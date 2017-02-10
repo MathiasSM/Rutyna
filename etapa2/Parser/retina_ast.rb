@@ -16,7 +16,7 @@ class AST
 end
 
 # Declaración de la clase para expresiones del tipo Boolean
-class BooleanType < AST
+class BooleanExpression < AST
     attr_accessor :boolean
 
     def initialize boolean
@@ -29,7 +29,7 @@ class BooleanType < AST
 end
 
 # Declaración de la clase para expresiones del tipo Number
-class NumberType < AST
+class NumberExpression < AST
     attr_accessor :number
 
     def initialize number
@@ -41,7 +41,8 @@ class NumberType < AST
     end
 end
 
-class StringType < AST
+# Declaración de la clase para expresiones del tipo Number
+class StringExpression < AST
     attr_accessor :string
 
     def initialize string
@@ -55,7 +56,7 @@ class StringType < AST
 end
 
 # Declaración de la clase general para operaciones unarias
-class UnaryOperation < AST
+class UnaryOperator < AST
     attr_accessor :operand
 
     def initialize operand
@@ -64,7 +65,7 @@ class UnaryOperation < AST
 end
 
 # Declaración de la clase general para operaciones binarias
-class BinaryOperation < AST
+class BinaryOperator < AST
     attr_accessor :left, :right
 
     def initialize lh, rh
@@ -74,7 +75,7 @@ class BinaryOperation < AST
 end
 
 # Declaración de la clase general para operaciones ternarias
-class TernaryOperation < AST
+class TernaryOperator < AST
     attr_accessor :left, :center, :right
 
     def initialize lh, ch, rh
@@ -85,42 +86,52 @@ class TernaryOperation < AST
 end
 
 # Declaración de las clases individuales para las operaciones booleanas
-class Negation < UnaryOperation; end        # Negación
-class Conjunction < BinaryOperation; end    # Conjunción
-class Disjunction < BinaryOperation; end    # Disyunción
-class Equivalent < BinaryOperation; end     # Equivalencia
-class Diferent < BinaryOperation; end       # Diferencia
-class Greater < BinaryOperation; end        # Mayor que
-class Less < BinaryOperation; end           # Menor que
-class GreaterOrEqual < BinaryOperation; end # Mayor o igual que
-class LessOrEqual < BinaryOperation; end    # Menor o igual que
+class NegationOperator < UnaryOperator; end        # Negación
+class ConjunctionOperator < BinaryOperator; end    # Conjunción
+class DisjunctionOperator < BinaryOperator; end    # Disyunción
+class EquivalentOperator < BinaryOperator; end     # Equivalencia
+class DiferentOperator < BinaryOperator; end       # Diferencia
+class GreaterOperator < BinaryOperator; end        # Mayor que
+class LessOperator < BinaryOperator; end           # Menor que
+class GreaterOrEqualOperator < BinaryOperator; end # Mayor o igual que
+class LessOrEqualOperator < BinaryOperator; end    # Menor o igual que
 
 # Declaración de las clases individuales para las operaciones aritmeticas
-class UnaryMinus < UnaryOperation; end      # Menos unitario
-class Addition < BinaryOperation; end       # Suma
-class Subtraction < BinaryOperation; end    # Resta
-class Multiplication < BinaryOperation; end # Multiplicación
-class Division < BinaryOperation; end       # División
-class IntDivision < BinaryOperation; end    # División entera
-class Modulus < BinaryOperation; end        # Modulo
-class ExactlyModulus < BinaryOperation; end # Modulo exacto
+class UnaryMinusOperator < UnaryOperator; end      # Menos unitario
+class AdditionOperator < BinaryOperator; end       # Suma
+class SubtractionOperator < BinaryOperator; end    # Resta
+class MultiplicationOperator < BinaryOperator; end # Multiplicación
+class DivisionOperator < BinaryOperator; end       # División
+class IntDivisionOperator < BinaryOperator; end    # División entera
+class ModulusOperator < BinaryOperator; end        # Modulo
+class ExactlyModulusOperator < BinaryOperator; end # Modulo exacto
 
 # Declaración de las clases individuales para bloques
-class ProgramBlock < UnaryOperation; end   # Bloque program
-class WithBlock < UnaryOperation; end      # Bloque with
-class IfBlock < BinaryOperation; end       # Bloque if
-class WhileBlock < BinaryOperation; end    # Bloque while
-class ForBlock < BinaryOperation; end      # Bloque for
-class RepeatBlock < BinaryOperation; end   # Bloque repeat
-class TimesBlock < BinaryOperation; end    # Bloque times
-class FunctionBlock < BinaryOperation; end # Bloque function
-class BeginBlock < UnaryOperation; end     # Bloque begin
-class ReturnBlock < BinaryOperation; end   # Bloque return
+class ProgramBlock < UnaryOperator; end   # Bloque program
+class WithBlock < UnaryOperator; end      # Bloque with
+class IfBlock < BinaryOperator; end       # Bloque if
+class WhileBlock < BinaryOperator; end    # Bloque while
+class ForBlock < BinaryOperator; end      # Bloque for
+class RepeatBlock < BinaryOperator; end   # Bloque repeat
+class TimesBlock < BinaryOperator; end    # Bloque times
+class FunctionBlock < BinaryOperator; end # Bloque function
+class BeginBlock < UnaryOperator; end     # Bloque begin
+class ReturnBlock < BinaryOperator; end   # Bloque return
+
+# Declaración de clases individuales para expresiones
+class TrueExpression < UnaryOperator; end  # True
+class FalseExpression < UnaryOperator; end # False
+
+# Declaración de clases individuales para declaraciones
+class SimpleStatement < BinaryOperator; end      # Declaración
+class AssignmentStatement < TernaryOperator; end # Declaración con asignación
 
 # Declaración de clases individuales para instrucciones
-class AssignmentInst < BinaryOperation; end        # Assignment
-class Identifier < UnaryOperation; end             # Negación
-class Declare < BinaryOperation; end               # Declaración
-class DeclareWithAssignment < TernaryOperation; end # Declaración con asignación
-class TrueExp < UnaryOperation; end
-class FalseExp < UnaryOperation; end
+class AssignmentInstruction < BinaryOperator; end # Asignación
+
+#  Declaración de clases individuales para los lobos solitarios
+class VariableName < UnaryOperator; end # Identificador de variable
+class FunctionName < UnaryOperator; end s# Identificador de variable
+
+
+
