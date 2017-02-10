@@ -41,6 +41,19 @@ class NumberType < AST
     end
 end
 
+class StringType < AST
+    attr_accessor :string
+
+    def initialize string
+        @string = string
+    end
+
+    def print_ast indent=""
+        puts "#{indent}#{self.class}: #{@string.to_str}"
+    end
+
+end
+
 # Declaración de la clase general para operaciones unarias
 class UnaryOperation < AST
     attr_accessor :operand
@@ -56,6 +69,17 @@ class BinaryOperation < AST
 
     def initialize lh, rh
         @left = lh
+        @right = rh
+    end
+end
+
+# Declaración de la clase general para operaciones ternarias
+class TernaryOperation < AST
+    attr_accessor :left, :center, :right
+
+    def initialize lh, ch, rh
+        @left = lh
+        @center = ch
         @right = rh
     end
 end
@@ -84,14 +108,9 @@ class ExactlyModulus < BinaryOperation; end # Modulo exacto
 # Declaración de las clases individuales para bloques
 class ProgramBlock < UnaryOperation; end   # Bloque program
 class WithBlock < UnaryOperation; end      # Bloque with
-class WhileBlock < BinaryOperation; end    # Bloque while
 class IfBlock < BinaryOperation; end       # Bloque if
-class ThenBlock < BinaryOperation; end     # Bloque then
-class ElseBlock < BinaryOperation; end     # Bloque else
+class WhileBlock < BinaryOperation; end    # Bloque while
 class ForBlock < BinaryOperation; end      # Bloque for
-class FromBlock < BinaryOperation; end     # Bloque from
-class ByBlock < BinaryOperation; end       # Bloque by
-class ToBlock < BinaryOperation; end       # Bloque to
 class RepeatBlock < BinaryOperation; end   # Bloque repeat
 class TimesBlock < BinaryOperation; end    # Bloque times
 class FunctionBlock < BinaryOperation; end # Bloque function
@@ -99,6 +118,9 @@ class BeginBlock < UnaryOperation; end     # Bloque begin
 class ReturnBlock < BinaryOperation; end   # Bloque return
 
 # Declaración de clases individuales para instrucciones
-class AssignmentInst < BinaryOperation; end # Assignment
-class Identifier < UnaryOperation; end      # Negación
-class Declare < BinaryOperation; end        # Declaración
+class AssignmentInst < BinaryOperation; end        # Assignment
+class Identifier < UnaryOperation; end             # Negación
+class Declare < BinaryOperation; end               # Declaración
+class DeclareWithAssignment < TernaryOperation; end # Declaración con asignación
+class TrueExp < UnaryOperation; end
+class FalseExp < UnaryOperation; end

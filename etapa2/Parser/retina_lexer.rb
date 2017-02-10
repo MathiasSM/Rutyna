@@ -106,7 +106,10 @@ class NumberLiteral < Token
 end
 class FunctionIdentifier < Token;   def to_s; "linea #{$row}, columna #{$col}: identificador de funcion \'#{@t}\'"; end; end
 class VariableIdentifier < Token;     def to_s; "linea #{$row}, columna #{$col}: identificador de variable\'#{@t}\'";      end;end
-class StringLiteral < Token;  def to_s; "linea #{$row}, columna #{$col}: literal de cadena de caracteres \'#{@t[1..-2]}\'"; end;end
+class StringLiteral < Token
+    def to_s; "linea #{$row}, columna #{$col}: literal de cadena de caracteres \'#{@t[1..-2]}\'"; end
+    def to_str;   @t;  end
+end
 
 # Signos
 class Plus < Token; end

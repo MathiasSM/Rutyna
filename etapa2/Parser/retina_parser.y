@@ -87,9 +87,9 @@ class Parser
         'write'       'Write'
         'writeline'   'WriteLine'
 
-        'num' 'NumberLiteral'
-        'id'  'VariableIdentifier'
-        'str' 'StringLiteral'
+        'num'    'NumberLiteral'
+        'id'     'VariableIdentifier'
+        'string' 'StringLiteral'
 
 end
 
@@ -98,24 +98,10 @@ start Retina
 # Declaración de las reglas de la gramatica
 rule
 
-    Retina: Instruction
-              ;
-    Instruction:  'id' '=' Expression                     { result = AssignmentInst.new(val[0], val[2]) }
-                | 'program' Instructions 'end'            { result = ProgramBlock.new(val[1]) }
-                | 'with' Statements 'do'                  { result = WithBlock.new(val[1])}
-                | 'begin' Instructions 'end'              { result = BeginBlock.new(val[1]) }
-                | 'if' Expression 'then' Instructions     { result = IfBlock.new(val[0]) }
-
-    Statement:    'boolean' 'id'    { result = Declare.new(val[0], val[1]) }
-                | 'number' 'id'     { result = Declare.new(val[0], val[1]) }
-
-    Statements:   Statements              { result = val[0] }
-                | Statement ';' Statement { result = val[0] + [val[1]] }
-
-    Instructions: Instruction                  { result = val[0]}
-                | Instruction ';' Instruction  { result = val[0] + [val[2]]}
-
     Expression:   'num'                       { result = NumberType.new(val[0])             }
+                | 'true'                      { result = TrueExp.new(val[0])                }
+                | 'false'                     { result = FalseExp.new(val[0])               }
+                | 'string'                    { result = StringType.new(val[0])             }
                 | 'id'                        { result = Identifier.new(val[0])             }
                 | '-' Expression = UMINUS     { result = UnaryMinus.new(val[1])             }
                 | 'not' Expression            { result = Negation.new(val[1])               }
@@ -135,7 +121,41 @@ rule
                 | Expression 'or' Expression  { result = Disyunction.new(val[0], val[2])    }
                 | Expression 'and' Expression { result = Conjunction.new(val[0], val[2])    }
                 | '(' Expression ')'          { result = val[1]                             }
-                ;
+    ;
+
+    Datatype:     'boolean' { result = val[0] }
+                | 'number'  { result = val[0] }
+    ;
+
+    Statement:    Datatype 'id'                { result = Declare.new(val[0], val[1])                       }
+                | Datatype 'id' '=' Expression { result = DeclareWithAssignment.new(val[0], val[1], val[3]) }
+    ;
+
+    Instruction:  'id' '=' Expression { result = AssignmentInst.new(val[0], val[2]) }
+    ;
+
+    Statements:   Statement                { result = val[0]            }
+                | Statements ';' Statement { result = val[0] + [val[1]] }
+    ;
+
+    Instructions: Instruction                   { result = val[0]            }
+                | Instructions ';' Instruction  { result = val[0] + [val[2]] }
+    ;
+
+    Params:       Statement                { result = val[0]            }
+                | Statements ',' Statement { result = val[0] + [val[2]] }
+    ;
+
+    Blocks:       'with' Statements 'do' Instructions 'end'                              { result = WithBlock.new(val[1])  }
+                | 'func' 'id' Params '->' Datatype 'begin' Instructions 'end'            { result = BeginBlock.new(val[1]) }
+                | 'while' Expression 'do' Instructions 'end'                             { result = BeginBlock.new(val[1]) }
+                | 'for' 'num' 'from' 'num' 'to' 'num' 'by' 'num' 'do' Instructions 'end' { result = BeginBlock.new(val[1]) }
+                | 'if' Expression 'then' Instructions 'end'                              { result = IfBlock.new(val[1], val[3]) }
+                | 'if' Expression 'then' Instructions 'else' Instructions 'end'          { result = IfBlock.new(val[1], val[3]) }
+    ;
+
+    Retina: 'program' Blocks 'end' { result = ProgramBlock.new(val[1]) }
+    ;
 
 ---- header
 

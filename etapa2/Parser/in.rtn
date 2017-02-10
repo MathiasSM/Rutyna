@@ -1,5 +1,7 @@
 program
-    begin
-        x = 4
+    with
+        number x
+    do
+        x = 42
     end
 end
