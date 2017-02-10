@@ -1,17 +1,16 @@
 class Parser
     # Lista de tokens
-    token '==' '!=' '>=' '<=' '>' '<' '->' '+' '-' '*' '/' '%' 'mod' 'div' '=' '(' ')' ';' ',' 'not' 'and' 'or' 'true' 'false' 'program' 'end' 'with' 'do' 'while' 'if' 'then' 'else' 'for' 'from' 'by' 'to' 'repeat' 'times' 'function' 'begin' 'return' 'boolean' 'number' 'openeye' 'closeeye' 'backward' 'forward' 'rotatel' 'rotater' 'setposition' 'arc' 'read' 'write' 'writeline' 'num' 'funid' 'varid' 'str' UMINUS
+    token '==' '/=' '>=' '<=' '>' '<' '->' '+' '-' '*' '/' '%' 'mod' 'div' '=' '(' ')' ';' ',' 'not' 'and' 'or' 'true' 'false' 'program' 'end' 'with' 'do' 'while' 'if' 'then' 'else' 'for' 'from' 'by' 'to' 'repeat' 'times' 'function' 'begin' 'return' 'boolean' 'number' 'openeye' 'closeeye' 'backward' 'forward' 'rotatel' 'rotater' 'setposition' 'arc' 'read' 'write' 'writeline' 'num' 'funid' 'varid' 'str' UMINUS
 
     # Tabla de presedencia
     prechigh
-        right 'not'
-        nonassoc UMINUS
+        right 'not' UMINUS
         left '*' '/' 'div' 'mod' '%'
         left '+' '-'
-        left '<=' '>=' '<' '>'
-        left '=='
-        left 'or' 'and'
-        right '='
+        noassoc '<=' '>=' '<' '>'
+        left '==' '/='
+        left 'or'
+        left 'and'
     preclow
 
     # Lista de conversiones de tokens a clases
@@ -22,7 +21,7 @@ class Parser
 
         # Operadores de comparación
         '==' 'Equal'
-        '!=' 'NotEqual'
+        '/=' 'NotEqual'
         '>=' 'GreaterOrEqualTo'
         '<=' 'LessOrEqualTo'
         '>'  'GreaterThan'
@@ -115,7 +114,7 @@ rule
                 | Expression '+' Expression   { result = AdditionOperator.new(val[0], val[2])       }
                 | Expression '-' Expression   { result = SubtractionOperator.new(val[0], val[2])    }
                 | Expression '==' Expression  { result = EquivalentOperator.new(val[0], val[2])     }
-                | Expression '!=' Expression  { result = DiferentOperator.new(val[0], val[2])       }
+                | Expression '/=' Expression  { result = DiferentOperator.new(val[0], val[2])       }
                 | Expression '<=' Expression  { result = LessOrEqualOperator.new(val[0], val[2])    }
                 | Expression '>=' Expression  { result = GreaterOrEqualOperator.new(val[0], val[2]) }
                 | Expression '<' Expression   { result = LessOperator.new(val[0], val[2])           }
@@ -130,33 +129,43 @@ rule
     ;
 
     Statement:    Datatype 'varid'                { result = SimpleStatement.new(val[0], val[1])                       }
-                | Datatype 'varid' '=' Expression { result = AssignmentStatement.new(val[0], val[1], val[3]) }
+                | Datatype 'varid' '=' Expression { result = AssignmentStatement.new(val[0], val[1], val[3])           }
     ;
 
-    Instruction:  'varid' '=' Expression { result = AssignmentInstruction.new(val[0], val[2]) }
+    Statements:   Statement ';'                      { result = val[0]            }
+                | Statements Statement ';'           { result = val[0] + [val[1]] }
     ;
 
-    Statements:   Statement                { result = val[0]            }
-                | Statements ';' Statement { result = val[0] + [val[1]] }
+    Instruction:  'varid' '=' Expression                                                                        { result = AssignmentInstruction.new(val[0], val[2]) }
+                | 'with' Statements 'do' Instructions 'end'                                                     { result = WithBlock.new(val[1])           }
+                | 'func' 'funid' '(' Params ')' '->' Datatype 'begin' Instructions 'end'                        { result = FunctionBlock.new(val[1], val[3], val[6], val[8])       }
+                | 'func' 'funid' '(' Params ')' 'begin' Instructions 'end'                                      { result = FunctionBlock.new(val[1], val[3], {}, val[6])       }
+                | 'while' Expression 'do' Instructions 'end'                                                    { result = WhileBlock.new(val[1], val[3])          }
+                | 'for' 'varid' 'from' Expression 'to' Expression 'by' Expression 'do' Instructions 'end'       { result = ForBlock.new(val[1],val[3],val[5],val[7],val[8]) }
+                | 'for' 'varid' 'from' Expression 'to' Expression 'do' Instructions 'end'                       { result = ForBlock.new(val[1],val[3],val[5],1,val[8])            }
+                | 'if' Expression 'then' Instructions 'end'                                                     { result = IfBlock.new(val[1], val[3])     }
+                | 'if' Expression 'then' Instructions 'else' Instructions 'end'                                 { result = IfElseBlock.new(val[1], val[3], val[5]) }
+                | 'repeat' Expression 'times' Instructions 'end'                                                { result = RepeatBlock.new(val[1], val[3]) }
     ;
 
-    Instructions: Instruction                   { result = val[0]            }
-                | Instructions ';' Instruction  { result = val[0] + [val[2]] }
+    Instructions: Instruction ';'                   { result = val[0]            }
+                | Instructions Instruction ';'      { result = val[0] + [val[2]] }
     ;
+
+
+#    InstructionsR: Instruction ';'                  { result = val[0]            }
+#                | 'return' Expression ';'           { result = val[1]       }
+#                | Instructions Instruction ';'      { result = val[0] + [val[2]] }
+#    ;
 
     Params:       Statement                { result = val[0]            }
-                | Statements ',' Statement { result = val[0] + [val[2]] }
+                | Params ',' Statement     { result = val[0] + [val[2]] }
     ;
 
-    Blocks:       'with' Statements 'do' Instructions 'end'                              { result = WithBlock.new(val[1])           }
-                | 'func' 'funid' Params '->' Datatype 'begin' Instructions 'end'         { result = FunctionBlock.new(val[1])       }
-                | 'while' Expression 'do' Instructions 'end'                             { result = WhileBlock.new(val[1])          }
-                | 'for' 'num' 'from' 'num' 'to' 'num' 'by' 'num' 'do' Instructions 'end' { result = ForBlock.new(val[1])            }
-                | 'if' Expression 'then' Instructions 'end'                              { result = IfBlock.new(val[1], val[3])     }
-                | 'if' Expression 'then' Instructions 'else' Instructions 'end'          { result = IfElseBlock.new(val[1], val[3]) }
+    Program: 'program' Instructions 'end' ';' { result = ProgramBlock.new(val[1]) }
     ;
 
-    Retina: 'program' Blocks 'end' { result = ProgramBlock.new(val[1]) }
+    Retina:     Program
     ;
 
 ---- header

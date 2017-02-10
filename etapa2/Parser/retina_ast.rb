@@ -131,7 +131,7 @@ class AssignmentInstruction < BinaryOperator; end # Asignación
 
 #  Declaración de clases individuales para los lobos solitarios
 class VariableName < UnaryOperator; end # Identificador de variable
-class FunctionName < UnaryOperator; end s# Identificador de variable
+class FunctionName < UnaryOperator; end # Identificador de variable
 
 
 
