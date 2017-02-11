@@ -1,4 +1,25 @@
-# Declaración de la clase AST (Abstract Syntaxis Tree)
+####################################################################################################################################
+## DESCRIPCIÓN:
+####################################################################################################################################
+
+# AST para el lenguaje Retina.
+# Basado en los ejemplos aportados por el preparador David Lilue y siguiendo las especificaciones dadas para el proyecto del curso
+# CI-3725 de la Universidad Simón Bolívar durante el trimestre Enero-Marzo 2017.
+
+####################################################################################################################################
+## AUTORES:
+####################################################################################################################################
+
+# Carlos Serrada, 13-11347, cserradag96@gmail.com
+# Mathias San Miguel, 13-11310, mathiassanmiguel@gmail.com
+
+####################################################################################################################################
+## DECLARACIÓN DE LA CLASE PRINCIPAL
+####################################################################################################################################
+
+#-----------------------------------------------------------------------------------------------------------------------------------
+# # AST (Abstract Syntaxis Tree)
+#-----------------------------------------------------------------------------------------------------------------------------------
 class AST
     def print_ast indent=""
         puts "#{indent}#{self.class}:"
@@ -15,6 +36,9 @@ class AST
     end
 end
 
+#-----------------------------------------------------------------------------------------------------------------------------------
+# # Listas de AST
+#-----------------------------------------------------------------------------------------------------------------------------------
 class ASList < AST
     attr_accessor :l
 
@@ -38,45 +62,13 @@ class ASList < AST
     end
 end
 
-# Declaración de la clase para expresiones del tipo Boolean
-class SingleBoolean < AST
-    attr_accessor :boolean
+####################################################################################################################################
+## DECLARACIÓN DE LA JERARQUÍA DE CLASES DERIVADAS DE AST ENLAZADAS A LOS DESCUBRIMIENTOS DEL PARSER:
+####################################################################################################################################
 
-    def initialize boolean
-        @boolean = boolean
-    end
-
-    def print_ast indent=""
-        puts "#{indent}#{self.class}"
-    end
-end
-
-# Declaración de la clase para expresiones del tipo Number
-class SingleNumber < AST
-    attr_accessor :number
-
-    def initialize number
-        @number = number
-    end
-
-    def print_ast indent=""
-        puts "#{indent}#{self.class}: #{@number.to_str}"
-    end
-end
-
-# Declaración de la clase para expresiones del tipo String
-class SingleString < AST
-    attr_accessor :string
-
-    def initialize string
-        @string = string
-    end
-
-    def print_ast indent=""
-        puts "#{indent}#{self.class}: #{@string.to_str}"
-    end
-
-end
+#-----------------------------------------------------------------------------------------------------------------------------------
+# Generalización de operaciones por catidad de elementos involucrados:
+#-----------------------------------------------------------------------------------------------------------------------------------
 
 # Declaración de la clase general para operaciones unarias
 class UnaryOperation < AST
@@ -137,7 +129,7 @@ class TernaryOperation < AST
     end
 end
 
-# Declaración de la clase especial para el FOR
+# Declaración de la clase especial para el bloque for
 class ForOperation < AST
     attr_accessor :it, :ini, :fin, :paso, :instr
 
@@ -165,6 +157,53 @@ class ForOperation < AST
     end
 end
 
+#-----------------------------------------------------------------------------------------------------------------------------------
+# Expresiones:
+#-----------------------------------------------------------------------------------------------------------------------------------
+
+# Declaración de la clase para expresiones del tipo Number
+class SingleNumber < AST
+    attr_accessor :number
+
+    def initialize number
+        @number = number
+    end
+
+    def print_ast indent=""
+        puts "#{indent}#{self.class}: #{@number.to_str}"
+    end
+end
+
+# Declaración de la clase para expresiones del tipo String
+class SingleString < AST
+    attr_accessor :string
+
+    def initialize string
+        @string = string
+    end
+
+    def print_ast indent=""
+        puts "#{indent}#{self.class}: #{@string.to_str}"
+    end
+
+end
+
+# Declaración de la clase para expresiones del tipo Boolean
+class SingleBoolean < AST
+    attr_accessor :boolean
+
+    def initialize boolean
+        @boolean = boolean
+    end
+
+    def print_ast indent=""
+        puts "#{indent}#{self.class}"
+    end
+end
+
+class SingleTrue < SingleBoolean; end  # True
+class SingleFalse < SingleBoolean; end # False
+
 # Declaración de las clases individuales para las operaciones booleanas
 class NegationOperation < UnaryOperation; end        # Negación
 class ConjunctionOperation < BinaryOperation; end    # Conjunción
@@ -186,20 +225,46 @@ class IntDivisionOperation < BinaryOperation; end    # División entera
 class ModulusOperation < BinaryOperation; end        # Modulo
 class ExactModulusOperation < BinaryOperation; end   # Modulo exacto
 
-# Declaración de las clases individuales para bloques
+#-----------------------------------------------------------------------------------------------------------------------------------
+# Instrucciones:
+#-----------------------------------------------------------------------------------------------------------------------------------
+
+# Asignación
+class AssignmentInstruction < BinaryOperation
+    def name
+        @lname = "VarID"
+        @rname = "Value"
+    end
+end
+
+# Llamado de función o procedimiento
+class FunctionCall < BinaryOperation
+    def name
+        @lname = "Funcion"
+        @rname = "Arguments"
+    end
+end
+
+# Bloque program
 class ProgramBlock < UnaryOperation; end
+
+# Bloque with
 class WithBlock < BinaryOperation
     def name
         @lname = "With"
         @rname = "Do"
     end
 end
+
+# Bloque if
 class IfBlock < BinaryOperation
     def name
         @lname = "If"
         @rname = "Then"
     end
 end
+
+# Bloque if else
 class IfElseBlock < TernaryOperation
     def name
         @lname = "If"
@@ -207,12 +272,16 @@ class IfElseBlock < TernaryOperation
         @rname = "Else"
     end
 end
+
+# Bloque while
 class WhileBlock < BinaryOperation
     def name
         @lname = "While"
         @rname = "Do"
     end
 end
+
+# Bloque repeat
 class RepeatBlock < BinaryOperation
     def name
         @lname = "Times"
@@ -220,17 +289,22 @@ class RepeatBlock < BinaryOperation
     end
 end
 
-# Declaración de clases individuales para expresiones
-class SingleTrue < SingleBoolean; end  # True
-class SingleFalse < SingleBoolean; end # False
+class InputOperation < UnaryOperation; end  # Operaciones de entrada
+class OutputOperation < UnaryOperation; end # Operaciones de salida
 
-# Declaración de clases individuales para declaraciones
+#-----------------------------------------------------------------------------------------------------------------------------------
+# Declaraciones:
+#-----------------------------------------------------------------------------------------------------------------------------------
+
+# Declaración de variable simple
 class SimpleStatement < BinaryOperation
     def name
         @lname = "Type"
         @rname = "VarID"
     end
 end
+
+# Declaración de variable con asignación
 class AssignmentStatement < TernaryOperation
     def name
         @lname = "Type"
@@ -239,7 +313,7 @@ class AssignmentStatement < TernaryOperation
     end
 end
 
-# Declaración de Función
+# Declaración de función
 class FunctionStatement < AST
     attr_accessor :id, :param, :type, :instr
     def initialize id, param, type, instr
@@ -248,33 +322,25 @@ class FunctionStatement < AST
         @type = type
         @instr = instr
     end
-end # Bloque function
+end
 
-# Declaración de clases individuales para instrucciones
-class AssignmentInstruction < BinaryOperation
-    def name
-        @lname = "VarID"
-        @rname = "Value"
-    end
-end # Asignación
+#-----------------------------------------------------------------------------------------------------------------------------------
+# Tipos de datos:
+#-----------------------------------------------------------------------------------------------------------------------------------
 
-#  Declaración de clases individuales para los lobos solitarios
-class VariableName < SingleString; end
 class Type < SingleString
     def print_ast indent=""
         puts "#{indent}#{@string.to_str}"
     end
 end
 
-class FunctionName < SingleString; end
+#-----------------------------------------------------------------------------------------------------------------------------------
+# Identificadores:
+#-----------------------------------------------------------------------------------------------------------------------------------
 
-class FunctionCall < BinaryOperation
-    def name
-        @lname = "Funcion"
-        @rname = "Arguments"
-    end
-end # Identificador de variable
+class VariableName < SingleString; end # Variables
+class FunctionName < SingleString; end # Funciones
 
-class OutputOperation < UnaryOperation; end
-class InputOperation < UnaryOperation; end
-
+####################################################################################################################################
+## FIN :)
+####################################################################################################################################

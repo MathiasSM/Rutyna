@@ -1,3 +1,22 @@
+####################################################################################################################################
+## DESCRIPCIÓN:
+####################################################################################################################################
+
+# Lexer para el lenguaje Retina.
+# Basado en los ejemplos aportados por el preparador David Lilue y siguiendo las especificaciones dadas para el proyecto del curso
+# CI-3725 de la Universidad Simón Bolívar durante el trimestre Enero-Marzo 2017.
+
+####################################################################################################################################
+## AUTORES:
+####################################################################################################################################
+
+# Carlos Serrada, 13-11347, cserradag96@gmail.com
+# Mathias San Miguel, 13-11310, mathiassanmiguel@gmail.com
+
+####################################################################################################################################
+## Declaración de las clases necesarias para identificar las palabras pertenencientes a Retina:
+####################################################################################################################################
+
 # Clase Token
 class Token
     attr_reader :t
@@ -70,16 +89,6 @@ $tokens = {
     Boolean:               /\Aboolean(?![a-zA-Z0-9_])/,
     Number:                /\Anumber(?![a-zA-Z0-9_])/,
 
-    # Funciones
-    #OpenEye:               /\Aopeneye(?![a-zA-Z0-9_])/,
-    #CloseEye:              /\Acloseye(?![a-zA-Z0-9_])/,
-    #Backward:              /\Abackward(?![a-zA-Z0-9_])/,
-    #Forward:               /\Aforward(?![a-zA-Z0-9_])/,
-    #RotateL:               /\Arotatel(?![a-zA-Z0-9_])/,
-    #RotateR:               /\Arotater(?![a-zA-Z0-9_])/,
-    #SetPosition:           /\Asetposition(?![a-zA-Z0-9_])/,
-    #Arc:                   /\Aarc(?![a-zA-Z0-9_])/,
-
     # Métodos de Entrada/Salida
     Read:                  /\Aread(?![a-zA-Z0-9_])/,
     Write:                 /\Awrite(?![a-zA-Z0-9_])/,
@@ -101,39 +110,7 @@ class LexicographicError < RuntimeError
     def to_s; "linea #{$row}, columna #{$col}: caracter inesperado \'#{@t}\'"; end
 end
 
-# Literales e identificadores custom
-class NumberLiteral < Token
-    def to_s; "linea #{$row}, columna #{$col}: literal numérico \'#{@t}\'"; end
-    def to_i;   @t.to_i;  end
-    def to_str
-        "#{@t}"
-    end
-end
-class FunctionIdentifier < Token
-    def to_s
-        "linea #{$row}, columna #{$col}: identificador de funcion \'#{@t}\'"
-    end
-    def to_str
-        "#{@t}"
-    end
-end
-class VariableIdentifier < Token
-    def to_s
-        "linea #{$row}, columna #{$col}: identificador de variable\'#{@t}\'"
-    end
-    def to_str
-        "#{@t}"
-    end
-end
-class StringLiteral < Token
-    def to_s; "linea #{$row}, columna #{$col}: literal de cadena de caracteres \'#{@t[1..-2]}\'"; end
-    def to_str;   @t;  end
-    def to_str
-        "#{@t}"
-    end
-end
-
-# Signos
+# Declaración de las clases para los signos
 class Plus < Token; end
 class Minus < Token; end
 class Asterisk < Token; end
@@ -156,7 +133,7 @@ class CloseRoundBracket < Token; end
 class Semicolon < Token; end
 class Comma < Token; end
 
-# Palabras Reservadas
+# Declaración de las clases para las palabras reservadas
 class Program < Token;      def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
 class End < Token;          def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
 class With < Token;         def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
@@ -171,12 +148,35 @@ class By < Token;           def to_s;   "linea #{$row}, columna #{$col}: palabra
 class To < Token;           def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
 class Repeat < Token;       def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
 class Times < Token;        def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-
 class Function < Token;     def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
 class Begin < Token;        def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
 class Return < Token;       def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
 class ReturnType < Token;   end
 
+# Declaración de las clases para los métodos de entrada/salida
+class Read < Token;         def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+class Write < Token;        def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+class WriteLine < Token;    def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+
+# Tipos de dato Number
+class Number < Token
+    def to_s;   "linea #{$row}, columna #{$col}: tipo de dato \'#{@t}\'";  end;
+    def to_i;   @t.to_i;  end
+    def to_str
+        "#{@t}"
+    end
+end
+
+# Tipos de dato Boolean
+class Boolean < Token
+    def to_s;   "linea #{$row}, columna #{$col}: tipo de dato \'#{@t}\'";  end;
+    def to_b;   @t.to_b;  end
+    def to_str
+        "#{@t}"
+    end
+end
+
+# Declaración de la clase para  el literal booleano: True
 class True < Token
     def to_s
         "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"
@@ -186,6 +186,8 @@ class True < Token
         "#{@t}"
     end
 end
+
+# Declaración de la clase para  el literal booleano: False
 class False < Token
     def to_s
         "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"
@@ -196,46 +198,58 @@ class False < Token
     end
 end
 
-# Tipos de datos
-class Boolean < Token
-    def to_s;   "linea #{$row}, columna #{$col}: tipo de dato \'#{@t}\'";  end;
-    def to_b;   @t.to_b;  end
-    def to_str
-        "#{@t}"
-    end
-end
-
-class Number < Token
-    def to_s;   "linea #{$row}, columna #{$col}: tipo de dato \'#{@t}\'";  end;
+# Declaración de la clase para literales numérico
+class NumberLiteral < Token
+    def to_s; "linea #{$row}, columna #{$col}: literal numérico \'#{@t}\'"; end
     def to_i;   @t.to_i;  end
     def to_str
         "#{@t}"
     end
 end
 
-# Identificadores predefinidos
-#class OpenEye < Token;      def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-#class CloseEye < Token;     def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-#class Backward < Token;     def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-#class Forward < Token;      def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-#class RotateL < Token;      def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-#class RotateR < Token;      def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-#class SetPosition < Token;  def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-#class Arc < Token;          def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+# Declaración de la clase para strings
+class StringLiteral < Token
+    def to_s; "linea #{$row}, columna #{$col}: literal de cadena de caracteres \'#{@t[1..-2]}\'"; end
+    def to_str;   @t;  end
+    def to_str
+        "#{@t}"
+    end
+end
 
-class Read < Token;         def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-class Write < Token;        def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-class WriteLine < Token;    def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+# Declaración de la clase para identificadores de funciones
+class FunctionIdentifier < Token
+    def to_s
+        "linea #{$row}, columna #{$col}: identificador de funcion \'#{@t}\'"
+    end
+    def to_str
+        "#{@t}"
+    end
+end
 
-# Clase del lexer
+# Declaración de la clase para identificadores de variables
+class VariableIdentifier < Token
+    def to_s
+        "linea #{$row}, columna #{$col}: identificador de variable\'#{@t}\'"
+    end
+    def to_str
+        "#{@t}"
+    end
+end
+
+####################################################################################################################################
+## Declaración del Lexer:
+####################################################################################################################################
+
 class Lexer
     attr_reader :tokens
 
+    # Inicialización
     def initialize input
         @tokens = []
         @input = input
     end
 
+    # Función para capturar los lexemas
     def catch_lexeme
         while @input =~ /(\A[^\S\n\r]*(\#[^\n]*)?[\n\r])/ do    # Salta líneas blancas o con comentarios
             @input = @input[$&.length..@input.length-1]         #
@@ -261,13 +275,13 @@ class Lexer
         if $&.nil? and class_to_be_instanciated.eql? LexicographicError
             @input =~ /\A(\w|\p{punct})/
             @tokens << LexicographicError.new($&)
-            puts @tokens[-1]
+            #puts @tokens[-1]
             $col = $col + $&.length
 
         # Si SI hay match, mete lo que matcheó
         else
             @tokens << class_to_be_instanciated.new($&)
-            puts @tokens[-1]
+            #puts @tokens[-1]
             $col = $col + $&.length
         end
 
@@ -276,3 +290,7 @@ class Lexer
         return @tokens[-1]
     end
 end
+
+####################################################################################################################################
+## FIN :)
+####################################################################################################################################

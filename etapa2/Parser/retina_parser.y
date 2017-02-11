@@ -1,3 +1,22 @@
+####################################################################################################################################
+## DESCRIPCIÓN:
+####################################################################################################################################
+
+# Código que será compilado con racc para generar el parser del lenguaje Retina.
+# Basado en los ejemplos aportados por el preparador David Lilue y siguiendo las especificaciones dadas para el proyecto del curso
+# CI-3725 de la Universidad Simón Bolívar durante el trimestre Enero-Marzo 2017.
+
+####################################################################################################################################
+## AUTORES:
+####################################################################################################################################
+
+# Carlos Serrada, 13-11347, cserradag96@gmail.com
+# Mathias San Miguel, 13-11310, mathiassanmiguel@gmail.com
+
+####################################################################################################################################
+## DECLARACIÓN DEL PARSER:
+####################################################################################################################################
+
 class Parser
     # Lista de tokens
     token '==' '/=' '>=' '<=' '>' '<' '->' '+' '-' '*' '/' '%' 'mod' 'div' '=' '(' ')' ';' ',' 'not' 'and' 'or' 'true' 'false' 'program' 'end' 'with' 'do' 'while' 'if' 'then' 'else' 'for' 'from' 'by' 'to' 'repeat' 'times' 'func' 'begin' 'return' 'boolean' 'number' 'read' 'write' 'writeln' 'num' 'funid' 'varid' 'str' UMINUS
@@ -87,16 +106,20 @@ class Parser
 
 end
 
+#-----------------------------------------------------------------------------------------------------------------------------------
+## Reglas de la gramática:
+#-----------------------------------------------------------------------------------------------------------------------------------
+
 start Retina
 
-# Declaración de las reglas de la gramatica
 rule
-
     Expression:   'num'                       { result = SingleNumber.new(val[0])                    }
                 | 'true'                      { result = SingleTrue.new(val[0])                      }
                 | 'false'                     { result = SingleFalse.new(val[0])                     }
                 | 'str'                       { result = SingleString.new(val[0])                    }
                 | VarID                       { result = val[0]                                      }
+                | FunID                       { result = val[0]                                      }
+                | '(' Expression ')'          { result = val[1]                                      }
                 | '-' Expression = UMINUS     { result = UnaryMinusOperation.new(val[1])             }
                 | 'not' Expression            { result = NegationOperation.new(val[1])               }
                 | Expression '*' Expression   { result = MultiplicationOperation.new(val[0], val[2]) }
@@ -114,7 +137,6 @@ rule
                 | Expression '>' Expression   { result = GreaterOperation.new(val[0], val[2])        }
                 | Expression 'or' Expression  { result = DisjunctionOperation.new(val[0], val[2])    }
                 | Expression 'and' Expression { result = ConjunctionOperation.new(val[0], val[2])    }
-                | '(' Expression ')'          { result = val[1]                                      }
     ;
 
     Expressions:  Expression                 { result = ASList.new(val[0])               }
@@ -141,17 +163,20 @@ rule
 
     Instruction:  Expression                                                                            { val[0]                                                    }
                 | VarID '=' Expression                                                                  { result = AssignmentInstruction.new(val[0], val[2])        }
+                | FunID '(' Expressions ')'                                                             { result = FunctionCall.new(val[0], val[2])                 }
+                | FunID '(' ')'                                                                         { result = FunctionCall.new(val[0], {})                     }
                 | 'with' Statements 'do' Instructions 'end'                                             { result = WithBlock.new(val[1], val[3])                    }
+                | 'with'  'do' Instructions 'end'                                                       { result = WithBlock.new({}, val[2])                        }
+                | 'with'  'do'  'end'                                                                   { result = WithBlock.new({}, {})                            }
                 | 'while' Expression 'do' Instructions 'end'                                            { result = WhileBlock.new(val[1], val[3])                   }
                 | 'for' VarID 'from' Expression 'to' Expression 'by' Expression 'do' Instructions 'end' { result = ForBlock.new(val[1],val[3],val[5],val[7],val[8]) }
                 | 'for' VarID 'from' Expression 'to' Expression 'do' Instructions 'end'                 { result = ForBlock.new(val[1],val[3],val[5],1,     val[8]) }
                 | 'if' Expression 'then' Instructions 'end'                                             { result = IfBlock.new(val[1], val[3])                      }
                 | 'if' Expression 'then' Instructions 'else' Instructions 'end'                         { result = IfElseBlock.new(val[1], val[3], val[5])          }
                 | 'repeat' Expression 'times' Instructions 'end'                                        { result = RepeatBlock.new(val[1], val[3])                  }
-                | FunID '(' Expressions ')'                                                             { result = FunctionCall.new(val[0], val[2])                 }
-                | 'write' Expressions                                                                   { result = OutputOperation.new(val[1]) }
-                | 'writeln' Expressions                                                                 { result = OutputOperation.new(val[1]) }
-                | 'read' VarID                                                                          { result = InputOperation.new(val[1]) }
+                | 'read' VarID                                                                          { result = InputOperation.new(val[1])                       }
+                | 'write' Expressions                                                                   { result = OutputOperation.new(val[1])                      }
+                | 'writeln' Expressions                                                                 { result = OutputOperation.new(val[1])                      }
     ;
 
     Instructions: Instruction ';'              { result = ASList.new(val[0])               }
@@ -184,11 +209,16 @@ rule
                 | Functions Program ';'  { result = ASList.new(val[1]).joina(val[0]) }
     ;
 
+####################################################################################################################################
+## Declaración del resto de las clases necesarias para el manejo de parser:
+####################################################################################################################################
+
 ---- header
 
-require_relative "retina_lexer"
-require_relative "retina_ast"
+require_relative "retina_lexer"  # Importar el lexer de retina
+require_relative "retina_ast"    # Importar el AST de retina
 
+# Clase para los errores de sintaxis
 class SyntacticError < RuntimeError
 
     def initialize(tok)
@@ -202,16 +232,21 @@ end
 
 ---- inner
 
+# Clase para captar los errores y producir una excepcion
+# generando una instancia de error de sintaxis
 def on_error(id, token, stack)
     raise SyntacticError::new(token)
 end
 
+# Clase para obtener el siguiente token reconocido por el lexer
 def next_token
     token = @lexer.catch_lexeme
     return [false,false] unless token
     return [token.class,token]
 end
 
+# Función para hacer el parse del lexer con el método
+# definido por racc
 def parse(lexer)
     @yydebug = true
     @lexer = lexer
@@ -219,3 +254,7 @@ def parse(lexer)
     ast = do_parse
     return ast
 end
+
+####################################################################################################################################
+## FIN :)
+####################################################################################################################################
