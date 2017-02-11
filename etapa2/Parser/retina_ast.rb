@@ -15,8 +15,26 @@ class AST
     end
 end
 
+class ASList < AST
+    attr_accessor :l
+
+    def initialize k=None
+        @l = [k]
+    end
+
+    def print_ast indent=""
+        @l.each do |a|
+            a.print_ast indent + "  " if a.respond_to? :print_ast
+        end
+    end
+
+    def join asl
+        @l += asl
+    end
+end
+
 # Declaración de la clase para expresiones del tipo Boolean
-class BooleanExpression < AST
+class SingleBoolean < AST
     attr_accessor :boolean
 
     def initialize boolean
@@ -29,7 +47,7 @@ class BooleanExpression < AST
 end
 
 # Declaración de la clase para expresiones del tipo Number
-class NumberExpression < AST
+class SingleNumber < AST
     attr_accessor :number
 
     def initialize number
@@ -41,8 +59,8 @@ class NumberExpression < AST
     end
 end
 
-# Declaración de la clase para expresiones del tipo Number
-class StringExpression < AST
+# Declaración de la clase para expresiones del tipo String
+class SingleString < AST
     attr_accessor :string
 
     def initialize string
@@ -56,7 +74,7 @@ class StringExpression < AST
 end
 
 # Declaración de la clase general para operaciones unarias
-class UnaryOperator < AST
+class UnaryOperation < AST
     attr_accessor :operand
 
     def initialize operand
@@ -65,7 +83,7 @@ class UnaryOperator < AST
 end
 
 # Declaración de la clase general para operaciones binarias
-class BinaryOperator < AST
+class BinaryOperation < AST
     attr_accessor :left, :right
 
     def initialize lh, rh
@@ -75,7 +93,7 @@ class BinaryOperator < AST
 end
 
 # Declaración de la clase general para operaciones ternarias
-class TernaryOperator < AST
+class TernaryOperation < AST
     attr_accessor :left, :center, :right
 
     def initialize lh, ch, rh
@@ -85,53 +103,82 @@ class TernaryOperator < AST
     end
 end
 
+# Declaración de la clase especial para el FOR
+class ForOperation < AST
+    attr_accessor :it, :ini, :fin, :paso, :instr
+
+    def initialize it, ini, fin, paso, instr
+        @it = it
+        @ini = init
+        @fin = fin
+        @paso = paso
+        @instr = instr
+    end
+end
+
 # Declaración de las clases individuales para las operaciones booleanas
-class NegationOperator < UnaryOperator; end        # Negación
-class ConjunctionOperator < BinaryOperator; end    # Conjunción
-class DisjunctionOperator < BinaryOperator; end    # Disyunción
-class EquivalentOperator < BinaryOperator; end     # Equivalencia
-class DiferentOperator < BinaryOperator; end       # Diferencia
-class GreaterOperator < BinaryOperator; end        # Mayor que
-class LessOperator < BinaryOperator; end           # Menor que
-class GreaterOrEqualOperator < BinaryOperator; end # Mayor o igual que
-class LessOrEqualOperator < BinaryOperator; end    # Menor o igual que
+class NegationOperation < UnaryOperation; end        # Negación
+class ConjunctionOperation < BinaryOperation; end    # Conjunción
+class DisjunctionOperation < BinaryOperation; end    # Disyunción
+class EquivalentOperation < BinaryOperation; end     # Equivalencia
+class DifferentOperation < BinaryOperation; end       # Diferencia
+class GreaterOperation < BinaryOperation; end        # Mayor que
+class LessOperation < BinaryOperation; end           # Menor que
+class GreaterOrEqualOperation < BinaryOperation; end # Mayor o igual que
+class LessOrEqualOperation < BinaryOperation; end    # Menor o igual que
 
 # Declaración de las clases individuales para las operaciones aritmeticas
-class UnaryMinusOperator < UnaryOperator; end      # Menos unitario
-class AdditionOperator < BinaryOperator; end       # Suma
-class SubtractionOperator < BinaryOperator; end    # Resta
-class MultiplicationOperator < BinaryOperator; end # Multiplicación
-class DivisionOperator < BinaryOperator; end       # División
-class IntDivisionOperator < BinaryOperator; end    # División entera
-class ModulusOperator < BinaryOperator; end        # Modulo
-class ExactlyModulusOperator < BinaryOperator; end # Modulo exacto
+class UnaryMinusOperation < UnaryOperation; end      # Menos unitario
+class AdditionOperation < BinaryOperation; end       # Suma
+class SubtractionOperation < BinaryOperation; end    # Resta
+class MultiplicationOperation < BinaryOperation; end # Multiplicación
+class DivisionOperation < BinaryOperation; end       # División
+class IntDivisionOperation < BinaryOperation; end    # División entera
+class ModulusOperation < BinaryOperation; end        # Modulo
+class ExactModulusOperation < BinaryOperation; end # Modulo exacto
 
 # Declaración de las clases individuales para bloques
-class ProgramBlock < UnaryOperator; end   # Bloque program
-class WithBlock < UnaryOperator; end      # Bloque with
-class IfBlock < BinaryOperator; end       # Bloque if
-class WhileBlock < BinaryOperator; end    # Bloque while
-class ForBlock < BinaryOperator; end      # Bloque for
-class RepeatBlock < BinaryOperator; end   # Bloque repeat
-class TimesBlock < BinaryOperator; end    # Bloque times
-class FunctionBlock < BinaryOperator; end # Bloque function
-class BeginBlock < UnaryOperator; end     # Bloque begin
-class ReturnBlock < BinaryOperator; end   # Bloque return
+class ProgramBlock < UnaryOperation; end
+class WithBlock < BinaryOperation
+    def print_ast indent=""
+        puts "#{indent}#{self.class}:"
+        puts "#{indent}  with:"
+        @left.print_ast indent+"    " if @left.respond_to? :print_ast
+        puts "#{indent}  do:"
+        @right.print_ast indent+"    " if @right.respond_to? :print_ast
+    end
+end     # Bloque with
+class IfBlock < BinaryOperation; end       # Bloque if
+class IfElseBlock < TernaryOperation; end  # Bloque if/else
+class WhileBlock < BinaryOperation; end    # Bloque while
+class RepeatBlock < BinaryOperation; end   # Bloque repeat
 
 # Declaración de clases individuales para expresiones
-class TrueExpression < UnaryOperator; end  # True
-class FalseExpression < UnaryOperator; end # False
+class SingleTrue < SingleBoolean; end  # True
+class SingleFalse < SingleBoolean; end # False
 
 # Declaración de clases individuales para declaraciones
-class SimpleStatement < BinaryOperator; end      # Declaración
-class AssignmentStatement < TernaryOperator; end # Declaración con asignación
+class SimpleStatement < BinaryOperation; end      # Declaración
+class AssignmentStatement < TernaryOperation; end # Declaración con asignación
+
+# Declaración de Función
+class FunctionStatement < AST
+    attr_accessor :id, :param, :type, :instr
+
+    def initialize id, param, type, instr
+        @id = id
+        @param = param
+        @type = type
+        @instr = instr
+    end
+end # Bloque function
 
 # Declaración de clases individuales para instrucciones
-class AssignmentInstruction < BinaryOperator; end # Asignación
+class AssignmentInstruction < BinaryOperation; end # Asignación
 
 #  Declaración de clases individuales para los lobos solitarios
-class VariableName < UnaryOperator; end # Identificador de variable
-class FunctionName < UnaryOperator; end # Identificador de variable
+class VariableName < UnaryOperation; end # Identificador de variable
+class FunctionName < BinaryOperation; end # Identificador de variable
 
 
 

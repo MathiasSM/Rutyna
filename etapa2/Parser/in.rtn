@@ -1,7 +1,7 @@
 program
     with
-        number x
+        number x;
     do
-        x = 42
-    end
-end
+        x = 42;
+    end;
+end;
