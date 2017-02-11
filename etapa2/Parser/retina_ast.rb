@@ -155,7 +155,7 @@ class ForBlock < AST
         else
             puts indent+"|  |  1"
         end
-        puts "#{indent}|  Intruction:"
+        puts "#{indent}|  Intructions:"
         @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast
     end
 end

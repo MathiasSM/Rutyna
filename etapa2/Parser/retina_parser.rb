@@ -1090,14 +1090,14 @@ module_eval(<<'.,.,', 'retina_parser.y', 170)
 
 module_eval(<<'.,.,', 'retina_parser.y', 171)
   def _reduce_43(val, _values, result)
-     result = ForBlock.new(val[1],val[3],val[5],val[7],val[8]) 
+     result = ForBlock.new(val[1],val[3],val[5],val[7],val[9]) 
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 172)
   def _reduce_44(val, _values, result)
-     result = ForBlock.new(val[1],val[3],val[5],1,     val[8]) 
+     result = ForBlock.new(val[1],val[3],val[5],1,     val[7]) 
     result
   end
 .,.,
