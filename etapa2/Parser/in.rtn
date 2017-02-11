@@ -1,10 +1,22 @@
+func circle(number radio)
+begin
+    arc(360, radio);
+end;
+func plus(number op1, number op2) -> number
+begin
+    return op1 + op2;
+end;
 program
     with
         number i;
     do
-        i = 28;
-        i = 27;
-        writeln 13, 42, 58, i;
-        read i;
+        with
+            number j = 1;
+        do
+            while j <= 4 do
+                write j, " ";
+                j = j + 1;
+            end;
+        end;
     end;
 end;

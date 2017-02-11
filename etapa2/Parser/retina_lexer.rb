@@ -71,19 +71,21 @@ $tokens = {
     Number:                /\Anumber(?![a-zA-Z0-9_])/,
 
     # Funciones
-    OpenEye:               /\Aopeneye(?![a-zA-Z0-9_])/,
-    CloseEye:              /\Acloseye(?![a-zA-Z0-9_])/,
-    Backward:              /\Abackward(?![a-zA-Z0-9_])/,
-    Forward:               /\Aforward(?![a-zA-Z0-9_])/,
-    RotateL:               /\Arotatel(?![a-zA-Z0-9_])/,
-    RotateR:               /\Arotater(?![a-zA-Z0-9_])/,
-    SetPosition:           /\Asetposition(?![a-zA-Z0-9_])/,
-    Arc:                   /\Aarc(?![a-zA-Z0-9_])/,
+    #OpenEye:               /\Aopeneye(?![a-zA-Z0-9_])/,
+    #CloseEye:              /\Acloseye(?![a-zA-Z0-9_])/,
+    #Backward:              /\Abackward(?![a-zA-Z0-9_])/,
+    #Forward:               /\Aforward(?![a-zA-Z0-9_])/,
+    #RotateL:               /\Arotatel(?![a-zA-Z0-9_])/,
+    #RotateR:               /\Arotater(?![a-zA-Z0-9_])/,
+    #SetPosition:           /\Asetposition(?![a-zA-Z0-9_])/,
+    #Arc:                   /\Aarc(?![a-zA-Z0-9_])/,
 
+    # Métodos de Entrada/Salida
     Read:                  /\Aread(?![a-zA-Z0-9_])/,
     Write:                 /\Awrite(?![a-zA-Z0-9_])/,
     WriteLine:             /\Awriteln(?![a-zA-Z0-9_])/,
 
+    # Identificadores y literales
     NumberLiteral:         /\A\d+(\.\d+)?/,
     FunctionIdentifier:    /\A[a-z][a-zA-Z0-9_]*(?=\()/,
     VariableIdentifier:    /\A[a-z][a-zA-Z0-9_]*/,
@@ -212,14 +214,14 @@ class Number < Token
 end
 
 # Identificadores predefinidos
-class OpenEye < Token;      def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-class CloseEye < Token;     def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-class Backward < Token;     def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-class Forward < Token;      def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-class RotateL < Token;      def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-class RotateR < Token;      def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-class SetPosition < Token;  def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-class Arc < Token;          def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+#class OpenEye < Token;      def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+#class CloseEye < Token;     def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+#class Backward < Token;     def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+#class Forward < Token;      def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+#class RotateL < Token;      def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+#class RotateR < Token;      def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+#class SetPosition < Token;  def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+#class Arc < Token;          def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
 
 class Read < Token;         def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
 class Write < Token;        def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
@@ -259,13 +261,13 @@ class Lexer
         if $&.nil? and class_to_be_instanciated.eql? LexicographicError
             @input =~ /\A(\w|\p{punct})/
             @tokens << LexicographicError.new($&)
-        #    puts @tokens[-1]
+            puts @tokens[-1]
             $col = $col + $&.length
 
         # Si SI hay match, mete lo que matcheó
         else
             @tokens << class_to_be_instanciated.new($&)
-        #    puts @tokens[-1]
+            puts @tokens[-1]
             $col = $col + $&.length
         end
 

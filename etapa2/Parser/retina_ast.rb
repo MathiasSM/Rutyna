@@ -241,7 +241,8 @@ end
 
 # Declaración de Función
 class FunctionStatement < AST
-    def name id, param, type, instr
+    attr_accessor :id, :param, :type, :instr
+    def initialize id, param, type, instr
         @id = id
         @param = param
         @type = type
@@ -264,9 +265,12 @@ class Type < SingleString
         puts "#{indent}#{@string.to_str}"
     end
 end
-class FunctionName < BinaryOperation
+
+class FunctionName < SingleString; end
+
+class FunctionCall < BinaryOperation
     def name
-        @lname = "Name"
+        @lname = "Funcion"
         @rname = "Arguments"
     end
 end # Identificador de variable

@@ -1,6 +1,6 @@
 class Parser
     # Lista de tokens
-    token '==' '/=' '>=' '<=' '>' '<' '->' '+' '-' '*' '/' '%' 'mod' 'div' '=' '(' ')' ';' ',' 'not' 'and' 'or' 'true' 'false' 'program' 'end' 'with' 'do' 'while' 'if' 'then' 'else' 'for' 'from' 'by' 'to' 'repeat' 'times' 'function' 'begin' 'return' 'boolean' 'number' 'read' 'write' 'writeln' 'num' 'funid' 'varid' 'str' UMINUS
+    token '==' '/=' '>=' '<=' '>' '<' '->' '+' '-' '*' '/' '%' 'mod' 'div' '=' '(' ')' ';' ',' 'not' 'and' 'or' 'true' 'false' 'program' 'end' 'with' 'do' 'while' 'if' 'then' 'else' 'for' 'from' 'by' 'to' 'repeat' 'times' 'func' 'begin' 'return' 'boolean' 'number' 'read' 'write' 'writeln' 'num' 'funid' 'varid' 'str' UMINUS
 
     # Tabla de presedencia
     prechigh
@@ -56,23 +56,23 @@ class Parser
         'false' 'False'
 
         # Bloques
-        'program'  'Program'
-        'end'      'End'
-        'with'     'With'
-        'do'       'Do'
-        'while'    'While'
-        'if'       'If'
-        'then'     'Then'
-        'else'     'Else'
-        'for'      'For'
-        'from'     'From'
-        'by'       'By'
-        'to'       'To'
-        'repeat'   'Repeat'
-        'times'    'Times'
-        'function' 'Function'
-        'begin'    'Begin'
-        'return'   'Return'
+        'program' 'Program'
+        'end'     'End'
+        'with'    'With'
+        'do'      'Do'
+        'while'   'While'
+        'if'      'If'
+        'then'    'Then'
+        'else'    'Else'
+        'for'     'For'
+        'from'    'From'
+        'by'      'By'
+        'to'      'To'
+        'repeat'  'Repeat'
+        'times'   'Times'
+        'func'    'Function'
+        'begin'   'Begin'
+        'return'  'Return'
 
         # Métodos de Entrada/Salida
         'read'    'Read'
@@ -148,7 +148,7 @@ rule
                 | 'if' Expression 'then' Instructions 'end'                                             { result = IfBlock.new(val[1], val[3])                      }
                 | 'if' Expression 'then' Instructions 'else' Instructions 'end'                         { result = IfElseBlock.new(val[1], val[3], val[5])          }
                 | 'repeat' Expression 'times' Instructions 'end'                                        { result = RepeatBlock.new(val[1], val[3])                  }
-                | FunID '(' Params ')'                                                                  { result = FunctionName.new(val[0], val[2])                 }
+                | FunID '(' Expressions ')'                                                             { result = FunctionCall.new(val[0], val[2])                 }
                 | 'write' Expressions                                                                   { result = OutputOperation.new(val[1]) }
                 | 'writeln' Expressions                                                                 { result = OutputOperation.new(val[1]) }
                 | 'read' VarID                                                                          { result = InputOperation.new(val[1]) }
