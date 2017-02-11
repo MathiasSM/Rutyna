@@ -3,5 +3,6 @@ program
         number x;
     do
         x = 42;
+	x = 12+2;
     end;
 end;

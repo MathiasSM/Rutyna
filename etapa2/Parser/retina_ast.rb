@@ -28,7 +28,7 @@ class ASList < AST
         end
     end
 
-    def join asl
+    def joina asl
         @l += asl
     end
 end
@@ -89,6 +89,19 @@ class BinaryOperation < AST
     def initialize lh, rh
         @left = lh
         @right = rh
+        @lname = ""
+        @rname = ""
+    end
+
+    def name; end
+
+    def print_ast indent=""
+        self.name
+        puts "#{indent}#{self.class}:"
+        puts "#{indent}  #{@lname}:"
+        @left.print_ast  indent+"    " if @left.respond_to? :print_ast
+        puts "#{indent}  #{@rname}:"
+        @right.print_ast indent+"    " if @right.respond_to? :print_ast
     end
 end
 
@@ -100,6 +113,22 @@ class TernaryOperation < AST
         @left = lh
         @center = ch
         @right = rh
+        @lname = ""
+        @rname = ""
+        @cname = ""
+    end
+
+    def name;end
+
+    def print_ast indent=""
+        self.name
+        puts "#{indent}#{self.class}:"
+        puts "#{indent}  #{@lname}:"
+        @left.print_ast indent+"    " if @left.respond_to? :print_ast
+        puts "#{indent}  #{@cname}:"
+        @center.print_ast indent+"    " if @center.respond_to? :print_ast
+        puts "#{indent}  #{@rname}:"
+        @right.print_ast indent+"    " if @right.respond_to? :print_ast
     end
 end
 
@@ -113,6 +142,21 @@ class ForOperation < AST
         @fin = fin
         @paso = paso
         @instr = instr
+    end
+
+    def print_ast indent=""
+        puts "#{indent}#{self.class}:"
+        puts "#{indent}  Iterador: #{@it.to_s}:"
+        puts "#{indent}  From:"
+        @init.print_ast indent+"    " if @init.respond_to? :print_ast
+        puts "#{indent}  To:"
+        @fin.print_ast indent+"    " if @fin.respond_to? :print_ast
+        if @paso.empty?
+            puts "#{indent}  Step:"
+            @paso.print_ast indent+"    " if @paso.respond_to? :print_ast
+        end
+        puts "#{indent}  Intruction:"
+        @instr.print_ast indent+"    " if @instr.respond_to? :print_ast
     end
 end
 
@@ -140,32 +184,61 @@ class ExactModulusOperation < BinaryOperation; end # Modulo exacto
 # Declaración de las clases individuales para bloques
 class ProgramBlock < UnaryOperation; end
 class WithBlock < BinaryOperation
-    def print_ast indent=""
-        puts "#{indent}#{self.class}:"
-        puts "#{indent}  with:"
-        @left.print_ast indent+"    " if @left.respond_to? :print_ast
-        puts "#{indent}  do:"
-        @right.print_ast indent+"    " if @right.respond_to? :print_ast
+    def name
+        @lname = "With"
+        @rname = "Do"
     end
-end     # Bloque with
-class IfBlock < BinaryOperation; end       # Bloque if
-class IfElseBlock < TernaryOperation; end  # Bloque if/else
-class WhileBlock < BinaryOperation; end    # Bloque while
-class RepeatBlock < BinaryOperation; end   # Bloque repeat
+end
+class IfBlock < BinaryOperation
+    def name
+        @lname = "If"
+        @rname = "Then"
+    end
+end
+class IfElseBlock < TernaryOperation
+    def name
+        @lname = "If"
+        @cname = "Then"
+        @rname = "Else"
+    end
+end
+class WhileBlock < BinaryOperation
+    def name
+        @lname = "While"
+        @rname = "Do"
+    end
+end
+class RepeatBlock < BinaryOperation
+    def name
+        @lname = "Times"
+        @rname = "Instruction"
+    end
+end
 
 # Declaración de clases individuales para expresiones
 class SingleTrue < SingleBoolean; end  # True
 class SingleFalse < SingleBoolean; end # False
 
 # Declaración de clases individuales para declaraciones
-class SimpleStatement < BinaryOperation; end      # Declaración
-class AssignmentStatement < TernaryOperation; end # Declaración con asignación
+class SimpleStatement < BinaryOperation
+    def name
+        @lname = "Type"
+        @rname = "VarID"
+    end
+end
+class AssignmentStatement < TernaryOperation
+    def name
+        @lname = "Type"
+        @cname = "VarID"
+        @rname = "Value"
+    end
+end
 
 # Declaración de Función
 class FunctionStatement < AST
     attr_accessor :id, :param, :type, :instr
 
-    def initialize id, param, type, instr
+    def name id, param, type, instr
         @id = id
         @param = param
         @type = type
@@ -174,11 +247,21 @@ class FunctionStatement < AST
 end # Bloque function
 
 # Declaración de clases individuales para instrucciones
-class AssignmentInstruction < BinaryOperation; end # Asignación
+class AssignmentInstruction < BinaryOperation
+    def name
+        @lname = "VarID"
+        @rname = "Value"
+    end
+end # Asignación
 
 #  Declaración de clases individuales para los lobos solitarios
 class VariableName < UnaryOperation; end # Identificador de variable
-class FunctionName < BinaryOperation; end # Identificador de variable
+class FunctionName < BinaryOperation
+    def name
+        @lname = "Name"
+        @rname = "Arguments"
+    end
+end # Identificador de variable
 
 
 

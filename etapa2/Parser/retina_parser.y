@@ -134,7 +134,7 @@ rule
     ;
 
     Statements:   Statement ';'                         { result = ASList.new(val[0])             }
-                | Statements Statement ';'              { result = ASList.new(val[1]).join(val[0]) }
+                | Statements Statement ';'              { result = ASList.new(val[1]).joina(val[0]) }
     ;
 
     Instruction:  Expression                                                                                    { val[0] }
@@ -151,16 +151,16 @@ rule
     ;
 
     Instructions: Instruction ';'                       { result = ASList.new(val[0])             }
-                | Instructions Instruction ';'          { result = ASList.new(val[1]).join(val[0]) }
+                | Instructions Instruction ';'          { result = ASList.new(val[1]).joina(val[0]) }
     ;
 
     InstructionsR: Instruction ';'                      { result = ASList.new(val[0])             }
                 | 'return' Expression ';'               { result = ASList.new(val[1])        }
-                | InstructionsR Instruction ';'         { result = ASList.new(val[1]).join(val[0]) }
+                | InstructionsR Instruction ';'         { result = ASList.new(val[1]).joina(val[0]) }
     ;
 
     Params:       Statement                             { result = ASList.new(val[0])            }
-                | Params ',' Statement                  { result = ASList.new(val[2]).join(val[0]) }
+                | Params ',' Statement                  { result = ASList.new(val[2]).joina(val[0]) }
     ;
 
     Program: 'program' Instructions 'end'               { result = ProgramBlock.new(val[1]) }
@@ -171,10 +171,10 @@ rule
     ;
 
     Functions: Function ';'                             { result = ASList.new(val[0])  }
-                | Functions Function ';'                { result = ASList.new(val[1]).join(val[0]) }
+                | Functions Function ';'                { result = ASList.new(val[1]).joina(val[0]) }
 
     Retina:   Program ';'                               { result = ASList.new(val[0])  }
-                | Functions Program ';'                 { result = ASList.new(val[1]).join(val[0]) }
+                | Functions Program ';'                 { result = ASList.new(val[1]).joina(val[0]) }
     ;
 
 ---- header
