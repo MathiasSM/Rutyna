@@ -103,7 +103,7 @@ rule
                 | 'true'                      { result = SingleTrue.new(val[0])                 }
                 | 'false'                     { result = SingleFalse.new(val[0])                }
                 | 'str'                       { result = SingleString.new(val[0])               }
-                | 'varid'                     { result = VariableName.new(val[0])                   }
+                | VarID                       { result = val[0]                      }
                 | '-' Expression = UMINUS     { result = UnaryMinusOperation.new(val[1])             }
                 | 'not' Expression            { result = NegationOperation.new(val[1])               }
                 | Expression '*' Expression   { result = MultiplicationOperation.new(val[0], val[2]) }
@@ -124,12 +124,17 @@ rule
                 | '(' Expression ')'          { result = val[1]                                     }
     ;
 
-    Datatype:     'boolean' { result = val[0] }
-                | 'number'  { result = val[0] }
+    VarID:        'varid'                      {result = VariableName.new(val[0])}
+    ;
+    FunID:        'funid'                      {result = FunctionName.new(val[0])}
     ;
 
-    Statement:    Datatype 'varid'                      { result = SimpleStatement.new(val[0], val[1])                       }
-                | Datatype 'varid' '=' Expression       { result = AssignmentStatement.new(val[0], val[1], val[3])           }
+    Datatype:     'boolean' { result = Type.new(val[0]) }
+                | 'number'  { result = Type.new(val[0]) }
+    ;
+
+    Statement:    Datatype VarID                      { result = SimpleStatement.new(val[0], val[1])                       }
+                | Datatype VarID '=' Expression       { result = AssignmentStatement.new(val[0], val[1], val[3])           }
                 |  /*Lambda*/                           { }
     ;
 
@@ -138,15 +143,15 @@ rule
     ;
 
     Instruction:  Expression                                                                                    { val[0] }
-                | 'varid' '=' Expression                                                                        { result = AssignmentInstruction.new(val[0], val[2]) }
+                | VarID '=' Expression                                                                        { result = AssignmentInstruction.new(val[0], val[2]) }
                 | 'with' Statements 'do' Instructions 'end'                                                     { result = WithBlock.new(val[1], val[3])           }
                 | 'while' Expression 'do' Instructions 'end'                                                    { result = WhileBlock.new(val[1], val[3]) }
-                | 'for' 'varid' 'from' Expression 'to' Expression 'by' Expression 'do' Instructions 'end'       { result = ForBlock.new(val[1],val[3],val[5],val[7],val[8]) }
-                | 'for' 'varid' 'from' Expression 'to' Expression 'do' Instructions 'end'                       { result = ForBlock.new(val[1],val[3],val[5],1,     val[8]) }
+                | 'for' VarID 'from' Expression 'to' Expression 'by' Expression 'do' Instructions 'end'       { result = ForBlock.new(val[1],val[3],val[5],val[7],val[8]) }
+                | 'for' VarID 'from' Expression 'to' Expression 'do' Instructions 'end'                       { result = ForBlock.new(val[1],val[3],val[5],1,     val[8]) }
                 | 'if' Expression 'then' Instructions 'end'                                                     { result = IfBlock.new(val[1], val[3])     }
                 | 'if' Expression 'then' Instructions 'else' Instructions 'end'                                 { result = IfElseBlock.new(val[1], val[3], val[5]) }
                 | 'repeat' Expression 'times' Instructions 'end'                                                { result = RepeatBlock.new(val[1], val[3]) }
-                | 'funid' '(' Params ')'                                                                        { result = FunctionName.new(val[0], val[2]) }
+                | FunID '(' Params ')'                                                                        { result = FunctionName.new(val[0], val[2]) }
                 |  /*Lambda*/                           {  }
     ;
 
@@ -166,8 +171,8 @@ rule
     Program: 'program' Instructions 'end'               { result = ProgramBlock.new(val[1]) }
     ;
 
-    Function: 'func' 'funid' '(' Params ')' '->' Datatype 'begin' InstructionsR 'end'                       { result = FunctionStatement.new(val[1], val[3], val[6], val[8])       }
-                | 'func' 'funid' '(' Params ')' 'begin' Instructions 'end'                                  { result = FunctionStatement.new(val[1], val[3], {}, val[6])       }
+    Function: 'func' FunID '(' Params ')' '->' Datatype 'begin' InstructionsR 'end'                       { result = FunctionStatement.new(val[1], val[3], val[6], val[8])       }
+                | 'func' FunID '(' Params ')' 'begin' Instructions 'end'                                  { result = FunctionStatement.new(val[1], val[3], {}, val[6])       }
     ;
 
     Functions: Function ';'                             { result = ASList.new(val[0])  }

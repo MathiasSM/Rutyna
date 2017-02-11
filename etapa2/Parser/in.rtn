@@ -4,5 +4,11 @@ program
     do
         x = 42;
 	x = 12+2;
+	with
+		number a = "sssdsfrefgrfe  rfesrgwbsfr";
+		boolean b = a + true;
+	do
+		x+x;
+	end;
     end;
 end;

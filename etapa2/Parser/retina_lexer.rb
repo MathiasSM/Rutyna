@@ -103,12 +103,32 @@ end
 class NumberLiteral < Token
     def to_s; "linea #{$row}, columna #{$col}: literal numérico \'#{@t}\'"; end
     def to_i;   @t.to_i;  end
+    def to_str
+        "#{@t}"
+    end
 end
-class FunctionIdentifier < Token;   def to_s; "linea #{$row}, columna #{$col}: identificador de funcion \'#{@t}\'"; end; end
-class VariableIdentifier < Token;     def to_s; "linea #{$row}, columna #{$col}: identificador de variable\'#{@t}\'";      end;end
+class FunctionIdentifier < Token
+    def to_s
+        "linea #{$row}, columna #{$col}: identificador de funcion \'#{@t}\'"
+    end
+    def to_str
+        "#{@t}"
+    end
+end
+class VariableIdentifier < Token
+    def to_s
+        "linea #{$row}, columna #{$col}: identificador de variable\'#{@t}\'"
+    end
+    def to_str
+        "#{@t}"
+    end
+end
 class StringLiteral < Token
     def to_s; "linea #{$row}, columna #{$col}: literal de cadena de caracteres \'#{@t[1..-2]}\'"; end
     def to_str;   @t;  end
+    def to_str
+        "#{@t}"
+    end
 end
 
 # Signos
@@ -155,18 +175,40 @@ class Begin < Token;        def to_s;   "linea #{$row}, columna #{$col}: palabra
 class Return < Token;       def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
 class ReturnType < Token;   end
 
-class True < Token;         def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class False < Token;        def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
+class True < Token
+    def to_s
+        "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"
+    end
+
+    def to_str
+        "#{@t}"
+    end
+end
+class False < Token
+    def to_s
+        "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"
+    end
+
+    def to_str
+        "#{@t}"
+    end
+end
 
 # Tipos de datos
 class Boolean < Token
     def to_s;   "linea #{$row}, columna #{$col}: tipo de dato \'#{@t}\'";  end;
     def to_b;   @t.to_b;  end
+    def to_str
+        "#{@t}"
+    end
 end
 
 class Number < Token
     def to_s;   "linea #{$row}, columna #{$col}: tipo de dato \'#{@t}\'";  end;
     def to_i;   @t.to_i;  end
+    def to_str
+        "#{@t}"
+    end
 end
 
 # Identificadores predefinidos
@@ -217,13 +259,13 @@ class Lexer
         if $&.nil? and class_to_be_instanciated.eql? LexicographicError
             @input =~ /\A(\w|\p{punct})/
             @tokens << LexicographicError.new($&)
-            puts @tokens[-1]
+        #    puts @tokens[-1]
             $col = $col + $&.length
 
         # Si SI hay match, mete lo que matcheó
         else
             @tokens << class_to_be_instanciated.new($&)
-            puts @tokens[-1]
+        #    puts @tokens[-1]
             $col = $col + $&.length
         end
 

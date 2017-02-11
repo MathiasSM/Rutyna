@@ -4,7 +4,7 @@ class AST
         puts "#{indent}#{self.class}:"
 
         attrs.each do |a|
-            a.print_ast indent + "  " if a.respond_to? :print_ast
+            a.print_ast indent + "|  " if a.respond_to? :print_ast
         end
     end
 
@@ -18,18 +18,23 @@ end
 class ASList < AST
     attr_accessor :l
 
-    def initialize k=None
-        @l = [k]
+    def initialize k=nil
+        if k.nil?
+            @l=[]
+        else
+            @l=[k]
+        end
     end
 
     def print_ast indent=""
         @l.each do |a|
-            a.print_ast indent + "  " if a.respond_to? :print_ast
+            a.print_ast indent if a.respond_to? :print_ast
         end
     end
 
     def joina asl
-        @l += asl
+        @l += asl.l
+        return self
     end
 end
 
@@ -42,7 +47,7 @@ class SingleBoolean < AST
     end
 
     def print_ast indent=""
-        puts "#{indent}#{self.class}: #{@boolean.to_b}"
+        puts "#{indent}#{self.class}"
     end
 end
 
@@ -55,7 +60,7 @@ class SingleNumber < AST
     end
 
     def print_ast indent=""
-        puts "#{indent}#{self.class}: #{@number.to_i}"
+        puts "#{indent}#{self.class}: #{@number.to_str}"
     end
 end
 
@@ -89,8 +94,8 @@ class BinaryOperation < AST
     def initialize lh, rh
         @left = lh
         @right = rh
-        @lname = ""
-        @rname = ""
+        @lname = "Left"
+        @rname = "Right"
     end
 
     def name; end
@@ -98,10 +103,10 @@ class BinaryOperation < AST
     def print_ast indent=""
         self.name
         puts "#{indent}#{self.class}:"
-        puts "#{indent}  #{@lname}:"
-        @left.print_ast  indent+"    " if @left.respond_to? :print_ast
-        puts "#{indent}  #{@rname}:"
-        @right.print_ast indent+"    " if @right.respond_to? :print_ast
+        puts "#{indent}|  #{@lname}:"
+        @left.print_ast  indent+"|  |  " if @left.respond_to? :print_ast
+        puts "#{indent}|  #{@rname}:"
+        @right.print_ast indent+"|  |  " if @right.respond_to? :print_ast
     end
 end
 
@@ -123,12 +128,12 @@ class TernaryOperation < AST
     def print_ast indent=""
         self.name
         puts "#{indent}#{self.class}:"
-        puts "#{indent}  #{@lname}:"
-        @left.print_ast indent+"    " if @left.respond_to? :print_ast
-        puts "#{indent}  #{@cname}:"
-        @center.print_ast indent+"    " if @center.respond_to? :print_ast
-        puts "#{indent}  #{@rname}:"
-        @right.print_ast indent+"    " if @right.respond_to? :print_ast
+        puts "#{indent}|  #{@lname}:"
+        @left.print_ast indent+"|  |  " if @left.respond_to? :print_ast
+        puts "#{indent}|  #{@cname}:"
+        @center.print_ast indent+"|  |  " if @center.respond_to? :print_ast
+        puts "#{indent}|  #{@rname}:"
+        @right.print_ast indent+"|  |  " if @right.respond_to? :print_ast
     end
 end
 
@@ -146,17 +151,17 @@ class ForOperation < AST
 
     def print_ast indent=""
         puts "#{indent}#{self.class}:"
-        puts "#{indent}  Iterador: #{@it.to_s}:"
-        puts "#{indent}  From:"
-        @init.print_ast indent+"    " if @init.respond_to? :print_ast
-        puts "#{indent}  To:"
-        @fin.print_ast indent+"    " if @fin.respond_to? :print_ast
+        puts "#{indent}|  Iterador: #{@it.to_str}:"
+        puts "#{indent}|  From:"
+        @init.print_ast indent+"|  |  " if @init.respond_to? :print_ast
+        puts "#{indent}|  To:"
+        @fin.print_ast indent+"|  |  " if @fin.respond_to? :print_ast
         if @paso.empty?
-            puts "#{indent}  Step:"
-            @paso.print_ast indent+"    " if @paso.respond_to? :print_ast
+            puts "#{indent}|  Step:"
+            @paso.print_ast indent+"|  |  " if @paso.respond_to? :print_ast
         end
-        puts "#{indent}  Intruction:"
-        @instr.print_ast indent+"    " if @instr.respond_to? :print_ast
+        puts "#{indent}|  Intruction:"
+        @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast
     end
 end
 
@@ -179,7 +184,7 @@ class MultiplicationOperation < BinaryOperation; end # Multiplicación
 class DivisionOperation < BinaryOperation; end       # División
 class IntDivisionOperation < BinaryOperation; end    # División entera
 class ModulusOperation < BinaryOperation; end        # Modulo
-class ExactModulusOperation < BinaryOperation; end # Modulo exacto
+class ExactModulusOperation < BinaryOperation; end   # Modulo exacto
 
 # Declaración de las clases individuales para bloques
 class ProgramBlock < UnaryOperation; end
@@ -236,8 +241,6 @@ end
 
 # Declaración de Función
 class FunctionStatement < AST
-    attr_accessor :id, :param, :type, :instr
-
     def name id, param, type, instr
         @id = id
         @param = param
@@ -255,7 +258,12 @@ class AssignmentInstruction < BinaryOperation
 end # Asignación
 
 #  Declaración de clases individuales para los lobos solitarios
-class VariableName < UnaryOperation; end # Identificador de variable
+class VariableName < SingleString; end
+class Type < SingleString
+    def print_ast indent=""
+        puts "#{indent}#{@string.to_str}"
+    end
+end
 class FunctionName < BinaryOperation
     def name
         @lname = "Name"
