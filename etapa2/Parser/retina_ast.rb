@@ -130,12 +130,12 @@ class TernaryOperation < AST
 end
 
 # Declaración de la clase especial para el bloque for
-class ForOperation < AST
+class ForBlock < AST
     attr_accessor :it, :ini, :fin, :paso, :instr
 
     def initialize it, ini, fin, paso, instr
         @it = it
-        @ini = init
+        @ini = ini
         @fin = fin
         @paso = paso
         @instr = instr
@@ -143,14 +143,17 @@ class ForOperation < AST
 
     def print_ast indent=""
         puts "#{indent}#{self.class}:"
-        puts "#{indent}|  Iterador: #{@it.to_str}:"
+        puts "#{indent}|  Iterator:"
+        @it.print_ast indent+"|  |  " if @it.respond_to? :print_ast
         puts "#{indent}|  From:"
-        @init.print_ast indent+"|  |  " if @init.respond_to? :print_ast
+        @ini.print_ast indent+"|  |  " if @ini.respond_to? :print_ast
         puts "#{indent}|  To:"
         @fin.print_ast indent+"|  |  " if @fin.respond_to? :print_ast
-        if @paso.empty?
-            puts "#{indent}|  Step:"
-            @paso.print_ast indent+"|  |  " if @paso.respond_to? :print_ast
+        puts "#{indent}|  Step:"
+        if @paso.respond_to? :print_ast
+            @paso.print_ast indent+"|  |  "
+        else
+            puts indent+"|  |  1"
         end
         puts "#{indent}|  Intruction:"
         @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast

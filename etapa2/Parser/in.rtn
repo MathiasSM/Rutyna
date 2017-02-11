@@ -1,5 +1,9 @@
 program
     with
+        number i;
     do
+        for j from 1.5 to 4.5 do
+            write j, " ";
+        end;
     end;
 end;
