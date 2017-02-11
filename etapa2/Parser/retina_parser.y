@@ -114,11 +114,13 @@ start Retina
 
 rule
     Expression:   'num'                       { result = SingleNumber.new(val[0])                    }
-                | 'true'                      { result = SingleTrue.new(val[0])                      }
-                | 'false'                     { result = SingleFalse.new(val[0])                     }
+                | 'true'                      { result = SingleBoolean.new(val[0])                   }
+                | 'false'                     { result = SingleBoolean.new(val[0])                   }
                 | 'str'                       { result = SingleString.new(val[0])                    }
                 | VarID                       { result = val[0]                                      }
                 | FunID                       { result = val[0]                                      }
+                | FunID '(' Expressions ')'   { result = FunctionCall.new(val[0], val[2])            }
+                | FunID '(' ')'               { result = FunctionCall.new(val[0], {})                }
                 | '(' Expression ')'          { result = val[1]                                      }
                 | '-' Expression = UMINUS     { result = UnaryMinusOperation.new(val[1])             }
                 | 'not' Expression            { result = NegationOperation.new(val[1])               }
@@ -161,10 +163,9 @@ rule
                 | Statements Statement ';' { result = ASList.new(val[1]).joina(val[0]) }
     ;
 
-    Instruction:  Expression                                                                            { val[0]                                                    }
+    Instruction:  #lambda
+                | Expression                                                                            { val[0]                                                    }
                 | VarID '=' Expression                                                                  { result = AssignmentInstruction.new(val[0], val[2])        }
-                | FunID '(' Expressions ')'                                                             { result = FunctionCall.new(val[0], val[2])                 }
-                | FunID '(' ')'                                                                         { result = FunctionCall.new(val[0], {})                     }
                 | 'with' Statements 'do' Instructions 'end'                                             { result = WithBlock.new(val[1], val[3])                    }
                 | 'with'  'do' Instructions 'end'                                                       { result = WithBlock.new({}, val[2])                        }
                 | 'with'  'do'  'end'                                                                   { result = WithBlock.new({}, {})                            }

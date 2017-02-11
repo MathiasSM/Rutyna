@@ -1,8 +1,44 @@
+# Presentación
+# Marico el que lo lea
+
+# Función 1
+func xd()
+begin
+    with
+        number i;
+        number x = 42;
+        boolean p;
+    do
+        if x == 42 then
+            for i from 1 to 42 do
+                write "La respuesta al universo, la vida y todo es ", x;  # Comentario marico
+                repeat x times
+                    home();             # Comentario random
+                    openeye();
+                    closeeye();             # Comentario random
+                    forward(42);
+                    backward(42);                   # Comentario random
+                    rotatel(42);
+                    rotater(42);
+                    setposition(42, radio);
+                    arc(42, radio);
+                end;
+                writeln "";
+            end;
+        else
+            i =  100*(2*(10+5) mod 3-(7 div 2 -23.5%2)/1 +(-4));
+            p = true and (((false or true) or false) and not true) and true;
+        end;
+    end;
+end;
+
+# Función 2
 func circle(number radio)
 begin
     arc(360, radio);
 end;
 
+# Función 3
 func plus(number op1, number op2) -> number
 begin
     return op1 + op2;
@@ -10,23 +46,15 @@ end;
 
 program
     with
-        number i;
+        # Comentario inutil
+        number a = 2;
     do
-        for j from 1.5 to 4.5 by 3 do
-            write j, " ";
+        xd();               # Chiste
+        while a >= 0 do
+            a = a - 1;
         end;
-    end;
-
-    with
-        number i;
-    do
-        with
-            number j = 1;
-        do
-            while j <= 4 do
-                write j, " ";
-                j = j + 1;
-            end;
-        end;
+        writeln a;              # Comentario random
+        circle(7);              # Comentario random
+        a = plus(42+2, 42);
     end;
 end;

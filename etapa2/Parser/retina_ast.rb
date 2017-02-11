@@ -200,12 +200,9 @@ class SingleBoolean < AST
     end
 
     def print_ast indent=""
-        puts "#{indent}#{self.class}"
+        puts "#{indent}#{self.class}: #{@boolean.to_str}"
     end
 end
-
-class SingleTrue < SingleBoolean; end  # True
-class SingleFalse < SingleBoolean; end # False
 
 # Declaración de las clases individuales para las operaciones booleanas
 class NegationOperation < UnaryOperation; end        # Negación
