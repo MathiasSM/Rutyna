@@ -1,14 +1,10 @@
 program
     with
-        number x;
+        number i;
     do
-        x = 42;
-	x = 12+2;
-	with
-		number a = "sssdsfrefgrfe  rfesrgwbsfr";
-		boolean b = a + true;
-	do
-		x+x;
-	end;
+        i = 28;
+        i = 27;
+        writeln 13, 42, 58, i;
+        read i;
     end;
 end;

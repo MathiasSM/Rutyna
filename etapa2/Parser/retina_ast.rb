@@ -271,5 +271,6 @@ class FunctionName < BinaryOperation
     end
 end # Identificador de variable
 
-
+class OutputOperation < UnaryOperation; end
+class InputOperation < UnaryOperation; end
 
