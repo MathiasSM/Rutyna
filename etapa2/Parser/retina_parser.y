@@ -184,7 +184,7 @@ rule
     ;
 
     InstructionsR: Instruction ';'              { result = ASList.new(val[0])               }
-                | 'return' Expression ';'       { result = ASList.new(val[1])               }
+                | 'return' Expression ';'       { result = ASList.new(ReturnInstr.new(val[1]))               }
                 | InstructionsR Instruction ';' { result = ASList.new(val[1]).joina(val[0]) }
     ;
 

@@ -1167,7 +1167,7 @@ module_eval(<<'.,.,', 'retina_parser.y', 185)
 
 module_eval(<<'.,.,', 'retina_parser.y', 186)
   def _reduce_54(val, _values, result)
-     result = ASList.new(val[1])               
+     result = ASList.new(ReturnInstr.new(val[1]))               
     result
   end
 .,.,

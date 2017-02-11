@@ -240,6 +240,13 @@ class AssignmentInstruction < BinaryOperation
     end
 end
 
+# Instrucción de return
+class ReturnInstr < UnaryOperation
+    def name
+        @operand = "Value"
+    end
+end
+
 # Llamado de función o procedimiento
 class FunctionCall < BinaryOperation
     def name
@@ -324,6 +331,22 @@ class FunctionStatement < AST
         @param = param
         @type = type
         @instr = instr
+    end
+
+    def print_ast indent=""
+        puts "#{indent}#{self.class}:"
+        puts "#{indent}|  Name:"
+        @id.print_ast indent+"|  |  " if @id.respond_to? :print_ast
+        puts "#{indent}|  Params:"
+        @param.print_ast indent+"|  |  " if @param.respond_to? :print_ast
+        puts "#{indent}|  Type:"
+        if @type.respond_to? :print_ast
+            @type.print_ast indent+"|  |  "
+        else
+            puts indent+"|  |  None"
+        end
+        puts "#{indent}|  Instr:"
+        @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast
     end
 end
 
