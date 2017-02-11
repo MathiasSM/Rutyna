@@ -33,7 +33,7 @@ class ASList < AST
     end
 
     def joina asl
-        @l += asl.l
+        @l = asl.l + @l
         return self
     end
 end
