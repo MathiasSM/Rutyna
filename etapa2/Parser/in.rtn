@@ -1,5 +1,5 @@
 program
-    begin
-        x = 2
-    end
-end
+    with
+    do
+    end;
+end;
