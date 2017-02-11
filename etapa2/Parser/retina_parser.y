@@ -135,7 +135,6 @@ rule
 
     Statement:    Datatype VarID                      { result = SimpleStatement.new(val[0], val[1])                       }
                 | Datatype VarID '=' Expression       { result = AssignmentStatement.new(val[0], val[1], val[3])           }
-                |  /*Lambda*/                           { }
     ;
 
     Statements:   Statement ';'                         { result = ASList.new(val[0])             }
@@ -152,7 +151,6 @@ rule
                 | 'if' Expression 'then' Instructions 'else' Instructions 'end'                                 { result = IfElseBlock.new(val[1], val[3], val[5]) }
                 | 'repeat' Expression 'times' Instructions 'end'                                                { result = RepeatBlock.new(val[1], val[3]) }
                 | FunID '(' Params ')'                                                                        { result = FunctionName.new(val[0], val[2]) }
-                |  /*Lambda*/                           {  }
     ;
 
     Instructions: Instruction ';'                       { result = ASList.new(val[0])             }
@@ -171,8 +169,10 @@ rule
     Program: 'program' Instructions 'end'               { result = ProgramBlock.new(val[1]) }
     ;
 
-    Function: 'func' FunID '(' Params ')' '->' Datatype 'begin' InstructionsR 'end'                       { result = FunctionStatement.new(val[1], val[3], val[6], val[8])       }
-                | 'func' FunID '(' Params ')' 'begin' Instructions 'end'                                  { result = FunctionStatement.new(val[1], val[3], {}, val[6])       }
+    Function: 'func' FunID '(' Params ')' '->' Datatype 'begin' InstructionsR 'end'   { result = FunctionStatement.new(val[1], val[3], val[6], val[8])       }
+            | 'func' FunID '(' ')' '->' Datatype 'begin' InstructionsR 'end'          { result = FunctionStatement.new(val[1], {}, val[5], val[6])       }
+            | 'func' FunID '(' Params ')' 'begin' Instructions 'end'                  { result = FunctionStatement.new(val[1], val[3], {}, val[6])       }
+            | 'func' FunID '(' ')' 'begin' Instructions 'end'                         { result = FunctionStatement.new(val[1], {}, {}, val[5])       }
     ;
 
     Functions: Function ';'                             { result = ASList.new(val[0])  }
