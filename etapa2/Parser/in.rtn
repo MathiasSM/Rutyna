@@ -55,6 +55,6 @@ program
         end;
         writeln a;              # Comentario random
         circle(7);              # Comentario random
-        a = plus(42+2, 42);
+        a = plus(42+2, 42);     # Comentario super random
     end;
 end;

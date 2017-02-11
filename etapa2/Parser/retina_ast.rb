@@ -331,19 +331,11 @@ class FunctionStatement < AST
     end
 
     def print_ast indent=""
-        puts "#{indent}#{self.class}:"
-        puts "#{indent}|  Name:"
-        @id.print_ast indent+"|  |  " if @id.respond_to? :print_ast
-        puts "#{indent}|  Params:"
-        @param.print_ast indent+"|  |  " if @param.respond_to? :print_ast
-        puts "#{indent}|  Type:"
-        if @type.respond_to? :print_ast
-            @type.print_ast indent+"|  |  "
-        else
-            puts indent+"|  |  None"
-        end
-        puts "#{indent}|  Instr:"
-        @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast
+        puts "#{indent}#{self.class}:"; @id.print_ast indent+"|  " if @id.respond_to? :print_ast          # Imprimir identificados
+        puts "#{indent}|  Params:";  @param.print_ast indent+"|  |  " if @param.respond_to? :print_ast    # Imprimir parametros
+        if @type.respond_to? :print_ast;  puts "#{indent}|  Type: #{@type.print_ast indent}"              # Imprimir tipo de dato de retorno si exists
+        else; puts "#{indent}|  Type: None"; end                                                          # Imprimir None si no retorna nada
+        puts "#{indent}|  Instr:"; @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast      # Imprimir conjunto de instrucciones de la función
     end
 end
 
