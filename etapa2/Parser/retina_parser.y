@@ -168,7 +168,6 @@ rule
                 | VarID '=' Expression                                                                  { result = AssignmentInstruction.new(val[0], val[2])        }
                 | 'with' Statements 'do' Instructions 'end'                                             { result = WithBlock.new(val[1], val[3])                    }
                 | 'with'  'do' Instructions 'end'                                                       { result = WithBlock.new({}, val[2])                        }
-                | 'with'  'do'  'end'                                                                   { result = WithBlock.new({}, {})                            }
                 | 'while' Expression 'do' Instructions 'end'                                            { result = WhileBlock.new(val[1], val[3])                   }
                 | 'for' VarID 'from' Expression 'to' Expression 'by' Expression 'do' Instructions 'end' { result = ForBlock.new(val[1],val[3],val[5],val[7],val[9]) }
                 | 'for' VarID 'from' Expression 'to' Expression 'do' Instructions 'end'                 { result = ForBlock.new(val[1],val[3],val[5],1,     val[7]) }
