@@ -130,12 +130,12 @@ class TernaryOperation < AST
 end
 
 # Declaración de la clase especial para el bloque for
-class ForOperation < AST
+class ForBlock < AST
     attr_accessor :it, :ini, :fin, :paso, :instr
 
     def initialize it, ini, fin, paso, instr
         @it = it
-        @ini = init
+        @ini = ini
         @fin = fin
         @paso = paso
         @instr = instr
@@ -143,16 +143,19 @@ class ForOperation < AST
 
     def print_ast indent=""
         puts "#{indent}#{self.class}:"
-        puts "#{indent}|  Iterador: #{@it.to_str}:"
+        puts "#{indent}|  Iterator:"
+        @it.print_ast indent+"|  |  " if @it.respond_to? :print_ast
         puts "#{indent}|  From:"
-        @init.print_ast indent+"|  |  " if @init.respond_to? :print_ast
+        @ini.print_ast indent+"|  |  " if @ini.respond_to? :print_ast
         puts "#{indent}|  To:"
         @fin.print_ast indent+"|  |  " if @fin.respond_to? :print_ast
-        if @paso.empty?
-            puts "#{indent}|  Step:"
-            @paso.print_ast indent+"|  |  " if @paso.respond_to? :print_ast
+        puts "#{indent}|  Step:"
+        if @paso.respond_to? :print_ast
+            @paso.print_ast indent+"|  |  "
+        else
+            puts indent+"|  |  1"
         end
-        puts "#{indent}|  Intruction:"
+        puts "#{indent}|  Intructions:"
         @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast
     end
 end
@@ -197,12 +200,9 @@ class SingleBoolean < AST
     end
 
     def print_ast indent=""
-        puts "#{indent}#{self.class}"
+        puts "#{indent}#{self.class}: #{@boolean.to_str}"
     end
 end
-
-class SingleTrue < SingleBoolean; end  # True
-class SingleFalse < SingleBoolean; end # False
 
 # Declaración de las clases individuales para las operaciones booleanas
 class NegationOperation < UnaryOperation; end        # Negación
@@ -234,6 +234,13 @@ class AssignmentInstruction < BinaryOperation
     def name
         @lname = "VarID"
         @rname = "Value"
+    end
+end
+
+# Instrucción de return
+class ReturnInstr < UnaryOperation
+    def name
+        @operand = "Value"
     end
 end
 
@@ -321,6 +328,14 @@ class FunctionStatement < AST
         @param = param
         @type = type
         @instr = instr
+    end
+
+    def print_ast indent=""
+        puts "#{indent}#{self.class}:"; @id.print_ast indent+"|  " if @id.respond_to? :print_ast          # Imprimir identificados
+        puts "#{indent}|  Params:";  @param.print_ast indent+"|  |  " if @param.respond_to? :print_ast    # Imprimir parametros
+        if @type.respond_to? :print_ast;  puts "#{indent}|  Type: #{@type.print_ast indent}"              # Imprimir tipo de dato de retorno si exists
+        else; puts "#{indent}|  Type: None"; end                                                          # Imprimir None si no retorna nada
+        puts "#{indent}|  Instr:"; @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast      # Imprimir conjunto de instrucciones de la función
     end
 end
 

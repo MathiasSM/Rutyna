@@ -160,80 +160,50 @@ class WriteLine < Token;    def to_s;   "linea #{$row}, columna #{$col}: identif
 
 # Tipos de dato Number
 class Number < Token
-    def to_s;   "linea #{$row}, columna #{$col}: tipo de dato \'#{@t}\'";  end;
-    def to_i;   @t.to_i;  end
-    def to_str
-        "#{@t}"
-    end
+    def to_s;   "linea #{$row}, columna #{$col}: tipo de dato \'#{@t}\'";  end
+    def to_str; "#{@t}"; end
 end
 
 # Tipos de dato Boolean
 class Boolean < Token
-    def to_s;   "linea #{$row}, columna #{$col}: tipo de dato \'#{@t}\'";  end;
-    def to_b;   @t.to_b;  end
-    def to_str
-        "#{@t}"
-    end
+    def to_s;   "linea #{$row}, columna #{$col}: tipo de dato \'#{@t}\'";  end
+    def to_str; "#{@t}"; end
 end
 
 # Declaración de la clase para  el literal booleano: True
 class True < Token
-    def to_s
-        "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"
-    end
-
-    def to_str
-        "#{@t}"
-    end
+    def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end
+    def to_str; "#{@t}"; end
 end
 
 # Declaración de la clase para  el literal booleano: False
 class False < Token
-    def to_s
-        "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"
-    end
-
-    def to_str
-        "#{@t}"
-    end
+    def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end
+    def to_str; "#{@t}"; end
 end
 
 # Declaración de la clase para literales numérico
 class NumberLiteral < Token
-    def to_s; "linea #{$row}, columna #{$col}: literal numérico \'#{@t}\'"; end
-    def to_i;   @t.to_i;  end
-    def to_str
-        "#{@t}"
-    end
+    def to_s;   "linea #{$row}, columna #{$col}: literal numérico \'#{@t}\'"; end
+    def to_str; "#{@t}"; end
 end
 
 # Declaración de la clase para strings
 class StringLiteral < Token
-    def to_s; "linea #{$row}, columna #{$col}: literal de cadena de caracteres \'#{@t[1..-2]}\'"; end
-    def to_str;   @t;  end
-    def to_str
-        "#{@t}"
-    end
+    def to_s;   "linea #{$row}, columna #{$col}: literal de cadena de caracteres \'#{@t[1..-2]}\'"; end
+    def to_str; "#{@t}"; end
 end
 
 # Declaración de la clase para identificadores de funciones
 class FunctionIdentifier < Token
-    def to_s
-        "linea #{$row}, columna #{$col}: identificador de funcion \'#{@t}\'"
-    end
-    def to_str
-        "#{@t}"
-    end
+    def to_s;   "linea #{$row}, columna #{$col}: identificador de funcion \'#{@t}\'"; end
+    def to_str; "#{@t}"; end
 end
 
 # Declaración de la clase para identificadores de variables
 class VariableIdentifier < Token
-    def to_s
-        "linea #{$row}, columna #{$col}: identificador de variable\'#{@t}\'"
-    end
-    def to_str
-        "#{@t}"
-    end
+    def to_s;   "linea #{$row}, columna #{$col}: identificador de variable\'#{@t}\'"; end
+    def to_str; "#{@t}"; end
 end
 
 ####################################################################################################################################
@@ -251,14 +221,14 @@ class Lexer
 
     # Función para capturar los lexemas
     def catch_lexeme
-        while @input =~ /(\A[^\S\n\r]*(\#[^\n]*)?[\n\r])/ do    # Salta líneas blancas o con comentarios
-            @input = @input[$&.length..@input.length-1]         #
-            $row = $row+1                                       # Y suma a las lineas
+        while @input =~ /(\A[^\S\n\r]*(\#[^\n]*)?[\n\r])|(\A\#.*$)/ do    # Salta líneas blancas o con comentarios
+            @input = @input[$&.length..@input.length-1]
+            $row = $row+1                                                 # Y suma a las lineas
             $col = 1
          end
-         @input =~ /\A[^\S\n\r]*/                               # Ignora espacio en blanco inicial
-         return if @input.empty?                                # Retorna nil si no hay input
-         $col = $col+$&.length if $&.length > 0                 # Pero lo suma a las columnas
+         @input =~ /\A[^\S\n\r]*/                                         # Ignora espacio en blanco inicial
+         return if @input.empty?                                          # Retorna nil si no hay input
+         $col = $col+$&.length if $&.length > 0                           # Pero lo suma a las columnas
          @input = $'
 
         class_to_be_instanciated = LexicographicError
