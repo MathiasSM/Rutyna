@@ -221,14 +221,14 @@ class Lexer
 
     # Función para capturar los lexemas
     def catch_lexeme
-        while @input =~ /(\A[^\S\n\r]*(\#[^\n]*)?[\n\r])/ do    # Salta líneas blancas o con comentarios
-            @input = @input[$&.length..@input.length-1]         #
-            $row = $row+1                                       # Y suma a las lineas
+        while @input =~ /(\A[^\S\n\r]*(\#[^\n]*)?[\n\r])|(\A\#.*$)/ do    # Salta líneas blancas o con comentarios
+            @input = @input[$&.length..@input.length-1]
+            $row = $row+1                                                 # Y suma a las lineas
             $col = 1
          end
-         @input =~ /\A[^\S\n\r]*/                               # Ignora espacio en blanco inicial
-         return if @input.empty?                                # Retorna nil si no hay input
-         $col = $col+$&.length if $&.length > 0                 # Pero lo suma a las columnas
+         @input =~ /\A[^\S\n\r]*/                                         # Ignora espacio en blanco inicial
+         return if @input.empty?                                          # Retorna nil si no hay input
+         $col = $col+$&.length if $&.length > 0                           # Pero lo suma a las columnas
          @input = $'
 
         class_to_be_instanciated = LexicographicError
