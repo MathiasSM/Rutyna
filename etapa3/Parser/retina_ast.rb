@@ -197,10 +197,13 @@ class ForBlock < AST
     
     def recorrer indent=""
 #        puts "#{indent}#{self.class}"
+        puts "#{indent}ForBlock"
+        puts "#{indent}|  #{@it.to_str} : number"
         $stt += [(SymbolTable.new())]
-        @attrs.each do |a|
-            a.recorrer indent+"|  " if a.respond_to? :recorrer
-        end
+        ini.recorrer indent+"|  " if ini.respond_to? :recorrer
+        fin.recorrer indent+"|  " if fin.respond_to? :recorrer
+        paso.recorrer indent+"|  " if paso.respond_to? :recorrer
+        instr.recorrer indent+"|  " if instr.respond_to? :recorrer
         $stt.pop
     end
 end
@@ -223,7 +226,7 @@ class SingleNumber < AST
     
     def recorrer indent=""
 #        puts "#{indent}#{self.class}"
-        return @number.to_f, "number" # Valor, Tipo
+        return @number.to_str.to_f, "number" # Valor, Tipo
     end
 end
 
@@ -263,7 +266,7 @@ class SingleBoolean < AST
     
     def recorrer indent=""
 #        puts "#{indent}#{self.class}"
-        return (@number.to_str == "true"), "boolean" # Valor, Tipo
+        return (@boolean.to_str == "true"), "boolean" # Valor, Tipo
     end
 end
 
@@ -523,7 +526,7 @@ class FunctionCall < BinaryOperation
         @rname = "Arguments"
     end
     def recorrer indent=""
-        puts "#{indent}#{self.class}"
+        # puts "#{indent}#{self.class}"
         # Buscar en tabla de simbolos el tipo de esta cosa, dejemos valor para la entrega 3 xD
         return 0
     end
@@ -539,6 +542,7 @@ class ProgramBlock < AST
     def recorrer indent=""
 #        puts "#{indent}#{self.class}"
         $stt += [(SymbolTable.new())]
+        puts indent+"Programa"
         instrs.recorrer indent="|  " if instrs.respond_to? :recorrer
         $stt.pop
     end
@@ -630,7 +634,7 @@ class AssignmentStatement < TernaryOperation
     end
     def recorrer indent=""
 #        puts "#{indent}#{self.class}"
-        $stt[-1] += [Row.new(@center.to_str, @left.to_str, @right.recorrer)]
+        $stt[-1].table += [Row.new(@center.to_str, @left.to_str, @right.recorrer)]
         $stt[-1].table[-1].print_row indent
     end
 end
@@ -659,8 +663,7 @@ class FunctionStatement < AST
     
     def recorrer indent=""
 #        puts "#{indent}#{self.class}"
-#
-        if @type.nil?
+        if not @type
             $stt[-1].table += [Row.new(@id.to_str, @type.to_str)]
         else
             $stt[-1].table += [Row.new(@id.to_str, "None")]
@@ -695,13 +698,13 @@ end
 class VariableName < SingleString
     def recorrer indent=""
 # Revisar tabla para saber tipo
-        return @string.to_str, "number" # Valor,Tipo
+        return 0, "number" # Valor,Tipo
     end
 end # Variables
 class FunctionName < SingleString
     def recorrer indent=""
 # Revisar tabla para saber tipo
-        return @string.to_str, "number" # Valor,Tipo
+        return 0, "number" # Valor,Tipo
     end
 end # Funciones
 

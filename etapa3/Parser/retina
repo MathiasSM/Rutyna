@@ -60,17 +60,15 @@ def main
             lexer = Lexer.new input
             parser = Parser.new
             ast = parser.parse lexer
-            ast.print_ast
+            #ast.print_ast
             
-            puts "\n\n\#\#\#\#\#\n\n"
-            
-            $stt = [SymbolTable.new()]
-            ast.recorrer
-            
-
+           
         rescue SyntacticError => e
             puts e
             return
+        else
+          $stt = [SymbolTable.new()]
+          ast.recorrer
         end
     end
 end

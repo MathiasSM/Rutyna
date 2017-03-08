@@ -1,147 +1,6 @@
 
 
 ##################################################################################### TEST NUMBER 1
-FunctionStatement:
-|  FunctionName: min
-|  Params:
-|  |  SimpleStatement:
-|  |  |  Type:
-|  |  |  |  number
-|  |  |  VarID:
-|  |  |  |  VariableName: x
-|  |  SimpleStatement:
-|  |  |  Type:
-|  |  |  |  number
-|  |  |  VarID:
-|  |  |  |  VariableName: y
-|  Type:
-|  |  number
-|  Instr:
-|  |  WithBlock:
-|  |  |  With:
-|  |  |  |  SimpleStatement:
-|  |  |  |  |  Type:
-|  |  |  |  |  |  boolean
-|  |  |  |  |  VarID:
-|  |  |  |  |  |  VariableName: b
-|  |  |  Do:
-|  |  |  |  AssignmentInstruction:
-|  |  |  |  |  VarID:
-|  |  |  |  |  |  VariableName: b
-|  |  |  |  |  Value:
-|  |  |  |  |  |  LessOperation:
-|  |  |  |  |  |  |  Left:
-|  |  |  |  |  |  |  |  VariableName: x
-|  |  |  |  |  |  |  Right:
-|  |  |  |  |  |  |  |  VariableName: y
-|  |  |  |  IfBlock:
-|  |  |  |  |  If:
-|  |  |  |  |  |  VariableName: b
-|  |  |  |  |  Then:
-|  |  |  |  |  |  ReturnInstr:
-|  |  |  |  |  |  |  VariableName: x
-|  |  |  |  ReturnInstr:
-|  |  |  |  |  VariableName: y
-|  |  WithBlock:
-|  |  |  With:
-|  |  |  |  SimpleStatement:
-|  |  |  |  |  Type:
-|  |  |  |  |  |  boolean
-|  |  |  |  |  VarID:
-|  |  |  |  |  |  VariableName: c
-|  |  |  |  SimpleStatement:
-|  |  |  |  |  Type:
-|  |  |  |  |  |  number
-|  |  |  |  |  VarID:
-|  |  |  |  |  |  VariableName: a
-|  |  |  Do:
-|  |  |  |  AssignmentInstruction:
-|  |  |  |  |  VarID:
-|  |  |  |  |  |  VariableName: c
-|  |  |  |  |  Value:
-|  |  |  |  |  |  LessOperation:
-|  |  |  |  |  |  |  Left:
-|  |  |  |  |  |  |  |  VariableName: x
-|  |  |  |  |  |  |  Right:
-|  |  |  |  |  |  |  |  VariableName: y
-|  |  |  |  IfBlock:
-|  |  |  |  |  If:
-|  |  |  |  |  |  VariableName: c
-|  |  |  |  |  Then:
-|  |  |  |  |  |  ReturnInstr:
-|  |  |  |  |  |  |  VariableName: x
-|  |  |  |  ReturnInstr:
-|  |  |  |  |  VariableName: y
-FunctionStatement:
-|  FunctionName: circle
-|  Params:
-|  |  SimpleStatement:
-|  |  |  Type:
-|  |  |  |  number
-|  |  |  VarID:
-|  |  |  |  VariableName: radio
-|  Type: None
-|  Instr:
-|  |  FunctionCall:
-|  |  |  Funcion:
-|  |  |  |  FunctionName: arc
-|  |  |  Arguments:
-|  |  |  |  SingleNumber: 360
-|  |  |  |  VariableName: radio
-ProgramBlock:
-|  OutputOperation:
-|  |  SingleString: "Insert a number : "
-|  WithBlock:
-|  |  With:
-|  |  |  SimpleStatement:
-|  |  |  |  Type:
-|  |  |  |  |  number
-|  |  |  |  VarID:
-|  |  |  |  |  VariableName: n
-|  |  Do:
-|  |  |  InputOperation:
-|  |  |  |  VariableName: n
-|  |  |  WithBlock:
-|  |  |  |  With:
-|  |  |  |  |  AssignmentStatement:
-|  |  |  |  |  |  Type:
-|  |  |  |  |  |  |  number
-|  |  |  |  |  |  VarID:
-|  |  |  |  |  |  |  VariableName: angle
-|  |  |  |  |  |  Value:
-|  |  |  |  |  |  |  VariableName: n
-|  |  |  |  Do:
-|  |  |  |  |  WhileBlock:
-|  |  |  |  |  |  While:
-|  |  |  |  |  |  |  LessOrEqualOperation:
-|  |  |  |  |  |  |  |  Left:
-|  |  |  |  |  |  |  |  |  VariableName: angle
-|  |  |  |  |  |  |  |  Right:
-|  |  |  |  |  |  |  |  |  SingleNumber: 360
-|  |  |  |  |  |  Do:
-|  |  |  |  |  |  |  FunctionCall:
-|  |  |  |  |  |  |  |  Funcion:
-|  |  |  |  |  |  |  |  |  FunctionName: rotater
-|  |  |  |  |  |  |  |  Arguments:
-|  |  |  |  |  |  |  |  |  VariableName: n
-|  |  |  |  |  |  |  FunctionCall:
-|  |  |  |  |  |  |  |  Funcion:
-|  |  |  |  |  |  |  |  |  FunctionName: circle
-|  |  |  |  |  |  |  |  Arguments:
-|  |  |  |  |  |  |  |  |  SingleNumber: 100
-|  |  |  |  |  |  |  AssignmentInstruction:
-|  |  |  |  |  |  |  |  VarID:
-|  |  |  |  |  |  |  |  |  VariableName: angle
-|  |  |  |  |  |  |  |  Value:
-|  |  |  |  |  |  |  |  |  AdditionOperation:
-|  |  |  |  |  |  |  |  |  |  Left:
-|  |  |  |  |  |  |  |  |  |  |  VariableName: angle
-|  |  |  |  |  |  |  |  |  |  Right:
-|  |  |  |  |  |  |  |  |  |  |  VariableName: n
-
-
-#####
-
 Funcion min : None
 |  x : number
 |  y : number
@@ -152,145 +11,32 @@ Funcion min : None
 |  |  a : number
 Funcion circle : None
 |  radio : number
-|  FunctionCall
+Programa
 |  WithDo
 |  |  n : number
 |  |  WithDo
+|  |  |  angle : number
 
 
 ##################################################################################### TEST NUMBER 2
-FunctionStatement:
-|  FunctionName: incremental_forward
-|  Params:
-|  |  SimpleStatement:
-|  |  |  Type:
-|  |  |  |  number
-|  |  |  VarID:
-|  |  |  |  VariableName: steps
-|  Type: None
-|  Instr:
-|  |  ForBlock:
-|  |  |  Iterator:
-|  |  |  |  VariableName: i
-|  |  |  From:
-|  |  |  |  SingleNumber: 1
-|  |  |  To:
-|  |  |  |  VariableName: steps
-|  |  |  Step:
-|  |  |  |  1
-|  |  |  Intructions:
-|  |  |  |  FunctionCall:
-|  |  |  |  |  Funcion:
-|  |  |  |  |  |  FunctionName: forward
-|  |  |  |  |  Arguments:
-|  |  |  |  |  |  VariableName: i
-ProgramBlock:
-|  ForBlock:
-|  |  Iterator:
-|  |  |  VariableName: i
-|  |  From:
-|  |  |  SingleNumber: 1
-|  |  To:
-|  |  |  SingleNumber: 360
-|  |  Step:
-|  |  |  1
-|  |  Intructions:
-|  |  |  FunctionCall:
-|  |  |  |  Funcion:
-|  |  |  |  |  FunctionName: incremental_forward
-|  |  |  |  Arguments:
-|  |  |  |  |  VariableName: i
-|  |  |  FunctionCall:
-|  |  |  |  Funcion:
-|  |  |  |  |  FunctionName: rotater
-|  |  |  |  Arguments:
-|  |  |  |  |  SingleNumber: 15
-
-
-#####
-
 Funcion incremental_forward : None
 |  steps : number
+|  ForBlock
+|  |  i : number
+Programa
+|  ForBlock
+|  |  i : number
 
 
 ##################################################################################### TEST NUMBER 3
-FunctionStatement:
-|  FunctionName: my_forward
-|  Params:
-|  Type: None
-|  Instr:
-|  |  FunctionCall:
-|  |  |  Funcion:
-|  |  |  |  FunctionName: forward
-|  |  |  Arguments:
-|  |  |  |  SingleNumber: 1
-FunctionStatement:
-|  FunctionName: max
-|  Params:
-|  |  SimpleStatement:
-|  |  |  Type:
-|  |  |  |  number
-|  |  |  VarID:
-|  |  |  |  VariableName: x
-|  |  SimpleStatement:
-|  |  |  Type:
-|  |  |  |  number
-|  |  |  VarID:
-|  |  |  |  VariableName: y
-|  Type:
-|  |  number
-|  Instr:
-|  |  IfElseBlock:
-|  |  |  If:
-|  |  |  |  LessOperation:
-|  |  |  |  |  Left:
-|  |  |  |  |  |  VariableName: x
-|  |  |  |  |  Right:
-|  |  |  |  |  |  VariableName: y
-|  |  |  Then:
-|  |  |  |  ReturnInstr:
-|  |  |  |  |  VariableName: y
-|  |  |  Else:
-|  |  |  |  ReturnInstr:
-|  |  |  |  |  VariableName: x
-ProgramBlock:
-|  FunctionCall:
-|  |  Funcion:
-|  |  |  FunctionName: my_forward
-|  |  Arguments:
-|  WithBlock:
-|  |  With:
-|  |  Do:
-|  WithBlock:
-|  |  With:
-|  |  |  AssignmentStatement:
-|  |  |  |  Type:
-|  |  |  |  |  number
-|  |  |  |  VarID:
-|  |  |  |  |  VariableName: x
-|  |  |  |  Value:
-|  |  |  |  |  SingleNumber: 37
-|  |  Do:
-|  |  |  OutputOperation:
-|  |  |  |  SingleString: "Un numero especial: "
-|  |  |  |  FunctionCall:
-|  |  |  |  |  Funcion:
-|  |  |  |  |  |  FunctionName: max
-|  |  |  |  |  Arguments:
-|  |  |  |  |  |  SingleNumber: 9
-|  |  |  |  |  |  VariableName: x
-
-
-#####
-
 Funcion my_forward : None
-|  FunctionCall
 Funcion max : None
 |  x : number
 |  y : number
-|  FunctionCall
+Programa
 |  WithDo
 |  WithDo
+|  |  x : number
 
 
 ##################################################################################### TEST NUMBER 4
