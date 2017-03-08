@@ -145,10 +145,10 @@ rule
                 | Expressions ',' Expression { result = ASList.new(val[2]).joina(val[0]) }
     ;
 
-    VarID:        'varid' { result = VariableName.new(val[0]) }
+    VarID:        'varid'   { result = VariableName.new(val[0]) }
     ;
 
-    FunID:        'funid' { result = FunctionName.new(val[0]) }
+    FunID:        'funid'   { result = FunctionName.new(val[0]) }
     ;
 
     Datatype:     'boolean' { result = Type.new(val[0]) }
@@ -157,48 +157,60 @@ rule
 
     Statement:    Datatype VarID                { result = SimpleStatement.new(val[0], val[1])             }
                 | Datatype VarID '=' Expression { result = AssignmentStatement.new(val[0], val[1], val[3]) }
+                |                               { }
     ;
 
-    Statements:   Statement ';'            { result = ASList.new(val[0])               }
-                | Statements Statement ';' { result = ASList.new(val[1]).joina(val[0]) }
+    Statements:   Statement ';'                 { result = ASList.new(val[0])               }
+                | Statements Statement ';'      { result = ASList.new(val[1]).joina(val[0]) }
     ;
 
-    Instruction:  #lambda
-                | Expression                                                                            { val[0]                                                    }
+    Instruction:                                                                                        { }
                 | VarID '=' Expression                                                                  { result = AssignmentInstruction.new(val[0], val[2])        }
                 | 'with' Statements 'do' Instructions 'end'                                             { result = WithBlock.new(val[1], val[3])                    }
+                | 'with' Statements 'do' 'end'                                                          { result = WithBlock.new(val[1], val[3])                    }
                 | 'with'  'do' Instructions 'end'                                                       { result = WithBlock.new({}, val[2])                        }
+                | 'with'  'do'  'end'                                                                   { result = WithBlock.new({}, val[2])                        }
                 | 'while' Expression 'do' Instructions 'end'                                            { result = WhileBlock.new(val[1], val[3])                   }
                 | 'for' VarID 'from' Expression 'to' Expression 'by' Expression 'do' Instructions 'end' { result = ForBlock.new(val[1],val[3],val[5],val[7],val[9]) }
+                | 'for' VarID 'from' Expression 'to' Expression 'by' Expression 'do' 'end'              { result = ForBlock.new(val[1],val[3],val[5],val[7],val[9]) }
                 | 'for' VarID 'from' Expression 'to' Expression 'do' Instructions 'end'                 { result = ForBlock.new(val[1],val[3],val[5],1,     val[7]) }
+                | 'for' VarID 'from' Expression 'to' Expression 'do' 'end'                              { result = ForBlock.new(val[1],val[3],val[5],1,     val[7]) }
                 | 'if' Expression 'then' Instructions 'end'                                             { result = IfBlock.new(val[1], val[3])                      }
+                | 'if' Expression 'then' 'end'                                                          { result = IfBlock.new(val[1], val[3])                      }
                 | 'if' Expression 'then' Instructions 'else' Instructions 'end'                         { result = IfElseBlock.new(val[1], val[3], val[5])          }
+                | 'if' Expression 'then' Instructions 'else' 'end'                                      { result = IfElseBlock.new(val[1], val[3], val[5])          }
+                | 'if' Expression 'then' 'else' Instructions 'end'                                      { result = IfElseBlock.new(val[1], val[3], val[5])          }
+                | 'if' Expression 'then' 'else' 'end'                                                   { result = IfElseBlock.new(val[1], val[3], val[5])          }
                 | 'repeat' Expression 'times' Instructions 'end'                                        { result = RepeatBlock.new(val[1], val[3])                  }
+                | 'repeat' Expression 'times' 'end'                                                     { result = RepeatBlock.new(val[1], val[3])                  }
                 | 'read' VarID                                                                          { result = InputOperation.new(val[1])                       }
                 | 'write' Expressions                                                                   { result = OutputOperation.new(val[1])                      }
                 | 'writeln' Expressions                                                                 { result = OutputOperation.new(val[1])                      }
+                | 'return' Expression                                                                   { result = ReturnInstr.new(val[1])                          }
+                | FunID '(' Expressions ')'   { result = FunctionCall.new(val[0], val[2])            }
+                | FunID '(' ')'               { result = FunctionCall.new(val[0], {})                }
     ;
 
     Instructions: Instruction ';'              { result = ASList.new(val[0])               }
                 | Instructions Instruction ';' { result = ASList.new(val[1]).joina(val[0]) }
     ;
 
-    InstructionsR: Instruction ';'              { result = ASList.new(val[0])               }
-                | 'return' Expression ';'       { result = ASList.new(ReturnInstr.new(val[1]))               }
-                | InstructionsR Instruction ';' { result = ASList.new(val[1]).joina(val[0]) }
+    Params:       Datatype VarID                 { result = ASList.new(SimpleStatement.new(val[0], val[1]))               }
+                | Params ',' Datatype VarID      { result = ASList.new(SimpleStatement.new(val[2], val[3])).joina(val[0]) }
     ;
 
-    Params:       Statement            { result = ASList.new(val[0])               }
-                | Params ',' Statement { result = ASList.new(val[2]).joina(val[0]) }
+    Program:      'program' Instructions 'end'  { result = ProgramBlock.new(val[1]) }
+                | 'program' 'end'               {  }
+    ;
+    
+    BeginEnd:     'begin' Instructions 'end'    { result = val[1] }
+                | 'begin' 'end'                 { }
     ;
 
-    Program:      'program' Instructions 'end' { result = ProgramBlock.new(val[1]) }
-    ;
-
-    Function:     'func' FunID '(' Params ')' '->' Datatype 'begin' InstructionsR 'end' { result = FunctionStatement.new(val[1], val[3], val[6], val[8]) }
-                | 'func' FunID '(' ')' '->' Datatype 'begin' InstructionsR 'end'        { result = FunctionStatement.new(val[1], {}, val[5], val[6])     }
-                | 'func' FunID '(' Params ')' 'begin' Instructions 'end'                { result = FunctionStatement.new(val[1], val[3], {}, val[6])     }
-                | 'func' FunID '(' ')' 'begin' Instructions 'end'                       { result = FunctionStatement.new(val[1], {}, {}, val[5])         }
+    Function:     'func' FunID '(' Params ')' '->' Datatype BeginEnd  { result = FunctionStatement.new(val[1], val[3], val[6], val[7]) }
+                | 'func' FunID '(' ')' '->' Datatype BeginEnd         { result = FunctionStatement.new(val[1], {}, val[5], val[6])     }
+                | 'func' FunID '(' Params ')' BeginEnd                { result = FunctionStatement.new(val[1], val[3], {}, val[5])     }
+                | 'func' FunID '(' ')' BeginEnd                       { result = FunctionStatement.new(val[1], {}, {}, val[4])         }
     ;
 
     Functions: Function ';'              { result = ASList.new(val[0])               }
