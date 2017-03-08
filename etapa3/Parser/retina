@@ -1,0 +1,80 @@
+#! /usr/bin/ruby
+
+####################################################################################################################################
+## DESCRIPCIÓN:
+####################################################################################################################################
+
+# Interpretador del lenguaje Retina.
+# Basado en los ejemplos aportados por el preparador David Lilue y siguiendo las especificaciones dadas para el proyecto del curso
+# CI-3725 de la Universidad Simón Bolívar durante el trimestre Enero-Marzo 2017.
+
+####################################################################################################################################
+## ALCANCE ACTUAL DEL INTERPRETADOR:
+####################################################################################################################################
+
+# - Análisis Lexicográfico (Listo)
+# - Análisis Sintáctico (Listo)
+# - Análisis de Contexto (Próximamente)
+# - Intérprete Final (Próximamente)
+
+####################################################################################################################################
+## AUTORES:
+####################################################################################################################################
+
+# Carlos Serrada, 13-11347, cserradag96@gmail.com
+# Mathias San Miguel, 13-11310, mathiassanmiguel@gmail.com
+
+####################################################################################################################################
+## LIBRERÍAS:
+####################################################################################################################################
+
+require_relative 'retina_parser'  # Librería que contiene el parser de Retina
+
+####################################################################################################################################
+## DECLRACIÓN DE FUNCIONES:
+####################################################################################################################################
+
+def main
+    # Check extension
+    ARGV[0] =~ /\w+\.rtn/
+    if $&.nil?; puts "Tipo de archivo no reconocido\nPor favor utilice un archivo 'file.rtn'"; return; end
+
+    # Open file as a string
+    begin
+       input = File::read(ARGV[0])
+    rescue
+        puts "File not found"
+        return
+    end
+
+    # Create lexer
+        $row = 1; $col = 1
+        lexer = Lexer.new input
+
+    # Get tokens until input is empty
+    begin
+        while lexer.catch_lexeme; end
+
+        begin
+            $row = 1; $col = 1
+            lexer = Lexer.new input
+            parser = Parser.new
+            ast = parser.parse lexer
+            ast.print_ast
+
+        rescue SyntacticError => e
+            puts e
+            return
+        end
+    end
+end
+
+####################################################################################################################################
+## PROGRAMA PRINCIPAL:
+####################################################################################################################################
+
+main
+
+####################################################################################################################################
+## FIN :)
+####################################################################################################################################
