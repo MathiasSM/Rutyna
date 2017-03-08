@@ -61,6 +61,12 @@ def main
             parser = Parser.new
             ast = parser.parse lexer
             ast.print_ast
+            
+            puts "\n\n\#\#\#\#\#\n\n"
+            
+            $stt = [SymbolTable.new()]
+            ast.recorrer
+            
 
         rescue SyntacticError => e
             puts e

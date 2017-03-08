@@ -9,6 +9,16 @@ begin
         end;
         return y;
     end;
+    with
+        boolean c;
+        number a;
+    do
+        c = x < y;
+        if c then
+            return x;
+        end;
+        return y;
+    end;
 end;
 
 func circle(number radio)

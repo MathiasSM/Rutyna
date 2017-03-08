@@ -42,6 +42,36 @@ FunctionStatement:
 |  |  |  |  |  |  |  VariableName: x
 |  |  |  |  ReturnInstr:
 |  |  |  |  |  VariableName: y
+|  |  WithBlock:
+|  |  |  With:
+|  |  |  |  SimpleStatement:
+|  |  |  |  |  Type:
+|  |  |  |  |  |  boolean
+|  |  |  |  |  VarID:
+|  |  |  |  |  |  VariableName: c
+|  |  |  |  SimpleStatement:
+|  |  |  |  |  Type:
+|  |  |  |  |  |  number
+|  |  |  |  |  VarID:
+|  |  |  |  |  |  VariableName: a
+|  |  |  Do:
+|  |  |  |  AssignmentInstruction:
+|  |  |  |  |  VarID:
+|  |  |  |  |  |  VariableName: c
+|  |  |  |  |  Value:
+|  |  |  |  |  |  LessOperation:
+|  |  |  |  |  |  |  Left:
+|  |  |  |  |  |  |  |  VariableName: x
+|  |  |  |  |  |  |  Right:
+|  |  |  |  |  |  |  |  VariableName: y
+|  |  |  |  IfBlock:
+|  |  |  |  |  If:
+|  |  |  |  |  |  VariableName: c
+|  |  |  |  |  Then:
+|  |  |  |  |  |  ReturnInstr:
+|  |  |  |  |  |  |  VariableName: x
+|  |  |  |  ReturnInstr:
+|  |  |  |  |  VariableName: y
 FunctionStatement:
 |  FunctionName: circle
 |  Params:
@@ -110,6 +140,18 @@ ProgramBlock:
 |  |  |  |  |  |  |  |  |  |  |  VariableName: n
 
 
+#####
+
+Funcion min
+|  x : number
+|  y : number
+|  WithDo
+|  |  b : boolean
+|  WithDo
+|  |  c : boolean
+|  |  a : number
+
+
 ##################################################################################### TEST NUMBER 2
 FunctionStatement:
 |  FunctionName: incremental_forward
@@ -157,6 +199,10 @@ ProgramBlock:
 |  |  |  |  |  FunctionName: rotater
 |  |  |  |  Arguments:
 |  |  |  |  |  SingleNumber: 15
+
+
+#####
+
 
 
 ##################################################################################### TEST NUMBER 3
@@ -225,6 +271,10 @@ ProgramBlock:
 |  |  |  |  |  Arguments:
 |  |  |  |  |  |  SingleNumber: 9
 |  |  |  |  |  |  VariableName: x
+
+
+#####
+
 
 
 ##################################################################################### TEST NUMBER 4

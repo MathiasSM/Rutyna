@@ -34,7 +34,36 @@ class AST
             instance_variable_get a
         end
     end
+    
+    
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        attrs.each do |a|
+            a.recorrer() if a.respond_to? :recorrer
+        end
+    end
 end
+
+class SymbolTable
+    attr_accessor :table
+    
+    def initialize
+        @table = []
+    end
+end
+
+class Row
+    attr_accessor :name, :type, :value
+    def initialize name, type=nil, value=nil
+        @name = name
+        @type = type
+        @value = value
+    end
+    def print_row indent=""
+        puts "#{indent}#{@name} : #{@type}"
+    end
+end
+        
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 # # Listas de AST
@@ -59,6 +88,13 @@ class ASList < AST
     def joina asl
         @l = asl.l + @l
         return self
+    end
+    
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        @l.each do |a|
+            a.recorrer indent if a.respond_to? :recorrer
+        end
     end
 end
 
@@ -158,6 +194,15 @@ class ForBlock < AST
         puts "#{indent}|  Intructions:"
         @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast
     end
+    
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        $stt += [(SymbolTable.new())]
+        @attrs.each do |a|
+            a.recorrer indent+"|  " if a.respond_to? :recorrer
+        end
+        $stt.pop
+    end
 end
 
 #-----------------------------------------------------------------------------------------------------------------------------------
@@ -175,6 +220,11 @@ class SingleNumber < AST
     def print_ast indent=""
         puts "#{indent}#{self.class}: #{@number.to_str}"
     end
+    
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        return @number.to_f, "number" # Valor, Tipo
+    end
 end
 
 # Declaración de la clase para expresiones del tipo String
@@ -188,7 +238,15 @@ class SingleString < AST
     def print_ast indent=""
         puts "#{indent}#{self.class}: #{@string.to_str}"
     end
-
+    
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        return @string.to_str # Valor
+    end
+    
+    def to_str
+        "#{@string.to_str}"
+    end
 end
 
 # Declaración de la clase para expresiones del tipo Boolean
@@ -202,28 +260,242 @@ class SingleBoolean < AST
     def print_ast indent=""
         puts "#{indent}#{self.class}: #{@boolean.to_str}"
     end
+    
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        return (@number.to_str == "true"), "boolean" # Valor, Tipo
+    end
 end
 
 # Declaración de las clases individuales para las operaciones booleanas
-class NegationOperation < UnaryOperation; end        # Negación
-class ConjunctionOperation < BinaryOperation; end    # Conjunción
-class DisjunctionOperation < BinaryOperation; end    # Disyunción
-class EquivalentOperation < BinaryOperation; end     # Equivalencia
-class DifferentOperation < BinaryOperation; end       # Diferencia
-class GreaterOperation < BinaryOperation; end        # Mayor que
-class LessOperation < BinaryOperation; end           # Menor que
-class GreaterOrEqualOperation < BinaryOperation; end # Mayor o igual que
-class LessOrEqualOperation < BinaryOperation; end    # Menor o igual que
+class NegationOperation < UnaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v,t = @operand.recorrer indent
+        if t != "boolean"
+           $stderr.puts ContextError::new(t,"boolean",self.class)
+        else
+            return (not v), "boolean" # Valor, Tipo
+        end
+    end
+end        # Negación
+class ConjunctionOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != "boolean"
+           $stderr.puts ContextError::new(t1,"boolean",self.class)
+        elsif t2!="boolean"
+           $stderr.puts ContextError::new(t2,"boolean",self.class)
+        else
+            return (v1 and v2), "boolean" # Valor, Tipo
+        end
+    end
+end    # Conjunción
+class DisjunctionOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != "boolean"
+           $stderr.puts ContextError::new(t1,"boolean",self.class)
+        elsif t2!="boolean"
+           $stderr.puts ContextError::new(t2,"boolean",self.class)
+        else
+            return (v1 or v2), "boolean" # Valor, Tipo
+        end
+    end
+end    # Disyunción
+class EquivalentOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != t2
+           $stderr.puts ContextError::new(t1,t2,0)
+        else
+            return (v1 == v2), "boolean" # Valor, Tipo
+        end
+    end
+end     # Equivalencia
+class DifferentOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != t2
+           $stderr.puts ContextError::new(t1,t2,0)
+        else
+            return (v1 != v2), "boolean" # Valor, Tipo
+        end
+    end
+end       # Diferencia
+class GreaterOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != "number"
+           $stderr.puts ContextError::new(t1,"number",self.class)
+        elsif t2!="number"
+           $stderr.puts ContextError::new(t2,"number",self.class)
+        else
+            return (v1 > v2), "boolean" # Valor, Tipo
+        end
+    end
+end        # Mayor que
+class LessOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != "number"
+           $stderr.puts ContextError::new(t1,"number",self.class)
+        elsif t2!="number"
+           $stderr.puts ContextError::new(t2,"number",self.class)
+        else
+            return (v1 < v2), "boolean" # Valor, Tipo
+        end
+    end
+end           # Menor que
+class GreaterOrEqualOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != "number"
+           $stderr.puts ContextError::new(t1,"number",self.class)
+        elsif t2!="number"
+           $stderr.puts ContextError::new(t2,"number",self.class)
+        else
+            return (v1 >= v2), "boolean" # Valor, Tipo
+        end
+    end
+end # Mayor o igual que
+class LessOrEqualOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != "number"
+           $stderr.puts ContextError::new(t1,"number",self.class)
+        elsif t2!="number"
+           $stderr.puts ContextError::new(t2,"number",self.class)
+        else
+            return (v1 <= v2), "boolean" # Valor, Tipo
+        end
+    end
+end    # Menor o igual que
 
 # Declaración de las clases individuales para las operaciones aritmeticas
-class UnaryMinusOperation < UnaryOperation; end      # Menos unitario
-class AdditionOperation < BinaryOperation; end       # Suma
-class SubtractionOperation < BinaryOperation; end    # Resta
-class MultiplicationOperation < BinaryOperation; end # Multiplicación
-class DivisionOperation < BinaryOperation; end       # División
-class IntDivisionOperation < BinaryOperation; end    # División entera
-class ModulusOperation < BinaryOperation; end        # Modulo
-class ExactModulusOperation < BinaryOperation; end   # Modulo exacto
+class UnaryMinusOperation < UnaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v,t = @operand.recorrer indent
+        if t != "number"
+           $stderr.puts ContextError::new(t,"number",self.class)
+        else
+            return (-v), "number"
+        end
+    end
+end      # Menos unitario
+class AdditionOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != "number" or t2!="number"
+           $stderr.puts ContextError::new(t,"number",self.class)
+        else
+            return (v1 + v2), "number" # Valor, Tipo
+        end
+    end
+end       # Suma
+class SubtractionOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != "number"
+           $stderr.puts ContextError::new(t1,"number",self.class)
+        elsif t2!="number"
+           $stderr.puts ContextError::new(t2,"number",self.class)
+        else
+            return (v1 - v2), "number" # Valor, Tipo
+        end
+    end
+end    # Resta
+class MultiplicationOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != "number"
+           $stderr.puts ContextError::new(t1,"number",self.class)
+        elsif t2!="number"
+           $stderr.puts ContextError::new(t2,"number",self.class)
+        else
+            return (v1 * v2), "number" # Valor, Tipo
+        end
+    end
+end # Multiplicación
+class DivisionOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != "number"
+           $stderr.puts ContextError::new(t1,"number",self.class)
+        elsif t2!="number"
+           $stderr.puts ContextError::new(t2,"number",self.class)
+        else
+            return (v1 / v2), "number" # Valor, Tipo
+        end
+    end
+end       # División
+class IntDivisionOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != "number"
+           $stderr.puts ContextError::new(t1,"number",self.class)
+        elsif t2!="number"
+           $stderr.puts ContextError::new(t2,"number",self.class)
+        else
+            return (v1 / v2), "number" # Valor, Tipo
+        end
+    end
+end    # División entera
+class ModulusOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != "number"
+           $stderr.puts ContextError::new(t1,"number",self.class)
+        elsif t2!="number"
+           $stderr.puts ContextError::new(t2,"number",self.class)
+        else
+            return (v1 % v2), "number" # Valor, Tipo
+        end
+    end
+end        # Modulo
+class ExactModulusOperation < BinaryOperation
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        v1,t1 = @left.recorrer indent
+        v2,t2 = @right.recorrer indent
+        if t1 != "number"
+            $stderr.puts ContextError::new(t1,"number",self.class)
+        elsif t2!="number"
+            $stderr.puts ContextError::new(t2,"number",self.class)
+        else
+            return (v1 % v2), "number" # Valor, Tipo
+        end
+    end
+ end   # Modulo exacto
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 # Instrucciones:
@@ -250,16 +522,41 @@ class FunctionCall < BinaryOperation
         @lname = "Funcion"
         @rname = "Arguments"
     end
+    def recorrer indent=""
+        puts "#{indent}#{self.class}"
+        # Buscar en tabla de simbolos el tipo de esta cosa, dejemos valor para la entrega 3 xD
+        return 0
+    end
 end
 
 # Bloque program
-class ProgramBlock < UnaryOperation; end
+class ProgramBlock < AST
+    attr_accessor :instrs
+
+    def initialize instrs
+        @instrs = instrs
+    end
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        $stt += [(SymbolTable.new())]
+        instrs.recorrer indent="|  " if instrs.respond_to? :recorrer
+        $stt.pop
+    end
+end
 
 # Bloque with
 class WithBlock < BinaryOperation
     def name
         @lname = "With"
         @rname = "Do"
+    end
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        $stt += [(SymbolTable.new())]
+        puts "#{indent}WithDo"
+        left.recorrer indent+"|  " if left.respond_to? :recorrer
+        right.recorrer indent+"|  " if right.respond_to? :recorrer
+        $stt.pop
     end
 end
 
@@ -294,6 +591,13 @@ class RepeatBlock < BinaryOperation
         @lname = "Times"
         @rname = "Instruction"
     end
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        $stt += [(SymbolTable.new())]
+        left.recorrer indent if left.respond_to? :recorrer
+        right.recorrer indent if right.respond_to? :recorrer
+        $stt.pop
+    end
 end
 
 class InputOperation < UnaryOperation; end  # Operaciones de entrada
@@ -309,6 +613,12 @@ class SimpleStatement < BinaryOperation
         @lname = "Type"
         @rname = "VarID"
     end
+    
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        $stt[-1].table += [Row.new(@right.to_str, @left.to_str)]
+        $stt[-1].table[-1].print_row indent
+    end
 end
 
 # Declaración de variable con asignación
@@ -317,6 +627,11 @@ class AssignmentStatement < TernaryOperation
         @lname = "Type"
         @cname = "VarID"
         @rname = "Value"
+    end
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        $stt[-1] += Row.new(@center.to_str, @left.to_str, @right.recorrer)
+        $stt[-1].table[-1].print_row indent
     end
 end
 
@@ -340,6 +655,17 @@ class FunctionStatement < AST
         end                                                          # Imprimir None si no retorna nada
         puts "#{indent}|  Instr:"; @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast      # Imprimir conjunto de instrucciones de la función
     end
+    
+    
+    def recorrer indent=""
+#        puts "#{indent}#{self.class}"
+        $stt[-1].table += [Row.new(@id.recorrer, @type.recorrer)]
+        $stt += [SymbolTable.new()]
+        puts "#{indent}Funcion #{@id.to_str}"
+        @param.recorrer indent+"|  " if @param.respond_to? :recorrer
+        @instr.recorrer indent+"|  " if @instr.respond_to? :recorrer
+        $stt.pop
+    end
 end
 
 #-----------------------------------------------------------------------------------------------------------------------------------
@@ -350,14 +676,45 @@ class Type < SingleString
     def print_ast indent=""
         puts "#{indent}#{@string.to_str}"
     end
+    
+    def to_str
+        @string.to_str
+    end
 end
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 # Identificadores:
 #-----------------------------------------------------------------------------------------------------------------------------------
 
-class VariableName < SingleString; end # Variables
-class FunctionName < SingleString; end # Funciones
+class VariableName < SingleString
+    def recorrer indent=""
+# Revisar tabla para saber tipo
+        return @string.to_str, "number" # Valor,Tipo
+    end
+end # Variables
+class FunctionName < SingleString
+    def recorrer indent=""
+# Revisar tabla para saber tipo
+        return @string.to_str, "number" # Valor,Tipo
+    end
+end # Funciones
+
+
+###
+####
+class ContextError < RuntimeError
+
+    def initialize v1, v2, place
+        @v1 = v1
+        @v2 = v2
+        @place = place
+    end
+
+    def to_s
+        "Error de contexto: #{@v1} != #{@v2}. En línea #{@place}"
+    end
+end
+
 
 ####################################################################################################################################
 ## FIN :)
