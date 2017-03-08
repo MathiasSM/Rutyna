@@ -142,7 +142,7 @@ ProgramBlock:
 
 #####
 
-Funcion min
+Funcion min : None
 |  x : number
 |  y : number
 |  WithDo
@@ -150,6 +150,12 @@ Funcion min
 |  WithDo
 |  |  c : boolean
 |  |  a : number
+Funcion circle : None
+|  radio : number
+|  FunctionCall
+|  WithDo
+|  |  n : number
+|  |  WithDo
 
 
 ##################################################################################### TEST NUMBER 2
@@ -203,6 +209,8 @@ ProgramBlock:
 
 #####
 
+Funcion incremental_forward : None
+|  steps : number
 
 
 ##################################################################################### TEST NUMBER 3
@@ -275,6 +283,14 @@ ProgramBlock:
 
 #####
 
+Funcion my_forward : None
+|  FunctionCall
+Funcion max : None
+|  x : number
+|  y : number
+|  FunctionCall
+|  WithDo
+|  WithDo
 
 
 ##################################################################################### TEST NUMBER 4

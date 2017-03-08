@@ -630,7 +630,7 @@ class AssignmentStatement < TernaryOperation
     end
     def recorrer indent=""
 #        puts "#{indent}#{self.class}"
-        $stt[-1] += Row.new(@center.to_str, @left.to_str, @right.recorrer)
+        $stt[-1] += [Row.new(@center.to_str, @left.to_str, @right.recorrer)]
         $stt[-1].table[-1].print_row indent
     end
 end
@@ -659,9 +659,15 @@ class FunctionStatement < AST
     
     def recorrer indent=""
 #        puts "#{indent}#{self.class}"
-        $stt[-1].table += [Row.new(@id.recorrer, @type.recorrer)]
+#
+        if @type.nil?
+            $stt[-1].table += [Row.new(@id.to_str, @type.to_str)]
+        else
+            $stt[-1].table += [Row.new(@id.to_str, "None")]
+        end
+        $stt[-1].table[-1].print_row indent+"Funcion "
+        
         $stt += [SymbolTable.new()]
-        puts "#{indent}Funcion #{@id.to_str}"
         @param.recorrer indent+"|  " if @param.respond_to? :recorrer
         @instr.recorrer indent+"|  " if @instr.respond_to? :recorrer
         $stt.pop
