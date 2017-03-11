@@ -85,6 +85,15 @@ class SymbolMetaTable
     end
     return -1, "None", 0
   end
+  
+  def lookf symbol
+    @meta[0].table.each do |row|
+      if row.name == symbol
+        return 0, (row.type), (row.value)
+      end
+    end
+    return -1, "None", 0
+  end
 end
 
 
@@ -551,8 +560,11 @@ class FunctionCall < BinaryOperation
     @rname = "Arguments"
   end
   def recorrer indent=""
-    # puts "#{indent}#{self.class}"
-    return 0, "None"
+    scope, type, value = $stt.lookf @left.to_str
+    if scope == -1
+      $stderr.puts ContextError::new("0","1 (La función '#{@left.to_str}' nunca fue declarada!)",self.class)
+    end
+    return value, type
   end
 end
 
@@ -706,13 +718,12 @@ class AssignmentStatement < TernaryOperation
     scope, type, value = $stt.lookfor @center.to_str
     
     if scope == 0
-      $stderr.puts ContextError::new("0","1 (Variable/Funcion ya declarada!)",self.class)
+      $stderr.puts ContextError::new("0","1 (La variable '#{@center.to_str}' ya fue declarada!)",self.class)
+      return
     elsif @left.to_str != t
-      $stderr.puts ContextError::new("#{type}","#{t} (Error de tipo!)",self.class)
-    else
-      return value, type
+      $stderr.puts ContextError::new("#{@left.to_str}","#{t} (Error de tipo!)",self.class)
+      return
     end
-    
     $stt.meta[-1].table += [Row.new(@center.to_str, @left.to_str, v)]
     $stt.meta[-1].table[-1].print_row indent
   end

@@ -68,6 +68,17 @@ def main
       
     else
       $stt = SymbolMetaTable.new
+      # Funciones del sistema
+      ## home
+      $stt.meta[-1].table += [Row.new("home", "None")]
+      $stt.meta[-1].table += [Row.new("openeye", "None")]
+      $stt.meta[-1].table += [Row.new("closeeye", "None")]
+      $stt.meta[-1].table += [Row.new("forward", "None")]
+      $stt.meta[-1].table += [Row.new("backward", "None")]
+      $stt.meta[-1].table += [Row.new("rotatel", "None")]
+      $stt.meta[-1].table += [Row.new("rotater", "None")]
+      $stt.meta[-1].table += [Row.new("setposition", "None")]
+      $stt.meta[-1].table += [Row.new("arc", "None")]
       ast.recorrer
     end
   end

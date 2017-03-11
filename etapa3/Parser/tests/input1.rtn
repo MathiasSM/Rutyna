@@ -1,10 +1,10 @@
 func min(number x, number y) -> number
 begin
     with
-        boolean b;
-        number x;
+        boolean b = false;
     do
         b = x < y;
+        b = 1;
         if b then
             return x;
         end;
