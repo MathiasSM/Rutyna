@@ -574,6 +574,20 @@ class AssignmentInstruction < BinaryOperation
     @lname = "VarID"
     @rname = "Value"
   end
+  
+  def recorrer indent=""
+    v,t = @right.recorrer indent+"|  " if @right.respond_to? :recorrer
+    
+    scope, type, value = $stt.lookfor @left.to_str
+    
+    if scope == -1
+      $stderr.puts ContextError::new("0","1 (La variable '#{@left.to_str}' no ha sido declarada.)",self.class)
+      exit 1
+    elsif t != type
+      $stderr.puts ContextError::new("#{type}","#{t} (Error de tipo!)",self.class)
+      exit 1
+    end
+  end
 end
 
 # Instrucción de return
