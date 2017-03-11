@@ -116,7 +116,7 @@ class ASList < AST
   def recorrer indent=""
     r = []
     @l.each do |a|
-      r.push(a.recorrer indent) if a.respond_to? :recorrer
+      r.push((a.recorrer indent)) if a.respond_to? :recorrer
     end
     return r
   end
@@ -267,7 +267,6 @@ class SingleString < AST
   end
   
   def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
     return @string.to_str # Valor
   end
   
@@ -375,8 +374,8 @@ end        # Mayor que
 class LessOperation < BinaryOperation
   def recorrer indent=""
     #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
+    v1,t1,s1 = @left.recorrer indent
+    v2,t2,s2 = @right.recorrer indent
     if t1 != "number"
       $stderr.puts ContextError::new(t1,"number",self.class)
     elsif t2!="number"
@@ -567,7 +566,7 @@ class ProgramBlock < AST
   def recorrer indent=""
     #        puts "#{indent}#{self.class}"
     $stt.meta += [(SymbolTable.new())]
-    puts indent+"Programa"
+    puts "\nPROGRAMA"
     instrs.recorrer indent="|  " if instrs.respond_to? :recorrer
     $stt.meta.pop
   end
@@ -636,6 +635,19 @@ class OutputOperation < UnaryOperation; end # Operaciones de salida
 # Declaraciones:
 #-----------------------------------------------------------------------------------------------------------------------------------
 
+# Listas de variables
+class VarList < ASList
+  attr_accessor :l
+  
+  def recorrer indent=""
+    r = []
+    @l.each do |a|
+      r.push((a)) if a.respond_to? :recorrer
+    end
+    return r
+  end
+end
+
 # Declaración de variable simple
 class SimpleStatement < BinaryOperation
   def name
@@ -644,19 +656,38 @@ class SimpleStatement < BinaryOperation
   end
   
   def recorrer indent=""
-    vs = @right.recorrer indent+"|  " if @right.respond_to? :recorrer
+    if @left.to_str == "number"
+      v = 0
+    else
+      v = false
+    end
+    $stt.meta[-1].table += [Row.new(@right.to_str, @left.to_str, v)]
+    $stt.meta[-1].table[-1].print_row indent
+  end
+end
+
+# Declaración de variables simples
+class MultiStatement < BinaryOperation
+  def name
+    @lname = "Type"
+    @rname = "VarIDs"
+  end
+  
+  def recorrer indent=""
+    vs = @right.recorrer if @right.respond_to? :recorrer
+    
+    if @left.to_str == "number"
+      vv = 0
+    else
+      vv = false
+    end
     
     vs.each do |v|
-   
-      s = $stt.lookfor v[0]
-      
-      if scope == 0
-        $stderr.puts ContextError::new("0","1 (Variable/Funcion ya declarada!)",self.class)
-      else
-        return value, type
+      if v.recorrer[2] == 0
+        puts "Error. La variable '#{v.to_str}' ya fue declarada en scope actual."
+        return
       end
-    
-      $stt.meta[-1].table += [Row.new(v[1], v[0])]
+      $stt.meta[-1].table += [Row.new(v.to_str, @left.to_str, vv)]
     end
     $stt.meta[-1].table[-1].print_row indent
   end
@@ -710,12 +741,16 @@ class FunctionStatement < AST
   
   
   def recorrer indent=""
-    if not @type
+    v,t,s = @id.recorrer
+    if s!=-1
+      puts "Error, funcion ya declarada"
+      return
+    elsif not @type
       $stt.meta[-1].table += [Row.new(@id.to_str, @type.to_str)]
     else
       $stt.meta[-1].table += [Row.new(@id.to_str, "None")]
     end
-    $stt.meta[-1].table[-1].print_row indent+"Funcion -> "
+    $stt.meta[-1].table[-1].print_row indent+"\nFUNCION "
     
     $stt.meta += [SymbolTable.new()]
     @param.recorrer indent+"|  " if @param.respond_to? :recorrer
@@ -744,14 +779,14 @@ end
 
 class VariableName < SingleString
   def recorrer indent=""
-    # Revisar tabla para saber tipo
-    return 0, "number" # Valor,Tipo
+    scope, type, value = $stt.lookfor @string.to_str
+    return value, type, scope # Valor,Tipo
   end
 end # Variables
 class FunctionName < SingleString
   def recorrer indent=""
-    # Revisar tabla para saber tipo
-    return 0, "number" # Valor,Tipo
+    scope, type, value = $stt.lookfor @string.to_str
+    return value, type, scope # Valor,Tipo
   end
 end # Funciones
 

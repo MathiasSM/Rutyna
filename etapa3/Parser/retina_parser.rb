@@ -928,21 +928,21 @@ module_eval(<<'.,.,', 'retina_parser.y', 153)
 
 module_eval(<<'.,.,', 'retina_parser.y', 156)
   def _reduce_33(val, _values, result)
-     result = ASList.new(val[0]) 
+     result = VarList.new(val[0]) 
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 157)
   def _reduce_34(val, _values, result)
-     result = ASList.new(val[2]).joina(val[0]) 
+     result = VarList.new(val[2]).joina(val[0]) 
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 159)
   def _reduce_35(val, _values, result)
-     result = SimpleStatement.new(val[0], val[1])             
+     result = MultiStatement.new(val[0], val[1])             
     result
   end
 .,.,

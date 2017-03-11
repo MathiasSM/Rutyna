@@ -154,10 +154,10 @@ rule
               | 'number'  { result = Type.new(val[0]) }
   ;
   
-  VarIDs:        VarID            { result = ASList.new(val[0]) }
-              | VarIDs ',' VarID  { result = ASList.new(val[2]).joina(val[0]) }
+  VarIDs:        VarID            { result = VarList.new(val[0]) }
+              | VarIDs ',' VarID  { result = VarList.new(val[2]).joina(val[0]) }
 
-  Statement:    Datatype VarIDs               { result = SimpleStatement.new(val[0], val[1])             }
+  Statement:    Datatype VarIDs               { result = MultiStatement.new(val[0], val[1])             }
               | Datatype VarID '=' Expression { result = AssignmentStatement.new(val[0], val[1], val[3]) }
               |                               { }
   ;

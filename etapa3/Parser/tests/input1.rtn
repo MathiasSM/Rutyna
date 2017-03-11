@@ -2,16 +2,17 @@ func min(number x, number y) -> number
 begin
     with
         boolean b;
+        number x;
     do
         b = x < y;
         if b then
             return x;
         end;
-        return y;
+        return b;
     end;
 end;
 
-func incremental_forward(number steps)
+func incremental_forward(number i)
 begin
     for i from 1 to steps do
         forward(i);
