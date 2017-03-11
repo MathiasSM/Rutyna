@@ -309,6 +309,7 @@ class NegationOperation < UnaryOperation
     v,t = @operand.recorrer indent
     if t != "boolean"
       $stderr.puts ContextError::new(t,"boolean",self.class)
+      exit 1
     else
       return (not v), "boolean" # Valor, Tipo
     end
@@ -321,8 +322,10 @@ class ConjunctionOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != "boolean"
       $stderr.puts ContextError::new(t1,"boolean",self.class)
+      exit 1
     elsif t2!="boolean"
       $stderr.puts ContextError::new(t2,"boolean",self.class)
+      exit 1
     else
       return (v1 and v2), "boolean" # Valor, Tipo
     end
@@ -335,8 +338,10 @@ class DisjunctionOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != "boolean"
       $stderr.puts ContextError::new(t1,"boolean",self.class)
+      exit 1
     elsif t2!="boolean"
       $stderr.puts ContextError::new(t2,"boolean",self.class)
+      exit 1
     else
       return (v1 or v2), "boolean" # Valor, Tipo
     end
@@ -349,6 +354,7 @@ class EquivalentOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != t2
       $stderr.puts ContextError::new(t1,t2,0)
+      exit 1
     else
       return (v1 == v2), "boolean" # Valor, Tipo
     end
@@ -361,6 +367,7 @@ class DifferentOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != t2
       $stderr.puts ContextError::new(t1,t2,0)
+      exit 1
     else
       return (v1 != v2), "boolean" # Valor, Tipo
     end
@@ -373,8 +380,10 @@ class GreaterOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != "number"
       $stderr.puts ContextError::new(t1,"number",self.class)
+      exit 1
     elsif t2!="number"
       $stderr.puts ContextError::new(t2,"number",self.class)
+      exit 1
     else
       return (v1 > v2), "boolean" # Valor, Tipo
     end
@@ -387,8 +396,10 @@ class LessOperation < BinaryOperation
     v2,t2,s2 = @right.recorrer indent
     if t1 != "number"
       $stderr.puts ContextError::new(t1,"number",self.class)
+      exit 1
     elsif t2!="number"
       $stderr.puts ContextError::new(t2,"number",self.class)
+      exit 1
     else
       return (v1 < v2), "boolean" # Valor, Tipo
     end
@@ -401,8 +412,10 @@ class GreaterOrEqualOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != "number"
       $stderr.puts ContextError::new(t1,"number",self.class)
+      exit 1
     elsif t2!="number"
       $stderr.puts ContextError::new(t2,"number",self.class)
+      exit 1
     else
       return (v1 >= v2), "boolean" # Valor, Tipo
     end
@@ -415,8 +428,10 @@ class LessOrEqualOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != "number"
       $stderr.puts ContextError::new(t1,"number",self.class)
+      exit 1
     elsif t2!="number"
       $stderr.puts ContextError::new(t2,"number",self.class)
+      exit 1
     else
       return (v1 <= v2), "boolean" # Valor, Tipo
     end
@@ -430,6 +445,7 @@ class UnaryMinusOperation < UnaryOperation
     v,t = @operand.recorrer indent
     if t != "number"
       $stderr.puts ContextError::new(t,"number",self.class)
+      exit 1
     else
       return (-v), "number"
     end
@@ -442,8 +458,10 @@ class AdditionOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != "number"
       $stderr.puts ContextError::new(t1,"number",self.class)
+      exit 1
     elsif t2!="number"
-        $stderr.puts ContextError::new(t2,"number",self.class)
+      $stderr.puts ContextError::new(t2,"number",self.class)
+      exit 1
     else
       return (v1 + v2), "number" # Valor, Tipo
     end
@@ -456,8 +474,10 @@ class SubtractionOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != "number"
       $stderr.puts ContextError::new(t1,"number",self.class)
+      exit 1
     elsif t2!="number"
       $stderr.puts ContextError::new(t2,"number",self.class)
+      exit 1
     else
       return (v1 - v2), "number" # Valor, Tipo
     end
@@ -470,8 +490,10 @@ class MultiplicationOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != "number"
       $stderr.puts ContextError::new(t1,"number",self.class)
+      exit 1
     elsif t2!="number"
       $stderr.puts ContextError::new(t2,"number",self.class)
+      exit 1
     else
       return (v1 * v2), "number" # Valor, Tipo
     end
@@ -484,8 +506,10 @@ class DivisionOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != "number"
       $stderr.puts ContextError::new(t1,"number",self.class)
+      exit 1
     elsif t2!="number"
       $stderr.puts ContextError::new(t2,"number",self.class)
+      exit 1
     else
       return (v1 / v2), "number" # Valor, Tipo
     end
@@ -498,8 +522,10 @@ class IntDivisionOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != "number"
       $stderr.puts ContextError::new(t1,"number",self.class)
+      exit 1
     elsif t2!="number"
       $stderr.puts ContextError::new(t2,"number",self.class)
+      exit 1
     else
       return (v1 / v2), "number" # Valor, Tipo
     end
@@ -512,8 +538,10 @@ class ModulusOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != "number"
       $stderr.puts ContextError::new(t1,"number",self.class)
+      exit 1
     elsif t2!="number"
       $stderr.puts ContextError::new(t2,"number",self.class)
+      exit 1
     else
       return (v1 % v2), "number" # Valor, Tipo
     end
@@ -526,8 +554,10 @@ class ExactModulusOperation < BinaryOperation
     v2,t2 = @right.recorrer indent
     if t1 != "number"
       $stderr.puts ContextError::new(t1,"number",self.class)
+      exit 1
     elsif t2!="number"
       $stderr.puts ContextError::new(t2,"number",self.class)
+      exit 1
     else
       return (v1 % v2), "number" # Valor, Tipo
     end
@@ -563,6 +593,7 @@ class FunctionCall < BinaryOperation
     scope, type, value = $stt.lookf @left.to_str
     if scope == -1
       $stderr.puts ContextError::new("0","1 (La función '#{@left.to_str}' nunca fue declarada!)",self.class)
+      exit 1
     end
     return value, type
   end
@@ -696,12 +727,12 @@ class MultiStatement < BinaryOperation
     
     vs.each do |v|
       if v.recorrer[2] == 0
-        puts "Error. La variable '#{v.to_str}' ya fue declarada en scope actual."
-        return
+        $stderr.puts ContextError::new("0", "1 (La variable '#{v.to_str}' ya fue declarada en el scope actual).", self.class)
+        exit 1
       end
       $stt.meta[-1].table += [Row.new(v.to_str, @left.to_str, vv)]
+      $stt.meta[-1].table[-1].print_row indent
     end
-    $stt.meta[-1].table[-1].print_row indent
   end
 end
 
@@ -718,11 +749,11 @@ class AssignmentStatement < TernaryOperation
     scope, type, value = $stt.lookfor @center.to_str
     
     if scope == 0
-      $stderr.puts ContextError::new("0","1 (La variable '#{@center.to_str}' ya fue declarada!)",self.class)
-      return
+      $stderr.puts ContextError::new("0","1 (La variable '#{@center.to_str}' ya fue declarada en el scope actual.)",self.class)
+      exit 1
     elsif @left.to_str != t
       $stderr.puts ContextError::new("#{@left.to_str}","#{t} (Error de tipo!)",self.class)
-      return
+      exit 1
     end
     $stt.meta[-1].table += [Row.new(@center.to_str, @left.to_str, v)]
     $stt.meta[-1].table[-1].print_row indent
@@ -754,8 +785,8 @@ class FunctionStatement < AST
   def recorrer indent=""
     v,t,s = @id.recorrer
     if s!=-1
-      puts "Error, funcion ya declarada"
-      return
+      $stderr.puts ContextError::new("0", "1 (La funcion '#{@id.to_str}' ya fue declarada", self.class)
+      exit 1
     elsif not @type
       $stt.meta[-1].table += [Row.new(@id.to_str, @type.to_str)]
     else
@@ -813,7 +844,7 @@ class ContextError < RuntimeError
   end
   
   def to_s
-    "Error de contexto: #{@v1} != #{@v2}. En línea #{@place}"
+    "Error de contexto: #{@v1} != #{@v2}. En #{@place}"
   end
 end
 

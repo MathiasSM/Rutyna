@@ -39,7 +39,7 @@ program
             while angle <= 360 do
                 rotater(n);
                 circle(100);
-                angle = angle + n;
+                angle = angle + true;
             end;
         end;
     end;

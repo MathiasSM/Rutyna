@@ -2,10 +2,9 @@
 program
   with
       number i;
-      boolean x, y, z, i;
+      boolean x, y, z;
       number j = 78;
   do
-      i = 27;
+      i = j+i+x;
   end;
 end;
-
