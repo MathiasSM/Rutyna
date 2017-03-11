@@ -3,7 +3,7 @@ program
   with
       number i;
       number j = 78;
-      boolean abc;
+      number abc;
   do
       i = 27;
       abc = 78;

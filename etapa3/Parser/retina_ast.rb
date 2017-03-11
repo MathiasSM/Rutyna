@@ -88,6 +88,7 @@ class SymbolMetaTable
   
   def lookf symbol
     @meta[0].table.each do |row|
+     # row.print_row
       if row.name == symbol
         return 0, (row.type), (row.value)
       end
@@ -505,10 +506,10 @@ class DivisionOperation < BinaryOperation
     v1,t1 = @left.recorrer indent
     v2,t2 = @right.recorrer indent
     if t1 != "number"
-      $stderr.puts ContextError::new(t1,"number",self.class)
+      $stderr.puts ContextError::new("#{t1.to_str}","number",self.class)
       exit 1
     elsif t2!="number"
-      $stderr.puts ContextError::new(t2,"number",self.class)
+      $stderr.puts ContextError::new("#{t2.to_str}","number",self.class)
       exit 1
     else
       return (v1 / v2), "number" # Valor, Tipo
@@ -595,6 +596,9 @@ class ReturnInstr < UnaryOperation
   def name
     @operand = "Value"
   end
+  def recorrer indent=""
+    return @operand.recorrer indent+"|  "
+  end
 end
 
 # Llamado de función o procedimiento
@@ -609,7 +613,7 @@ class FunctionCall < BinaryOperation
       $stderr.puts ContextError::new("0","1 (La función '#{@left.to_str}' nunca fue declarada!)",self.class)
       exit 1
     end
-    return value, type
+    return 0, type
   end
 end
 
@@ -624,8 +628,11 @@ class ProgramBlock < AST
     #        puts "#{indent}#{self.class}"
     $stt.meta += [(SymbolTable.new())]
     puts "\nPROGRAMA"
-    instrs.recorrer indent="|  " if instrs.respond_to? :recorrer
+    ret, rt = @instrs.recorrer indent="|  " if instrs.respond_to? :recorrer
     $stt.meta.pop
+    if ret == "return"
+      $stderr.puts ContextError::new("0","1 (Program NO debe retornar nada)",self.class)
+    end
   end
 end
 
@@ -640,8 +647,9 @@ class WithBlock < BinaryOperation
     $stt.meta += [(SymbolTable.new())]
     puts "#{indent}WithDo"
     @left.recorrer indent+"|  " if left.respond_to? :recorrer
-    @right.recorrer indent+"|  " if right.respond_to? :recorrer
+    ret, rt = @right.recorrer indent+"|  " if right.respond_to? :recorrer
     $stt.meta.pop
+    return ret, rt
   end
 end
 
@@ -679,9 +687,10 @@ class RepeatBlock < BinaryOperation
   def recorrer indent=""
     #        puts "#{indent}#{self.class}"
     $stt.meta += [(SymbolTable.new())]
-    left.recorrer indent if left.respond_to? :recorrer
-    right.recorrer indent if right.respond_to? :recorrer
+    @left.recorrer indent if left.respond_to? :recorrer
+    ret, rt = @right.recorrer indent if right.respond_to? :recorrer
     $stt.meta.pop
+    return ret, rt
   end
 end
 
@@ -801,16 +810,21 @@ class FunctionStatement < AST
     if s!=-1
       $stderr.puts ContextError::new("0", "1 (La funcion '#{@id.to_str}' ya fue declarada", self.class)
       exit 1
-    elsif not @type
-      $stt.meta[-1].table += [Row.new(@id.to_str, @type.to_str)]
-    else
+    elsif @type == {}
       $stt.meta[-1].table += [Row.new(@id.to_str, "None")]
+    else
+      $stt.meta[-1].table += [Row.new(@id.to_str, @type.to_str)]
     end
     $stt.meta[-1].table[-1].print_row indent+"\nFUNCION "
     
     $stt.meta += [SymbolTable.new()]
     @param.recorrer indent+"|  " if @param.respond_to? :recorrer
-    @instr.recorrer indent+"|  " if @instr.respond_to? :recorrer
+    ret, rt = @instr.recorrer indent+"|  " if @instr.respond_to? :recorrer
+    if ret == "return"
+      if rt != @type
+        $stderr.puts ContextError::new(@type,rt,self.class)
+      end
+    end
     $stt.meta.pop
   end
 end
