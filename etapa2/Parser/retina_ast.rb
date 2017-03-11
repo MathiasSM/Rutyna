@@ -21,45 +21,45 @@
 # # AST (Abstract Syntaxis Tree)
 #-----------------------------------------------------------------------------------------------------------------------------------
 class AST
-    def print_ast indent=""
-        puts "#{indent}#{self.class}:"
-
-        attrs.each do |a|
-            a.print_ast indent + "|  " if a.respond_to? :print_ast
-        end
+  def print_ast indent=""
+    puts "#{indent}#{self.class}:"
+    
+    attrs.each do |a|
+      a.print_ast indent + "|  " if a.respond_to? :print_ast
     end
-
-    def attrs
-        instance_variables.map do |a|
-            instance_variable_get a
-        end
+  end
+  
+  def attrs
+    instance_variables.map do |a|
+      instance_variable_get a
     end
+  end
 end
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 # # Listas de AST
 #-----------------------------------------------------------------------------------------------------------------------------------
 class ASList < AST
-    attr_accessor :l
-
-    def initialize k=nil
-        if k.nil?
-            @l=[]
-        else
-            @l=[k]
-        end
+  attr_accessor :l
+  
+  def initialize k=nil
+    if k.nil?
+      @l=[]
+    else
+      @l=[k]
     end
-
-    def print_ast indent=""
-        @l.each do |a|
-            a.print_ast indent if a.respond_to? :print_ast
-        end
+  end
+  
+  def print_ast indent=""
+    @l.each do |a|
+      a.print_ast indent if a.respond_to? :print_ast
     end
-
-    def joina asl
-        @l = asl.l + @l
-        return self
-    end
+  end
+  
+  def joina asl
+    @l = asl.l + @l
+    return self
+  end
 end
 
 ####################################################################################################################################
@@ -72,92 +72,92 @@ end
 
 # Declaración de la clase general para operaciones unarias
 class UnaryOperation < AST
-    attr_accessor :operand
-
-    def initialize operand
-        @operand = operand
-    end
+  attr_accessor :operand
+  
+  def initialize operand
+    @operand = operand
+  end
 end
 
 # Declaración de la clase general para operaciones binarias
 class BinaryOperation < AST
-    attr_accessor :left, :right
-
-    def initialize lh, rh
-        @left = lh
-        @right = rh
-        @lname = "Left"
-        @rname = "Right"
-    end
-
-    def name; end
-
-    def print_ast indent=""
-        self.name
-        puts "#{indent}#{self.class}:"
-        puts "#{indent}|  #{@lname}:"
-        @left.print_ast  indent+"|  |  " if @left.respond_to? :print_ast
-        puts "#{indent}|  #{@rname}:"
-        @right.print_ast indent+"|  |  " if @right.respond_to? :print_ast
-    end
+  attr_accessor :left, :right
+  
+  def initialize lh, rh
+    @left = lh
+    @right = rh
+    @lname = "Left"
+    @rname = "Right"
+  end
+  
+  def name; end
+  
+  def print_ast indent=""
+    self.name
+    puts "#{indent}#{self.class}:"
+    puts "#{indent}|  #{@lname}:"
+    @left.print_ast  indent+"|  |  " if @left.respond_to? :print_ast
+    puts "#{indent}|  #{@rname}:"
+    @right.print_ast indent+"|  |  " if @right.respond_to? :print_ast
+  end
 end
 
 # Declaración de la clase general para operaciones ternarias
 class TernaryOperation < AST
-    attr_accessor :left, :center, :right
-
-    def initialize lh, ch, rh
-        @left = lh
-        @center = ch
-        @right = rh
-        @lname = ""
-        @rname = ""
-        @cname = ""
-    end
-
-    def name;end
-
-    def print_ast indent=""
-        self.name
-        puts "#{indent}#{self.class}:"
-        puts "#{indent}|  #{@lname}:"
-        @left.print_ast indent+"|  |  " if @left.respond_to? :print_ast
-        puts "#{indent}|  #{@cname}:"
-        @center.print_ast indent+"|  |  " if @center.respond_to? :print_ast
-        puts "#{indent}|  #{@rname}:"
-        @right.print_ast indent+"|  |  " if @right.respond_to? :print_ast
-    end
+  attr_accessor :left, :center, :right
+  
+  def initialize lh, ch, rh
+    @left = lh
+    @center = ch
+    @right = rh
+    @lname = ""
+    @rname = ""
+    @cname = ""
+  end
+  
+  def name;end
+  
+  def print_ast indent=""
+    self.name
+    puts "#{indent}#{self.class}:"
+    puts "#{indent}|  #{@lname}:"
+    @left.print_ast indent+"|  |  " if @left.respond_to? :print_ast
+    puts "#{indent}|  #{@cname}:"
+    @center.print_ast indent+"|  |  " if @center.respond_to? :print_ast
+    puts "#{indent}|  #{@rname}:"
+    @right.print_ast indent+"|  |  " if @right.respond_to? :print_ast
+  end
 end
 
 # Declaración de la clase especial para el bloque for
 class ForBlock < AST
-    attr_accessor :it, :ini, :fin, :paso, :instr
-
-    def initialize it, ini, fin, paso, instr
-        @it = it
-        @ini = ini
-        @fin = fin
-        @paso = paso
-        @instr = instr
+  attr_accessor :it, :ini, :fin, :paso, :instr
+  
+  def initialize it, ini, fin, paso, instr
+    @it = it
+    @ini = ini
+    @fin = fin
+    @paso = paso
+    @instr = instr
+  end
+  
+  def print_ast indent=""
+    puts "#{indent}#{self.class}:"
+    puts "#{indent}|  Iterator:"
+    @it.print_ast indent+"|  |  " if @it.respond_to? :print_ast
+    puts "#{indent}|  From:"
+    @ini.print_ast indent+"|  |  " if @ini.respond_to? :print_ast
+    puts "#{indent}|  To:"
+    @fin.print_ast indent+"|  |  " if @fin.respond_to? :print_ast
+    puts "#{indent}|  Step:"
+    if @paso.respond_to? :print_ast
+      @paso.print_ast indent+"|  |  "
+    else
+      puts indent+"|  |  1"
     end
-
-    def print_ast indent=""
-        puts "#{indent}#{self.class}:"
-        puts "#{indent}|  Iterator:"
-        @it.print_ast indent+"|  |  " if @it.respond_to? :print_ast
-        puts "#{indent}|  From:"
-        @ini.print_ast indent+"|  |  " if @ini.respond_to? :print_ast
-        puts "#{indent}|  To:"
-        @fin.print_ast indent+"|  |  " if @fin.respond_to? :print_ast
-        puts "#{indent}|  Step:"
-        if @paso.respond_to? :print_ast
-            @paso.print_ast indent+"|  |  "
-        else
-            puts indent+"|  |  1"
-        end
-        puts "#{indent}|  Intructions:"
-        @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast
-    end
+    puts "#{indent}|  Intructions:"
+    @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast
+  end
 end
 
 #-----------------------------------------------------------------------------------------------------------------------------------
@@ -166,42 +166,42 @@ end
 
 # Declaración de la clase para expresiones del tipo Number
 class SingleNumber < AST
-    attr_accessor :number
-
-    def initialize number
-        @number = number
-    end
-
-    def print_ast indent=""
-        puts "#{indent}#{self.class}: #{@number.to_str}"
-    end
+  attr_accessor :number
+  
+  def initialize number
+    @number = number
+  end
+  
+  def print_ast indent=""
+    puts "#{indent}#{self.class}: #{@number.to_str}"
+  end
 end
 
 # Declaración de la clase para expresiones del tipo String
 class SingleString < AST
-    attr_accessor :string
-
-    def initialize string
-        @string = string
-    end
-
-    def print_ast indent=""
-        puts "#{indent}#{self.class}: #{@string.to_str}"
-    end
-
+  attr_accessor :string
+  
+  def initialize string
+    @string = string
+  end
+  
+  def print_ast indent=""
+    puts "#{indent}#{self.class}: #{@string.to_str}"
+  end
+  
 end
 
 # Declaración de la clase para expresiones del tipo Boolean
 class SingleBoolean < AST
-    attr_accessor :boolean
-
-    def initialize boolean
-        @boolean = boolean
-    end
-
-    def print_ast indent=""
-        puts "#{indent}#{self.class}: #{@boolean.to_str}"
-    end
+  attr_accessor :boolean
+  
+  def initialize boolean
+    @boolean = boolean
+  end
+  
+  def print_ast indent=""
+    puts "#{indent}#{self.class}: #{@boolean.to_str}"
+  end
 end
 
 # Declaración de las clases individuales para las operaciones booleanas
@@ -231,25 +231,25 @@ class ExactModulusOperation < BinaryOperation; end   # Modulo exacto
 
 # Asignación
 class AssignmentInstruction < BinaryOperation
-    def name
-        @lname = "VarID"
-        @rname = "Value"
-    end
+  def name
+    @lname = "VarID"
+    @rname = "Value"
+  end
 end
 
 # Instrucción de return
 class ReturnInstr < UnaryOperation
-    def name
-        @operand = "Value"
-    end
+  def name
+    @operand = "Value"
+  end
 end
 
 # Llamado de función o procedimiento
 class FunctionCall < BinaryOperation
-    def name
-        @lname = "Funcion"
-        @rname = "Arguments"
-    end
+  def name
+    @lname = "Funcion"
+    @rname = "Arguments"
+  end
 end
 
 # Bloque program
@@ -257,43 +257,43 @@ class ProgramBlock < UnaryOperation; end
 
 # Bloque with
 class WithBlock < BinaryOperation
-    def name
-        @lname = "With"
-        @rname = "Do"
-    end
+  def name
+    @lname = "With"
+    @rname = "Do"
+  end
 end
 
 # Bloque if
 class IfBlock < BinaryOperation
-    def name
-        @lname = "If"
-        @rname = "Then"
-    end
+  def name
+    @lname = "If"
+    @rname = "Then"
+  end
 end
 
 # Bloque if else
 class IfElseBlock < TernaryOperation
-    def name
-        @lname = "If"
-        @cname = "Then"
-        @rname = "Else"
-    end
+  def name
+    @lname = "If"
+    @cname = "Then"
+    @rname = "Else"
+  end
 end
 
 # Bloque while
 class WhileBlock < BinaryOperation
-    def name
-        @lname = "While"
-        @rname = "Do"
-    end
+  def name
+    @lname = "While"
+    @rname = "Do"
+  end
 end
 
 # Bloque repeat
 class RepeatBlock < BinaryOperation
-    def name
-        @lname = "Times"
-        @rname = "Instruction"
-    end
+  def name
+    @lname = "Times"
+    @rname = "Instruction"
+  end
 end
 
 class InputOperation < UnaryOperation; end  # Operaciones de entrada
@@ -305,41 +305,41 @@ class OutputOperation < UnaryOperation; end # Operaciones de salida
 
 # Declaración de variable simple
 class SimpleStatement < BinaryOperation
-    def name
-        @lname = "Type"
-        @rname = "VarID"
-    end
+  def name
+    @lname = "Type"
+    @rname = "VarID"
+  end
 end
 
 # Declaración de variable con asignación
 class AssignmentStatement < TernaryOperation
-    def name
-        @lname = "Type"
-        @cname = "VarID"
-        @rname = "Value"
-    end
+  def name
+    @lname = "Type"
+    @cname = "VarID"
+    @rname = "Value"
+  end
 end
 
 # Declaración de función
 class FunctionStatement < AST
-    attr_accessor :id, :param, :type, :instr
-    def initialize id, param, type, instr
-        @id = id
-        @param = param
-        @type = type
-        @instr = instr
-    end
-
-    def print_ast indent=""
-        puts "#{indent}#{self.class}:"; @id.print_ast indent+"|  " if @id.respond_to? :print_ast          # Imprimir identificados
-        puts "#{indent}|  Params:";  @param.print_ast indent+"|  |  " if @param.respond_to? :print_ast    # Imprimir parametros
-        if @type.respond_to? :print_ast
-          puts "#{indent}|  Type:"; @type.print_ast indent+"|  |  "                # Imprimir tipo de dato de retorno si exists
-        else
-          puts "#{indent}|  Type: None"
-        end                                                          # Imprimir None si no retorna nada
-        puts "#{indent}|  Instr:"; @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast      # Imprimir conjunto de instrucciones de la función
-    end
+  attr_accessor :id, :param, :type, :instr
+  def initialize id, param, type, instr
+    @id = id
+    @param = param
+    @type = type
+    @instr = instr
+  end
+  
+  def print_ast indent=""
+    puts "#{indent}#{self.class}:"; @id.print_ast indent+"|  " if @id.respond_to? :print_ast          # Imprimir identificados
+    puts "#{indent}|  Params:";  @param.print_ast indent+"|  |  " if @param.respond_to? :print_ast    # Imprimir parametros
+    if @type.respond_to? :print_ast
+      puts "#{indent}|  Type:"; @type.print_ast indent+"|  |  "                # Imprimir tipo de dato de retorno si exists
+    else
+      puts "#{indent}|  Type: None"
+    end                                                          # Imprimir None si no retorna nada
+    puts "#{indent}|  Instr:"; @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast      # Imprimir conjunto de instrucciones de la función
+  end
 end
 
 #-----------------------------------------------------------------------------------------------------------------------------------
@@ -347,9 +347,9 @@ end
 #-----------------------------------------------------------------------------------------------------------------------------------
 
 class Type < SingleString
-    def print_ast indent=""
-        puts "#{indent}#{@string.to_str}"
-    end
+  def print_ast indent=""
+    puts "#{indent}#{@string.to_str}"
+  end
 end
 
 #-----------------------------------------------------------------------------------------------------------------------------------

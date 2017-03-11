@@ -700,238 +700,238 @@ Racc_debug_parser = false
 
 module_eval(<<'.,.,', 'retina_parser.y', 115)
   def _reduce_1(val, _values, result)
-     result = SingleNumber.new(val[0])                    
+     result = SingleNumber.new(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 116)
   def _reduce_2(val, _values, result)
-     result = SingleBoolean.new(val[0])                   
+     result = SingleBoolean.new(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 117)
   def _reduce_3(val, _values, result)
-     result = SingleBoolean.new(val[0])                   
+     result = SingleBoolean.new(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 118)
   def _reduce_4(val, _values, result)
-     result = SingleString.new(val[0])                    
+     result = SingleString.new(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 119)
   def _reduce_5(val, _values, result)
-     result = val[0]                                      
+     result = val[0]
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 120)
   def _reduce_6(val, _values, result)
-     result = val[0]                                      
+     result = val[0]
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 121)
   def _reduce_7(val, _values, result)
-     result = FunctionCall.new(val[0], val[2])            
+     result = FunctionCall.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 122)
   def _reduce_8(val, _values, result)
-     result = FunctionCall.new(val[0], {})                
+     result = FunctionCall.new(val[0], {})
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 123)
   def _reduce_9(val, _values, result)
-     result = val[1]                                      
+     result = val[1]
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 124)
   def _reduce_10(val, _values, result)
-     result = UnaryMinusOperation.new(val[1])             
+     result = UnaryMinusOperation.new(val[1])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 125)
   def _reduce_11(val, _values, result)
-     result = NegationOperation.new(val[1])               
+     result = NegationOperation.new(val[1])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 126)
   def _reduce_12(val, _values, result)
-     result = MultiplicationOperation.new(val[0], val[2]) 
+     result = MultiplicationOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 127)
   def _reduce_13(val, _values, result)
-     result = DivisionOperation.new(val[0], val[2])       
+     result = DivisionOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 128)
   def _reduce_14(val, _values, result)
-     result = IntDivisionOperation.new(val[0], val[2])    
+     result = IntDivisionOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 129)
   def _reduce_15(val, _values, result)
-     result = ModulusOperation.new(val[0], val[2])        
+     result = ModulusOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 130)
   def _reduce_16(val, _values, result)
-     result = ExactModulusOperation.new(val[0], val[2])   
+     result = ExactModulusOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 131)
   def _reduce_17(val, _values, result)
-     result = AdditionOperation.new(val[0], val[2])       
+     result = AdditionOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 132)
   def _reduce_18(val, _values, result)
-     result = SubtractionOperation.new(val[0], val[2])    
+     result = SubtractionOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 133)
   def _reduce_19(val, _values, result)
-     result = EquivalentOperation.new(val[0], val[2])     
+     result = EquivalentOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 134)
   def _reduce_20(val, _values, result)
-     result = DifferentOperation.new(val[0], val[2])      
+     result = DifferentOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 135)
   def _reduce_21(val, _values, result)
-     result = LessOrEqualOperation.new(val[0], val[2])    
+     result = LessOrEqualOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 136)
   def _reduce_22(val, _values, result)
-     result = GreaterOrEqualOperation.new(val[0], val[2]) 
+     result = GreaterOrEqualOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 137)
   def _reduce_23(val, _values, result)
-     result = LessOperation.new(val[0], val[2])           
+     result = LessOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 138)
   def _reduce_24(val, _values, result)
-     result = GreaterOperation.new(val[0], val[2])        
+     result = GreaterOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 139)
   def _reduce_25(val, _values, result)
-     result = DisjunctionOperation.new(val[0], val[2])    
+     result = DisjunctionOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 140)
   def _reduce_26(val, _values, result)
-     result = ConjunctionOperation.new(val[0], val[2])    
+     result = ConjunctionOperation.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 143)
   def _reduce_27(val, _values, result)
-     result = ASList.new(val[0])               
+     result = ASList.new(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 144)
   def _reduce_28(val, _values, result)
-     result = ASList.new(val[2]).joina(val[0]) 
+     result = ASList.new(val[2]).joina(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 147)
   def _reduce_29(val, _values, result)
-     result = VariableName.new(val[0]) 
+     result = VariableName.new(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 150)
   def _reduce_30(val, _values, result)
-     result = FunctionName.new(val[0]) 
+     result = FunctionName.new(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 153)
   def _reduce_31(val, _values, result)
-     result = Type.new(val[0]) 
+     result = Type.new(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 154)
   def _reduce_32(val, _values, result)
-     result = Type.new(val[0]) 
+     result = Type.new(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 157)
   def _reduce_33(val, _values, result)
-     result = SimpleStatement.new(val[0], val[1])             
+     result = SimpleStatement.new(val[0], val[1])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 158)
   def _reduce_34(val, _values, result)
-     result = AssignmentStatement.new(val[0], val[1], val[3]) 
+     result = AssignmentStatement.new(val[0], val[1], val[3])
     result
   end
 .,.,
@@ -945,14 +945,14 @@ module_eval(<<'.,.,', 'retina_parser.y', 159)
 
 module_eval(<<'.,.,', 'retina_parser.y', 162)
   def _reduce_36(val, _values, result)
-     result = ASList.new(val[0])               
+     result = ASList.new(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 163)
   def _reduce_37(val, _values, result)
-     result = ASList.new(val[1]).joina(val[0]) 
+     result = ASList.new(val[1]).joina(val[0])
     result
   end
 .,.,
@@ -966,203 +966,203 @@ module_eval(<<'.,.,', 'retina_parser.y', 166)
 
 module_eval(<<'.,.,', 'retina_parser.y', 167)
   def _reduce_39(val, _values, result)
-     result = AssignmentInstruction.new(val[0], val[2])        
+     result = AssignmentInstruction.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 168)
   def _reduce_40(val, _values, result)
-     result = WithBlock.new(val[1], val[3])                    
+     result = WithBlock.new(val[1], val[3])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 169)
   def _reduce_41(val, _values, result)
-     result = WithBlock.new(val[1], val[3])                    
+     result = WithBlock.new(val[1], val[3])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 170)
   def _reduce_42(val, _values, result)
-     result = WithBlock.new({}, val[2])                        
+     result = WithBlock.new({}, val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 171)
   def _reduce_43(val, _values, result)
-     result = WithBlock.new({}, val[2])                        
+     result = WithBlock.new({}, val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 172)
   def _reduce_44(val, _values, result)
-     result = WhileBlock.new(val[1], val[3])                   
+     result = WhileBlock.new(val[1], val[3])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 173)
   def _reduce_45(val, _values, result)
-     result = ForBlock.new(val[1],val[3],val[5],val[7],val[9]) 
+     result = ForBlock.new(val[1],val[3],val[5],val[7],val[9])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 174)
   def _reduce_46(val, _values, result)
-     result = ForBlock.new(val[1],val[3],val[5],val[7],val[9]) 
+     result = ForBlock.new(val[1],val[3],val[5],val[7],val[9])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 175)
   def _reduce_47(val, _values, result)
-     result = ForBlock.new(val[1],val[3],val[5],1,     val[7]) 
+     result = ForBlock.new(val[1],val[3],val[5],1,     val[7])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 176)
   def _reduce_48(val, _values, result)
-     result = ForBlock.new(val[1],val[3],val[5],1,     val[7]) 
+     result = ForBlock.new(val[1],val[3],val[5],1,     val[7])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 177)
   def _reduce_49(val, _values, result)
-     result = IfBlock.new(val[1], val[3])                      
+     result = IfBlock.new(val[1], val[3])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 178)
   def _reduce_50(val, _values, result)
-     result = IfBlock.new(val[1], val[3])                      
+     result = IfBlock.new(val[1], val[3])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 179)
   def _reduce_51(val, _values, result)
-     result = IfElseBlock.new(val[1], val[3], val[5])          
+     result = IfElseBlock.new(val[1], val[3], val[5])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 180)
   def _reduce_52(val, _values, result)
-     result = IfElseBlock.new(val[1], val[3], val[5])          
+     result = IfElseBlock.new(val[1], val[3], val[5])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 181)
   def _reduce_53(val, _values, result)
-     result = IfElseBlock.new(val[1], val[3], val[5])          
+     result = IfElseBlock.new(val[1], val[3], val[5])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 182)
   def _reduce_54(val, _values, result)
-     result = IfElseBlock.new(val[1], val[3], val[5])          
+     result = IfElseBlock.new(val[1], val[3], val[5])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 183)
   def _reduce_55(val, _values, result)
-     result = RepeatBlock.new(val[1], val[3])                  
+     result = RepeatBlock.new(val[1], val[3])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 184)
   def _reduce_56(val, _values, result)
-     result = RepeatBlock.new(val[1], val[3])                  
+     result = RepeatBlock.new(val[1], val[3])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 185)
   def _reduce_57(val, _values, result)
-     result = InputOperation.new(val[1])                       
+     result = InputOperation.new(val[1])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 186)
   def _reduce_58(val, _values, result)
-     result = OutputOperation.new(val[1])                      
+     result = OutputOperation.new(val[1])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 187)
   def _reduce_59(val, _values, result)
-     result = OutputOperation.new(val[1])                      
+     result = OutputOperation.new(val[1])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 188)
   def _reduce_60(val, _values, result)
-     result = ReturnInstr.new(val[1])                          
+     result = ReturnInstr.new(val[1])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 189)
   def _reduce_61(val, _values, result)
-     result = FunctionCall.new(val[0], val[2])            
+     result = FunctionCall.new(val[0], val[2])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 190)
   def _reduce_62(val, _values, result)
-     result = FunctionCall.new(val[0], {})                
+     result = FunctionCall.new(val[0], {})
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 193)
   def _reduce_63(val, _values, result)
-     result = ASList.new(val[0])               
+     result = ASList.new(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 194)
   def _reduce_64(val, _values, result)
-     result = ASList.new(val[1]).joina(val[0]) 
+     result = ASList.new(val[1]).joina(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 197)
   def _reduce_65(val, _values, result)
-     result = ASList.new(SimpleStatement.new(val[0], val[1]))               
+     result = ASList.new(SimpleStatement.new(val[0], val[1]))
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 198)
   def _reduce_66(val, _values, result)
-     result = ASList.new(SimpleStatement.new(val[2], val[3])).joina(val[0]) 
+     result = ASList.new(SimpleStatement.new(val[2], val[3])).joina(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 201)
   def _reduce_67(val, _values, result)
-     result = ProgramBlock.new(val[1]) 
+     result = ProgramBlock.new(val[1])
     result
   end
 .,.,
@@ -1176,7 +1176,7 @@ module_eval(<<'.,.,', 'retina_parser.y', 202)
 
 module_eval(<<'.,.,', 'retina_parser.y', 205)
   def _reduce_69(val, _values, result)
-     result = val[1] 
+     result = val[1]
     result
   end
 .,.,
@@ -1190,56 +1190,56 @@ module_eval(<<'.,.,', 'retina_parser.y', 206)
 
 module_eval(<<'.,.,', 'retina_parser.y', 209)
   def _reduce_71(val, _values, result)
-     result = FunctionStatement.new(val[1], val[3], val[6], val[7]) 
+     result = FunctionStatement.new(val[1], val[3], val[6], val[7])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 210)
   def _reduce_72(val, _values, result)
-     result = FunctionStatement.new(val[1], {}, val[5], val[6])     
+     result = FunctionStatement.new(val[1], {}, val[5], val[6])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 211)
   def _reduce_73(val, _values, result)
-     result = FunctionStatement.new(val[1], val[3], {}, val[5])     
+     result = FunctionStatement.new(val[1], val[3], {}, val[5])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 212)
   def _reduce_74(val, _values, result)
-     result = FunctionStatement.new(val[1], {}, {}, val[4])         
+     result = FunctionStatement.new(val[1], {}, {}, val[4])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 215)
   def _reduce_75(val, _values, result)
-     result = ASList.new(val[0])               
+     result = ASList.new(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 216)
   def _reduce_76(val, _values, result)
-     result = ASList.new(val[1]).joina(val[0]) 
+     result = ASList.new(val[1]).joina(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 219)
   def _reduce_77(val, _values, result)
-     result = ASList.new(val[0])               
+     result = ASList.new(val[0])
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 220)
   def _reduce_78(val, _values, result)
-     result = ASList.new(val[1]).joina(val[0]) 
+     result = ASList.new(val[1]).joina(val[0])
     result
   end
 .,.,

@@ -35,38 +35,38 @@ require_relative 'retina_parser'  # Librería que contiene el parser de Retina
 ####################################################################################################################################
 
 def main
-    # Check extension
-    ARGV[0] =~ /\w+\.rtn/
-    if $&.nil?; puts "Tipo de archivo no reconocido\nPor favor utilice un archivo 'file.rtn'"; return; end
-
-    # Open file as a string
+  # Check extension
+  ARGV[0] =~ /\w+\.rtn/
+  if $&.nil?; puts "Tipo de archivo no reconocido\nPor favor utilice un archivo 'file.rtn'"; return; end
+  
+  # Open file as a string
+  begin
+    input = File::read(ARGV[0])
+  rescue
+    puts "File not found"
+    return
+  end
+  
+  # Create lexer
+  $row = 1; $col = 1
+  lexer = Lexer.new input
+  
+  # Get tokens until input is empty
+  begin
+    while lexer.catch_lexeme; end
+    
     begin
-       input = File::read(ARGV[0])
-    rescue
-        puts "File not found"
-        return
+      $row = 1; $col = 1
+      lexer = Lexer.new input
+      parser = Parser.new
+      ast = parser.parse lexer
+      ast.print_ast
+      
+    rescue SyntacticError => e
+      puts e
+      return
     end
-
-    # Create lexer
-        $row = 1; $col = 1
-        lexer = Lexer.new input
-
-    # Get tokens until input is empty
-    begin
-        while lexer.catch_lexeme; end
-
-        begin
-            $row = 1; $col = 1
-            lexer = Lexer.new input
-            parser = Parser.new
-            ast = parser.parse lexer
-            ast.print_ast
-
-        rescue SyntacticError => e
-            puts e
-            return
-        end
-    end
+  end
 end
 
 ####################################################################################################################################
