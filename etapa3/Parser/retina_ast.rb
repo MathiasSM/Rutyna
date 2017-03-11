@@ -232,12 +232,27 @@ class ForBlock < AST
   def recorrer indent=""
     #        puts "#{indent}#{self.class}"
     puts "#{indent}ForBlock"
+    v,t,s = @it.recorrer indent+"|  "   if @it.respond_to? :recorrer
+    
     puts "#{indent}|  #{@it.to_str} : number"
     $stt.meta += [(SymbolTable.new())]
-    ini.recorrer indent+"|  "   if ini.respond_to? :recorrer
-    fin.recorrer indent+"|  "   if fin.respond_to? :recorrer
-    paso.recorrer indent+"|  "  if paso.respond_to? :recorrer
-    instr.recorrer indent+"|  " if instr.respond_to? :recorrer
+    v,t,s = @ini.recorrer indent+"|  "   if @ini.respond_to? :recorrer
+     if s == -1
+       $stderr.puts ContextError::new(0,"1 (Variable #{@ini.to_str} no ha sido declarada)",self.class)
+       exit 1
+     end
+    v,t,s = @fin.recorrer indent+"|  "   if @fin.respond_to? :recorrer
+     if s == -1
+       $stderr.puts ContextError::new(0,"1 (Variable #{@fin.to_str} no ha sido declarada)",self.class)
+       exit 1
+     end
+    v,t,s = @paso.recorrer indent+"|  "  if @paso.respond_to? :recorrer
+     if s == -1
+       $stderr.puts ContextError::new(0,"1 (Variable #{@paso.to_str} no ha sido declarada)",self.class)
+       exit 1
+     end
+    @instr.recorrer indent+"|  " if @instr.respond_to? :recorrer
+   
     $stt.meta.pop
   end
 end
@@ -597,7 +612,12 @@ class ReturnInstr < UnaryOperation
     @operand = "Value"
   end
   def recorrer indent=""
-    return @operand.recorrer indent+"|  "
+    v,t,s = @operand.recorrer indent+"|  "   if @operand.respond_to? :recorrer
+     if s == -1
+       $stderr.puts ContextError::new(0,"1 (Variable #{@operand.to_str} no ha sido declarada)",self.class)
+       exit 1
+     end
+    return v,t,s
   end
 end
 
@@ -659,6 +679,16 @@ class IfBlock < BinaryOperation
     @lname = "If"
     @rname = "Then"
   end
+  def recorrer indent=""
+    #        puts "#{indent}#{self.class}"
+    puts "#{indent}IfBlock"
+    v,t,s = @left.recorrer indent+"|  "   if @left.respond_to? :recorrer
+     if s == -1
+       $stderr.puts ContextError::new(0,"1 (Variable #{@left.to_str} no ha sido declarada)",self.class)
+       exit 1
+     end
+    @right.recorrer indent+"|  " if @right.respond_to? :recorrer
+  end
 end
 
 # Bloque if else
@@ -668,6 +698,17 @@ class IfElseBlock < TernaryOperation
     @cname = "Then"
     @rname = "Else"
   end
+  def recorrer indent=""
+    #        puts "#{indent}#{self.class}"
+    puts "#{indent}IfElseBlock"
+    v,t,s = @left.recorrer indent+"|  "   if @left.respond_to? :recorrer
+     if s == -1
+       $stderr.puts ContextError::new(0,"1 (Variable #{@left.to_str} no ha sido declarada)",self.class)
+       exit 1
+     end
+    @center.recorrer indent+"|  " if @center.respond_to? :recorrer
+    @right.recorrer indent+"|  " if @right.respond_to? :recorrer
+  end
 end
 
 # Bloque while
@@ -675,6 +716,17 @@ class WhileBlock < BinaryOperation
   def name
     @lname = "While"
     @rname = "Do"
+  end
+  
+  def recorrer indent=""
+    #        puts "#{indent}#{self.class}"
+    puts "#{indent}WhileBlock"
+    v,t,s = @left.recorrer indent+"|  "   if @left.respond_to? :recorrer
+     if s == -1
+       $stderr.puts ContextError::new(0,"1 (Variable #{@left.to_str} no ha sido declarada)",self.class)
+       exit 1
+     end
+    @right.recorrer indent+"|  " if @right.respond_to? :recorrer
   end
 end
 
@@ -687,15 +739,35 @@ class RepeatBlock < BinaryOperation
   def recorrer indent=""
     #        puts "#{indent}#{self.class}"
     $stt.meta += [(SymbolTable.new())]
-    @left.recorrer indent if left.respond_to? :recorrer
+    v,t,s = @left.recorrer indent if left.respond_to? :recorrer
+    if s == -1
+      $stderr.puts ContextError::new(0,"1 (Variable #{@left.to_str} no ha sido declarada)",self.class)
+      exit 1
+    end
     ret, rt = @right.recorrer indent if right.respond_to? :recorrer
     $stt.meta.pop
     return ret, rt
   end
 end
 
-class InputOperation < UnaryOperation; end  # Operaciones de entrada
-class OutputOperation < UnaryOperation; end # Operaciones de salida
+class InputOperation < UnaryOperation
+  def recorrer indent=""
+    v,t,s = @operand.recorrer indent if @operand.respond_to? :recorrer
+    if s == -1
+      $stderr.puts ContextError::new(0,"1 (Variable #{@operand.to_str} no ha sido declarada)",self.class)
+      exit 1
+    end
+  end
+end  # Operaciones de entrada
+class OutputOperation < UnaryOperation
+  def recorrer indent=""
+    v,t,s = @operand.recorrer indent if @operand.respond_to? :recorrer
+    if s == -1
+      $stderr.puts ContextError::new(0,"1 (Variable #{@operand.to_str} no ha sido declarada)",self.class)
+      exit 1
+    end
+  end
+end # Operaciones de salida
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 # Declaraciones:

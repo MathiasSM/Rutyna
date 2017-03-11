@@ -998,7 +998,7 @@ module_eval(<<'.,.,', 'retina_parser.y', 170)
 
 module_eval(<<'.,.,', 'retina_parser.y', 171)
   def _reduce_43(val, _values, result)
-     result = WithBlock.new(val[1], val[3])                    
+     result = WithBlock.new(val[1], {})                    
     result
   end
 .,.,
@@ -1012,7 +1012,7 @@ module_eval(<<'.,.,', 'retina_parser.y', 172)
 
 module_eval(<<'.,.,', 'retina_parser.y', 173)
   def _reduce_45(val, _values, result)
-     result = WithBlock.new({}, val[2])                        
+     result = WithBlock.new({}, {})                        
     result
   end
 .,.,
@@ -1033,7 +1033,7 @@ module_eval(<<'.,.,', 'retina_parser.y', 175)
 
 module_eval(<<'.,.,', 'retina_parser.y', 176)
   def _reduce_48(val, _values, result)
-     result = ForBlock.new(val[1],val[3],val[5],val[7],val[9]) 
+     result = ForBlock.new(val[1],val[3],val[5],val[7],{}) 
     result
   end
 .,.,
@@ -1047,7 +1047,7 @@ module_eval(<<'.,.,', 'retina_parser.y', 177)
 
 module_eval(<<'.,.,', 'retina_parser.y', 178)
   def _reduce_50(val, _values, result)
-     result = ForBlock.new(val[1],val[3],val[5],1,     val[7]) 
+     result = ForBlock.new(val[1],val[3],val[5],1,     {}) 
     result
   end
 .,.,
@@ -1061,7 +1061,7 @@ module_eval(<<'.,.,', 'retina_parser.y', 179)
 
 module_eval(<<'.,.,', 'retina_parser.y', 180)
   def _reduce_52(val, _values, result)
-     result = IfBlock.new(val[1], val[3])                      
+     result = IfBlock.new(val[1], {})                      
     result
   end
 .,.,
@@ -1075,21 +1075,21 @@ module_eval(<<'.,.,', 'retina_parser.y', 181)
 
 module_eval(<<'.,.,', 'retina_parser.y', 182)
   def _reduce_54(val, _values, result)
-     result = IfElseBlock.new(val[1], val[3], val[5])          
+     result = IfElseBlock.new(val[1], val[3], {})          
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 183)
   def _reduce_55(val, _values, result)
-     result = IfElseBlock.new(val[1], val[3], val[5])          
+     result = IfElseBlock.new(val[1], {}, val[4])          
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 184)
   def _reduce_56(val, _values, result)
-     result = IfElseBlock.new(val[1], val[3], val[5])          
+     result = IfElseBlock.new(val[1], {}, {})          
     result
   end
 .,.,
@@ -1103,7 +1103,7 @@ module_eval(<<'.,.,', 'retina_parser.y', 185)
 
 module_eval(<<'.,.,', 'retina_parser.y', 186)
   def _reduce_58(val, _values, result)
-     result = RepeatBlock.new(val[1], val[3])                  
+     result = RepeatBlock.new(val[1], {})                  
     result
   end
 .,.,

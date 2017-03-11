@@ -169,22 +169,22 @@ rule
   Instruction:                                                                                        { }
               | VarID '=' Expression                                                                  { result = AssignmentInstruction.new(val[0], val[2])        }
               | 'with' Statements 'do' Instructions 'end'                                             { result = WithBlock.new(val[1], val[3])                    }
-              | 'with' Statements 'do' 'end'                                                          { result = WithBlock.new(val[1], val[3])                    }
+              | 'with' Statements 'do' 'end'                                                          { result = WithBlock.new(val[1], {})                    }
               | 'with'  'do' Instructions 'end'                                                       { result = WithBlock.new({}, val[2])                        }
-              | 'with'  'do'  'end'                                                                   { result = WithBlock.new({}, val[2])                        }
+              | 'with'  'do'  'end'                                                                   { result = WithBlock.new({}, {})                        }
               | 'while' Expression 'do' Instructions 'end'                                            { result = WhileBlock.new(val[1], val[3])                   }
               | 'for' VarID 'from' Expression 'to' Expression 'by' Expression 'do' Instructions 'end' { result = ForBlock.new(val[1],val[3],val[5],val[7],val[9]) }
-              | 'for' VarID 'from' Expression 'to' Expression 'by' Expression 'do' 'end'              { result = ForBlock.new(val[1],val[3],val[5],val[7],val[9]) }
+              | 'for' VarID 'from' Expression 'to' Expression 'by' Expression 'do' 'end'              { result = ForBlock.new(val[1],val[3],val[5],val[7],{}) }
               | 'for' VarID 'from' Expression 'to' Expression 'do' Instructions 'end'                 { result = ForBlock.new(val[1],val[3],val[5],1,     val[7]) }
-              | 'for' VarID 'from' Expression 'to' Expression 'do' 'end'                              { result = ForBlock.new(val[1],val[3],val[5],1,     val[7]) }
+              | 'for' VarID 'from' Expression 'to' Expression 'do' 'end'                              { result = ForBlock.new(val[1],val[3],val[5],1,     {}) }
               | 'if' Expression 'then' Instructions 'end'                                             { result = IfBlock.new(val[1], val[3])                      }
-              | 'if' Expression 'then' 'end'                                                          { result = IfBlock.new(val[1], val[3])                      }
+              | 'if' Expression 'then' 'end'                                                          { result = IfBlock.new(val[1], {})                      }
               | 'if' Expression 'then' Instructions 'else' Instructions 'end'                         { result = IfElseBlock.new(val[1], val[3], val[5])          }
-              | 'if' Expression 'then' Instructions 'else' 'end'                                      { result = IfElseBlock.new(val[1], val[3], val[5])          }
-              | 'if' Expression 'then' 'else' Instructions 'end'                                      { result = IfElseBlock.new(val[1], val[3], val[5])          }
-              | 'if' Expression 'then' 'else' 'end'                                                   { result = IfElseBlock.new(val[1], val[3], val[5])          }
+              | 'if' Expression 'then' Instructions 'else' 'end'                                      { result = IfElseBlock.new(val[1], val[3], {})          }
+              | 'if' Expression 'then' 'else' Instructions 'end'                                      { result = IfElseBlock.new(val[1], {}, val[4])          }
+              | 'if' Expression 'then' 'else' 'end'                                                   { result = IfElseBlock.new(val[1], {}, {})          }
               | 'repeat' Expression 'times' Instructions 'end'                                        { result = RepeatBlock.new(val[1], val[3])                  }
-              | 'repeat' Expression 'times' 'end'                                                     { result = RepeatBlock.new(val[1], val[3])                  }
+              | 'repeat' Expression 'times' 'end'                                                     { result = RepeatBlock.new(val[1], {})                  }
               | 'read' VarID                                                                          { result = InputOperation.new(val[1])                       }
               | 'write' Expressions                                                                   { result = OutputOperation.new(val[1])                      }
               | 'writeln' Expressions                                                                 { result = OutputOperation.new(val[1])                      }
