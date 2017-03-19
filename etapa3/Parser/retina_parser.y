@@ -1,42 +1,45 @@
-####################################################################################################################################
-## DESCRIPCIÓN:
-####################################################################################################################################
+####################################################################################################
+## INFO:
+####################################################################################################
 
-# Código que será compilado con racc para generar el parser del lenguaje Retina.
-# Basado en los ejemplos aportados por el preparador David Lilue y siguiendo las especificaciones dadas para el proyecto del curso
-# CI-3725 de la Universidad Simón Bolívar durante el trimestre Enero-Marzo 2017.
+# DESCRIPCIÓN
+# =====================
+# GRAMMAR FILE para el lenguaje Retina. (A ser compilado con RACC)
+# Basado en los ejemplos aportados por el preparador David Lilue y siguiendo las
+# especificaciones dadas para el proyecto del curso CI-3725 de la Universidad
+# Simón Bolívar durante el trimestre Enero-Marzo 2017.
 
-####################################################################################################################################
-## AUTORES:
-####################################################################################################################################
+# AUTORES
+# =====================
+# Carlos Serrada      13-11347    cserradag96@gmail.com
+# Mathias San Miguel  13-11310    mathiassanmiguel@gmail.com
 
-# Carlos Serrada, 13-11347, cserradag96@gmail.com
-# Mathias San Miguel, 13-11310, mathiassanmiguel@gmail.com
 
-####################################################################################################################################
+
+####################################################################################################
 ## DECLARACIÓN DEL PARSER:
-####################################################################################################################################
-
+####################################################################################################
 class Parser
   # Lista de tokens
-  token '==' '/=' '>=' '<=' '>' '<' '->' '+' '-' '*' '/' '%' 'mod' 'div' '=' '(' ')' ';' ',' 'not' 'and' 'or' 'true' 'false' 'program' 'end' 'with' 'do' 'while' 'if' 'then' 'else' 'for' 'from' 'by' 'to' 'repeat' 'times' 'func' 'begin' 'return' 'boolean' 'number' 'read' 'write' 'writeln' 'num' 'funid' 'varid' 'str' UMINUS
+  token '==' '/=' '>=' '<=' '>' '<' '->' '+' '-' '*' '/' '%' mod div '=' '(' ')' ';' ',' not and or true false program 'end' with do while if then else for from by to repeat times func begin return boolean number read write writeln NumberLiteral FunctionID VariableID StringLiteral UMINUS
 
-  # Tabla de presedencia
+  # Tabla de precedencia
   prechigh
-    right 'not' UMINUS
-    left '*' '/' 'div' 'mod' '%'
+    right not UMINUS
+    right '-'
+    left '*' '/' div mod '%'
     left '+' '-'
     noassoc '<=' '>=' '<' '>'
     left '==' '/='
-    left 'or'
-    left 'and'
+    left or
+    left and
   preclow
 
   # Lista de conversiones de tokens a clases
   convert
     # Tipos
-    'boolean' 'Boolean'
-    'number'  'Number'
+    boolean 'Boolean'
+    number  'Number'
 
     # Operadores de comparación
     '==' 'Equal'
@@ -55,8 +58,8 @@ class Parser
     '*'   'Asterisk'
     '/'   'Slash'
     '%'   'Percent'
-    'mod' 'Mod'
-    'div' 'Div'
+    mod 'Mod'
+    div 'Div'
 
     # Signos
     '=' 'Assignment'
@@ -66,185 +69,191 @@ class Parser
     ',' 'Comma'
 
     # Operadores lógicos
-    'not' 'Not'
-    'and' 'And'
-    'or'  'Or'
+    not 'Not'
+    and 'And'
+    or  'Or'
 
     # Constantes booleanas
-    'true'  'True'
-    'false' 'False'
+    true  'True'
+    false 'False'
 
     # Bloques
-    'program' 'Program'
+    program 'Program'
     'end'     'End'
-    'with'    'With'
-    'do'      'Do'
-    'while'   'While'
-    'if'      'If'
-    'then'    'Then'
-    'else'    'Else'
-    'for'     'For'
-    'from'    'From'
-    'by'      'By'
-    'to'      'To'
-    'repeat'  'Repeat'
-    'times'   'Times'
-    'func'    'Function'
-    'begin'   'Begin'
-    'return'  'Return'
+    with    'With'
+    do      'Do'
+    while   'While'
+    if      'If'
+    then    'Then'
+    else    'Else'
+    for     'For'
+    from    'From'
+    by      'By'
+    to      'To'
+    repeat  'Repeat'
+    times   'Times'
+    func    'Function'
+    begin   'Begin'
+    return  'Return'
 
     # Métodos de Entrada/Salida
-    'read'    'Read'
-    'write'   'Write'
-    'writeln' 'WriteLine'
+    read    'Read'
+    write   'Write'
+    writeln 'WriteLine'
 
     # Literales e identificadores
-    'num'   'NumberLiteral'
-    'funid' 'FunctionIdentifier'
-    'varid' 'VariableIdentifier'
-    'str'   'StringLiteral'
+    NumberLiteral  'NumberLiteral'
+    FunctionID     'FunctionIdentifier'
+    VariableID     'VariableIdentifier'
+    StringLiteral  'StringLiteral'
 end
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 ## Reglas de la gramática:
 #-----------------------------------------------------------------------------------------------------------------------------------
 
-start Retina
+start RETINA
 
 rule
-  Expression:   'num'                       { result = SingleNumber.new(val[0])                    }
-              | 'true'                      { result = SingleBoolean.new(val[0])                   }
-              | 'false'                     { result = SingleBoolean.new(val[0])                   }
-              | 'str'                       { result = SingleString.new(val[0])                    }
-              | VarID                       { result = val[0]                                      }
-              | FunID                       { result = val[0]                                      }
-              | FunID '(' Expressions ')'   { result = FunctionCall.new(val[0], val[2])            }
-              | FunID '(' ')'               { result = FunctionCall.new(val[0], {})                }
-              | '(' Expression ')'          { result = val[1]                                      }
-              | '-' Expression = UMINUS     { result = UnaryMinusOperation.new(val[1])             }
-              | 'not' Expression            { result = NegationOperation.new(val[1])               }
-              | Expression '*' Expression   { result = MultiplicationOperation.new(val[0], val[2]) }
-              | Expression '/' Expression   { result = DivisionOperation.new(val[0], val[2])       }
-              | Expression 'div' Expression { result = IntDivisionOperation.new(val[0], val[2])    }
-              | Expression 'mod' Expression { result = ModulusOperation.new(val[0], val[2])        }
-              | Expression '%' Expression   { result = ExactModulusOperation.new(val[0], val[2])   }
-              | Expression '+' Expression   { result = AdditionOperation.new(val[0], val[2])       }
-              | Expression '-' Expression   { result = SubtractionOperation.new(val[0], val[2])    }
-              | Expression '==' Expression  { result = EquivalentOperation.new(val[0], val[2])     }
-              | Expression '/=' Expression  { result = DifferentOperation.new(val[0], val[2])      }
-              | Expression '<=' Expression  { result = LessOrEqualOperation.new(val[0], val[2])    }
-              | Expression '>=' Expression  { result = GreaterOrEqualOperation.new(val[0], val[2]) }
-              | Expression '<' Expression   { result = LessOperation.new(val[0], val[2])           }
-              | Expression '>' Expression   { result = GreaterOperation.new(val[0], val[2])        }
-              | Expression 'or' Expression  { result = DisjunctionOperation.new(val[0], val[2])    }
-              | Expression 'and' Expression { result = ConjunctionOperation.new(val[0], val[2])    }
+  EXPRESSION:   NumberLiteral                                                               { result = Nodo_LitNumber.new( val[0] ) }
+              | true                                                                        { result = Nodo_LitBoolean.new( val[0] ) }
+              | false                                                                       { result = Nodo_LitBoolean.new( val[0] ) }
+              | StringLiteral                                                               { result = Nodo_LitString.new( val[0] ) }
+              | VariableID                                                                  { result = Nodo_LlamaVariable.new( val[0] ) }
+              | FunctionID '(' EXPRESSIONs ')'                                              { result = Nodo_LlamaFuncion.new( val[0], val[2] ) }
+              | FunctionID '(' ')'                                                          { result = Nodo_LlamaFuncion.new( val[0], Nodo_Lista.new() ) }
+              | '(' EXPRESSION ')'                                                          { result = val[1] }
+              
+              | '-' EXPRESSION = UMINUS                                                     { result = Nodo_UMINUS.new( val[1] ) }
+              | not EXPRESSION                                                              { result = Nodo_Not.new( val[1] ) }
+              
+              | EXPRESSION '*' EXPRESSION                                                   { result = Nodo_Multiplicacion.new( val[0], val[2] ) }
+              | EXPRESSION '/' EXPRESSION                                                   { result = Nodo_DivisionReal.new( val[0], val[2] ) }
+              | EXPRESSION div EXPRESSION                                                   { result = Nodo_DivisionEntera.new( val[0], val[2] ) }
+              | EXPRESSION mod EXPRESSION                                                   { result = Nodo_ModuloEntero.new( val[0], val[2] ) }
+              | EXPRESSION '%' EXPRESSION                                                   { result = Nodo_ModuloReal.new( val[0], val[2] ) }
+              | EXPRESSION '+' EXPRESSION                                                   { result = Nodo_Suma.new( val[0], val[2] ) }
+              | EXPRESSION '-' EXPRESSION                                                   { result = Nodo_Resta.new( val[0], val[2] ) }
+              
+              | EXPRESSION '==' EXPRESSION                                                  { result = Nodo_IgualQue.new(val[0], val[2]) }
+              | EXPRESSION '/=' EXPRESSION                                                  { result = Nodo_DiferenteDe.new(val[0], val[2]) }
+              
+              | EXPRESSION '<=' EXPRESSION                                                  { result = Nodo_MenorIgualQue.new(val[0], val[2]) }
+              | EXPRESSION '>=' EXPRESSION                                                  { result = Nodo_MayorIgualQue.new(val[0], val[2]) }
+              | EXPRESSION '<' EXPRESSION                                                   { result = Nodo_MenorQue.new( val[0], val[2] ) }
+              | EXPRESSION '>' EXPRESSION                                                   { result = Nodo_MayorQue.new( val[0], val[2] ) }
+              
+              | EXPRESSION or EXPRESSION                                                    { result = Nodo_O.new( val[0], val[2] ) }
+              | EXPRESSION and EXPRESSION                                                   { result = Nodo_Y.new( val[0], val[2] ) }
   ;
 
-  Expressions:  Expression                 { result = ASList.new(val[0])               }
-              | Expressions ',' Expression { result = ASList.new(val[2]).joina(val[0]) }
+  EXPRESSIONs:  EXPRESSION                                                                  { result = Nodo_Lista.new( val[0] ) }
+              | EXPRESSIONs ',' EXPRESSION                                                  { result = Nodo_Lista.new(val[2]).appendTo( val[0] ) }
   ;
 
-  VarID:        'varid'   { result = VariableName.new(val[0]) }
-  ;
-
-  FunID:        'funid'   { result = FunctionName.new(val[0]) }
-  ;
-
-  Datatype:     'boolean' { result = Type.new(val[0]) }
-              | 'number'  { result = Type.new(val[0]) }
+  VARID:        VariableID                                                                  { result = Nodo_VariableNewName.new( val[0] ) }
   ;
   
-  VarIDs:        VarID            { result = VarList.new(val[0]) }
-              | VarIDs ',' VarID  { result = VarList.new(val[2]).joina(val[0]) }
+  VARIDs:       VARID                                                                       { result = Nodo_Lista.new( val[0] ) }
+              | VARIDs ',' VARID                                                            { result = Nodo_Lista.new( val[2] ).appendTo( val[0] ) }
 
-  Statement:    Datatype VarIDs               { result = MultiStatement.new(val[0], val[1])             }
-              | Datatype VarID '=' Expression { result = AssignmentStatement.new(val[0], val[1], val[3]) }
-              |                               { }
-  ;
 
-  Statements:   Statement ';'                 { result = ASList.new(val[0])               }
-              | Statements Statement ';'      { result = ASList.new(val[1]).joina(val[0]) }
-  ;
-
-  Instruction:                                                                                        { }
-              | VarID '=' Expression                                                                  { result = AssignmentInstruction.new(val[0], val[2])        }
-              | 'with' Statements 'do' Instructions 'end'                                             { result = WithBlock.new(val[1], val[3])                    }
-              | 'with' Statements 'do' 'end'                                                          { result = WithBlock.new(val[1], {})                    }
-              | 'with'  'do' Instructions 'end'                                                       { result = WithBlock.new({}, val[2])                        }
-              | 'with'  'do'  'end'                                                                   { result = WithBlock.new({}, {})                        }
-              | 'while' Expression 'do' Instructions 'end'                                            { result = WhileBlock.new(val[1], val[3])                   }
-              | 'for' VarID 'from' Expression 'to' Expression 'by' Expression 'do' Instructions 'end' { result = ForBlock.new(val[1],val[3],val[5],val[7],val[9]) }
-              | 'for' VarID 'from' Expression 'to' Expression 'by' Expression 'do' 'end'              { result = ForBlock.new(val[1],val[3],val[5],val[7],{}) }
-              | 'for' VarID 'from' Expression 'to' Expression 'do' Instructions 'end'                 { result = ForBlock.new(val[1],val[3],val[5],1,     val[7]) }
-              | 'for' VarID 'from' Expression 'to' Expression 'do' 'end'                              { result = ForBlock.new(val[1],val[3],val[5],1,     {}) }
-              | 'if' Expression 'then' Instructions 'end'                                             { result = IfBlock.new(val[1], val[3])                      }
-              | 'if' Expression 'then' 'end'                                                          { result = IfBlock.new(val[1], {})                      }
-              | 'if' Expression 'then' Instructions 'else' Instructions 'end'                         { result = IfElseBlock.new(val[1], val[3], val[5])          }
-              | 'if' Expression 'then' Instructions 'else' 'end'                                      { result = IfElseBlock.new(val[1], val[3], {})          }
-              | 'if' Expression 'then' 'else' Instructions 'end'                                      { result = IfElseBlock.new(val[1], {}, val[4])          }
-              | 'if' Expression 'then' 'else' 'end'                                                   { result = IfElseBlock.new(val[1], {}, {})          }
-              | 'repeat' Expression 'times' Instructions 'end'                                        { result = RepeatBlock.new(val[1], val[3])                  }
-              | 'repeat' Expression 'times' 'end'                                                     { result = RepeatBlock.new(val[1], {})                  }
-              | 'read' VarID                                                                          { result = InputOperation.new(val[1])                       }
-              | 'write' Expressions                                                                   { result = OutputOperation.new(val[1])                      }
-              | 'writeln' Expressions                                                                 { result = OutputOperation.new(val[1])                      }
-              | 'return' Expression                                                                   { result = ReturnInstr.new(val[1])                          }
-              | FunID '(' Expressions ')'   { result = FunctionCall.new(val[0], val[2])            }
-              | FunID '(' ')'               { result = FunctionCall.new(val[0], {})                }
-  ;
-
-  Instructions: Instruction ';'              { result = ASList.new(val[0])               }
-              | Instructions Instruction ';' { result = ASList.new(val[1]).joina(val[0]) }
-  ;
-
-  Params:       Datatype VarID                 { result = ASList.new(SimpleStatement.new(val[0], val[1]))               }
-              | Params ',' Datatype VarID      { result = ASList.new(SimpleStatement.new(val[2], val[3])).joina(val[0]) }
-  ;
-
-  Program:      'program' Instructions 'end'  { result = ProgramBlock.new(val[1]) }
-              | 'program' 'end'               {  }
+  DATATYPE:     boolean                                                                     { result = val[0] }
+              | number                                                                      { result = val[0] }
   ;
   
-  BeginEnd:     'begin' Instructions 'end'    { result = val[1] }
-              | 'begin' 'end'                 { }
+  STATEMENT:    DATATYPE VARIDs                                                             { result = Nodo_DeclaracionMultiple.new(val[0], val[1]) }
+              | DATATYPE VARID '=' EXPRESSION                                               { result = Nodo_DeclaracionCompleta.new(val[0], val[1], val[3]) }
   ;
 
-  Function:     'func' FunID '(' Params ')' '->' Datatype BeginEnd  { result = FunctionStatement.new(val[1], val[3], val[6], val[7]) }
-              | 'func' FunID '(' ')' '->' Datatype BeginEnd         { result = FunctionStatement.new(val[1], {}, val[5], val[6])     }
-              | 'func' FunID '(' Params ')' BeginEnd                { result = FunctionStatement.new(val[1], val[3], {}, val[5])     }
-              | 'func' FunID '(' ')' BeginEnd                       { result = FunctionStatement.new(val[1], {}, {}, val[4])         }
+  STATEMENTs:   STATEMENT ';'                                                               { result = Nodo_Lista.new(val[0]) }
+              | STATEMENTs STATEMENT ';'                                                    { result = Nodo_Lista.new(val[1]).appendTo(val[0]) }
   ;
 
-  Functions: Function ';'              { result = ASList.new(val[0])               }
-              | Functions Function ';' { result = ASList.new(val[1]).joina(val[0]) }
+  INSTRUCTION:                                                                              { result = Nodo_Nulo.new }
+              | VARID '=' EXPRESSION                                                        { result = Nodo_Asignacion.new(              val[0],              val[2] ) }
+              | with STATEMENTs do INSTRUCTIONs 'end'                                       { result = Nodo_BloqueWith.new(              val[1],              val[3] ) }
+              | with STATEMENTs do 'end'                                                    { result = Nodo_BloqueWith.new(              val[1], Nodo_Lista.new(nil) ) }
+              | with  do INSTRUCTIONs 'end'                                                 { result = Nodo_BloqueWith.new( Nodo_Lista.new(nil),              val[2] ) }
+              | with  do  'end'                                                             { result = Nodo_BloqueWith.new( Nodo_Lista.new(nil), Nodo_Lista.new(nil) ) }
+              | while EXPRESSION do INSTRUCTIONs 'end'                                      { result = Nodo_BloqueWhile.new( val[1], val[3] ) }
+              | for VARID from EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs 'end' { result = Nodo_BloqueFor.new( val[1], val[3], val[5],                  val[7],              val[9] ) }
+              | for VARID from EXPRESSION to EXPRESSION by EXPRESSION do 'end'              { result = Nodo_BloqueFor.new( val[1], val[3], val[5],                  val[7], Nodo_Lista.new(nil) ) }
+              | for VARID from EXPRESSION to EXPRESSION do INSTRUCTIONs 'end'               { result = Nodo_BloqueFor.new( val[1], val[3], val[5], Nodo_LitNumber.new( 1 ),              val[7] ) }
+              | for VARID from EXPRESSION to EXPRESSION do 'end'                            { result = Nodo_BloqueFor.new( val[1], val[3], val[5], Nodo_LitNumber.new( 1 ), Nodo_Lista.new(nil) ) }
+              | if EXPRESSION then INSTRUCTIONs 'end'                                       { result = Nodo_BloqueIfElse.new( val[1],              val[3], Nodo_Lista.new(nil) ) }
+              | if EXPRESSION then 'end'                                                    { result = Nodo_BloqueIfElse.new( val[1], Nodo_Lista.new(nil), Nodo_Lista.new(nil) ) }
+              | if EXPRESSION then INSTRUCTIONs else INSTRUCTIONs 'end'                     { result = Nodo_BloqueIfElse.new( val[1],              val[3],              val[5] ) }
+              | if EXPRESSION then INSTRUCTIONs else 'end'                                  { result = Nodo_BloqueIfElse.new( val[1],              val[3], Nodo_Lista.new(nil) ) }
+              | if EXPRESSION then else INSTRUCTIONs 'end'                                  { result = Nodo_BloqueIfElse.new( val[1], Nodo_Lista.new(nil),              val[4] ) }
+              | if EXPRESSION then else 'end'                                               { result = Nodo_BloqueIfElse.new( val[1], Nodo_Lista.new(nil), Nodo_Lista.new(nil) ) }
+              | repeat EXPRESSION times INSTRUCTIONs 'end'                                  { result = Nodo_BloqueRepeat.new( val[1],             val[3]  ) }
+              | repeat EXPRESSION times 'end'                                               { result = Nodo_BloqueRepeat.new( val[1], Nodo_Lista.new(nil) ) }
+              | read VariableID                                                             { result = Nodo_Read.new( val[1] ) }
+              | write EXPRESSIONs                                                           { result = Nodo_Write.new( val[1],   '' ) }
+              | writeln EXPRESSIONs                                                         { result = Nodo_Write.new( val[1], '\n' ) }
+              | return EXPRESSION                                                           { result = Nodo_Return.new( val[1] ) }
+              | FunctionID '(' EXPRESSIONs ')'                                              { result = Nodo_LlamaFuncion.new( val[0],              val[2] ) }
+              | FunctionID '(' ')'                                                          { result = Nodo_LlamaFuncion.new( val[0], Nodo_Lista.new(nil) ) }
   ;
 
-  Retina:   Program ';'                { result = ASList.new(val[0])               }
-              | Functions Program ';'  { result = ASList.new(val[1]).joina(val[0]) }
+  INSTRUCTIONs: INSTRUCTION ';'                                                             { result = Nodo_Lista.new(val[0]) }
+              | INSTRUCTIONs INSTRUCTION ';'                                                { result = Nodo_Lista.new(val[1]).appendTo(val[0]) }
   ;
 
-####################################################################################################################################
-## Declaración del resto de las clases necesarias para el manejo de parser:
-####################################################################################################################################
+  PARAMS:       DATATYPE VARID                                                              { result = Nodo_Lista.new( Nodo_DeclaracionSimple.new( val[0], val[1] ) ) }
+              | PARAMS ',' DATATYPE VARID                                                   { result = Nodo_Lista.new( Nodo_DeclaracionSimple.new( val[2], val[3] ) ).appendTo( val[0] ) }
+  ;
 
+  PROGRAM:      program INSTRUCTIONs 'end'                                                  { result = Nodo_BloqueProgram.new( val[1] ) }
+              | program 'end'                                                               { result = Nodo_BloqueProgram.new(    nil ) }
+  ;
+  
+  BEGINEND:     begin INSTRUCTIONs 'end'                                                    { result =                val[1] }
+              | begin 'end'                                                                 { result = Nodo_Lista.new( nil ) }
+  ;
+  
+  FUNID:        FunctionID                                                                  { result = Nodo_FunctionNewName.new( val[0] ) }
+  ;
+  
+  FUNCTION:     func FUNID '(' PARAMS ')' '->' DATATYPE BEGINEND                            { result = Nodo_NewFunctionBody.new( val[1],                val[3],                val[6], val[7] ) }
+              | func FUNID '(' ')' '->' DATATYPE BEGINEND                                   { result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ),                val[5], val[6] ) }
+              | func FUNID '(' PARAMS ')' BEGINEND                                          { result = Nodo_NewFunctionBody.new( val[1],                val[3], Nodo_Lista.new( nil ), val[5] ) }
+              | func FUNID '(' ')' BEGINEND                                                 { result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ), Nodo_Lista.new( nil ), val[4] ) }
+  ;
+
+  FUNCTIONs: FUNCTION ';'                                                                   { result = Nodo_Lista.new( val[0] ) }
+              | FUNCTIONs FUNCTION ';'                                                      { result = Nodo_Lista.new( val[1] ).appendTo( val[0] ) }
+  ;
+
+  RETINA:   PROGRAM ';'                                                                     { result = Nodo_Lista.new( val[0] ) }
+              | FUNCTIONs PROGRAM ';'                                                       { result = Nodo_Lista.new( val[1] ).appendTo( val[0] ) }
+  ;
+
+####################################################################################################
+## USER BLOCKS
+####################################################################################################
 ---- header
-
 require_relative "retina_lexer"  # Importar el lexer de retina
 require_relative "retina_ast"    # Importar el AST de retina
 
-# Clase para los errores de sintaxis
+# CLASE de ERROR DE SINTÁXISz
+#=======================================
 class SyntacticError < RuntimeError
-  def initialize(tok)
-    @token = tok
+  def initialize token
+    @token = token
   end
 
   def to_s
-    "Syntactic error on: #{@token}"
+    if false
+      "Error de Sintáxis: linea #{@token.row}, columna #{@token.col}: token inesperado"
+    else
+      "Error de Sintáxis: linea #{@token.row}, columna #{@token.col}: token inesperado \'#{@token.to_str}\'"
+    end
   end
 end
 
 ---- inner
-
 # Clase para captar los errores y producir una excepcion
 # generando una instancia de error de sintaxis
 def on_error(id, token, stack)
@@ -258,8 +267,7 @@ def next_token
   return [token.class,token]
 end
 
-# Función para hacer el parse del lexer con el método
-# definido por racc
+# Función para hacer el parse del lexer con el método definido por racc
 def parse(lexer)
   @yydebug = true
   @lexer = lexer
@@ -267,7 +275,3 @@ def parse(lexer)
   ast = do_parse
   return ast
 end
-
-####################################################################################################################################
-## FIN :)
-####################################################################################################################################

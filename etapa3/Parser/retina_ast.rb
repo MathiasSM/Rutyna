@@ -1,50 +1,42 @@
-####################################################################################################################################
-## DESCRIPCIÓN:
-####################################################################################################################################
+####################################################################################################
+## INFO:
+####################################################################################################
 
-# AST para el lenguaje Retina.
-# Basado en los ejemplos aportados por el preparador David Lilue y siguiendo las especificaciones dadas para el proyecto del curso
-# CI-3725 de la Universidad Simón Bolívar durante el trimestre Enero-Marzo 2017.
+# DESCRIPCIÓN
+# =====================
+# CLASE(S) para el AST del lenguaje Retina.
+# Basado en los ejemplos aportados por el preparador David Lilue y siguiendo las
+# especificaciones dadas para el proyecto del curso CI-3725 de la Universidad
+# Simón Bolívar durante el trimestre Enero-Marzo 2017.
 
-####################################################################################################################################
-## AUTORES:
-####################################################################################################################################
+# AUTORES
+# =====================
+# Carlos Serrada      13-11347    cserradag96@gmail.com
+# Mathias San Miguel  13-11310    mathiassanmiguel@gmail.com
 
-# Carlos Serrada, 13-11347, cserradag96@gmail.com
-# Mathias San Miguel, 13-11310, mathiassanmiguel@gmail.com
 
-####################################################################################################################################
-## DECLARACIÓN DE LA CLASE PRINCIPAL
-####################################################################################################################################
+####################################################################################################
+## Manejo de ERRORES DE CONTEXTO
+####################################################################################################
 
-#-----------------------------------------------------------------------------------------------------------------------------------
-# # AST (Abstract Syntaxis Tree)
-#-----------------------------------------------------------------------------------------------------------------------------------
-class AST
-  def print_ast indent=""
-    puts "#{indent}#{self.class}:"
-    
-    attrs.each do |a|
-      a.print_ast indent + "|  " if a.respond_to? :print_ast
-    end
+class ContextError < RuntimeError
+  def initialize mensaje=""
+    @mensaje = mensaje
   end
   
-  def attrs
-    instance_variables.map do |a|
-      instance_variable_get a
-    end
-  end
-  
-  
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    attrs.each do |a|
-      a.recorrer() if a.respond_to? :recorrer
-    end
+  def to_s
+    @mensaje=="" ? "Error de contexto" : "Error de contexto: #{@mensaje}"
   end
 end
 
-class Row
+
+####################################################################################################
+## TABLA DE SIMBOLOS
+####################################################################################################
+
+# VARIABLES
+# =====================
+class VarSymbol
   attr_accessor :name, :type, :value
   
   def initialize name, type=nil, value=nil
@@ -52,45 +44,52 @@ class Row
     @type = type
     @value = value
   end
-  
-  def print_row indent=""
-    puts "#{indent}#{@name} : #{@type}"
-  end
 end
 
+
+# FUNCIONES
+# =====================
+class FunSymbol < VarSymbol; end  # Se utiliza el atributo .value para el cuerpo de la función
+  
+  
+# TABLA
+# =====================
 class SymbolTable
   attr_accessor :table
   
   def initialize
-    @table = []
+    @table
   end
 end
 
-class SymbolMetaTable
+
+# LISTA DE TABLAS (mayor índice == scope más interno)
+# =====================
+class TableList
   attr_accessor :meta
   
   def initialize
-    @meta = [SymbolTable.new()]
+    @varlist = [SymbolTable.new()]  # Lista de tablas de VarSymbols
+    @funtable = SymbolTable.new()   # Una única tabla de FunSymbols
   end
   
-  def lookfor symbol
-    scope_depth = 0
-    @meta.reverse.each do |scope|
-      scope.table.each do |row|
-        if row.name == symbol
-          return scope_depth, (row.type), (row.value)
+  def lookforvar symbol_name
+    scope_dist = 0
+    @varlist.reverse.each do |scope|
+      scope.table.each do |symbol|
+        if symbol.name == symbol_name
+          return scope_dist, (symbol.type), (symbol.value)
         end
       end
-      scope_depth += 1
+      scope_dist += 1
     end
     return -1, "None", 0
   end
   
-  def lookf symbol
-    @meta[0].table.each do |row|
-     # row.print_row
-      if row.name == symbol
-        return 0, (row.type), (row.value)
+  def lookforfun symbol_name
+    @funtable.each do |function|
+      if function.name == symbol_name
+        return -1, (function.type), (function.value)
       end
     end
     return -1, "None", 0
@@ -98,111 +97,546 @@ class SymbolMetaTable
 end
 
 
-#-----------------------------------------------------------------------------------------------------------------------------------
-# # Listas de AST
-#-----------------------------------------------------------------------------------------------------------------------------------
-class ASList < AST
-  attr_accessor :l
+
+####################################################################################################
+## Abstract Syntax TREE and NODES
+####################################################################################################
+
+# AST para el árbol y AST_node para los nodos
+# =====================
+class AST
+  def initialize
+    @head = nil
+  end
+  
+  def to_s
+    @head.print_ast if @head.respond_to? :to_s
+  end
+  
+  def recorrer
+    return @head.recorrer if @head.respond_to? :recorrer
+  end
+end
+
+class NodoAST
+  def print_ast indent=""; puts "#{indent}#{self.class}:"; end
+  def recorrer; end
+end
+
+class Nodo_Nulo < NodoAST; end
+
+
+
+####################################################################################################
+## Tipos de Nodos
+####################################################################################################
+
+# Nodo LISTA de cosas
+# ======================
+# (instrucciones, variables, etc. Devuelve la lista al recorrer)
+class Nodo_Lista < NodoAST
+  attr_accessor :lista
   
   def initialize k=nil
-    if k.nil?
-      @l=[]
-    else
-      @l=[k]
-    end
+    k.nil? ? @lista=[] : @lista=[k];
   end
   
-  def print_ast indent=""
-    @l.each do |a|
-      a.print_ast indent if a.respond_to? :print_ast
-    end
-  end
-  
-  def joina asl
-    @l = asl.l + @l
+  def appendTo nl=nil
+    return self if nl.nil?
+    @lista = nl.lista + @lista
     return self
   end
   
-  def recorrer indent=""
-    r = []
-    @l.each do |a|
-      r.push((a.recorrer indent)) if a.respond_to? :recorrer
+  def recorrer
+    cosas = []
+    @lista.each do |a|
+      cosas.push a.recorrer if not a.nil?
     end
-    return r
+    return nil, cosas
   end
 end
 
-####################################################################################################################################
-## DECLARACIÓN DE LA JERARQUÍA DE CLASES DERIVADAS DE AST ENLAZADAS A LOS DESCUBRIMIENTOS DEL PARSER:
-####################################################################################################################################
 
-#-----------------------------------------------------------------------------------------------------------------------------------
-# Generalización de operaciones por catidad de elementos involucrados:
-#-----------------------------------------------------------------------------------------------------------------------------------
-
-# Declaración de la clase general para operaciones unarias
-class UnaryOperation < AST
-  attr_accessor :operand
-  
-  def initialize operand
-    @operand = operand
+# Nodos de LITERALES
+# ======================
+# (udevuelven el literal al recorrer)
+class Nodo_Literal < NodoAST
+  def initialize literal
+    @literal = literal
+  end
+  def recorrer
+    return self.class.const_get(:Tipo), @literal
   end
 end
 
-# Declaración de la clase general para operaciones binarias
-class BinaryOperation < AST
-  attr_accessor :left, :right
-  
-  def initialize lh, rh
-    @left = lh
-    @right = rh
-    @lname = "Left"
-    @rname = "Right"
+class Nodo_LitNumber < Nodo_Literal;  Tipo = "number"; end
+class Nodo_LitBoolean < Nodo_Literal; Tipo = "boolean";  end
+class Nodo_LitString < Nodo_Literal;  Tipo = "string";  end
+
+
+# Nodos de OPERACIONES (SUPER CLASES)
+# ======================
+# (unarios y binarios)
+class Nodo_OpeUnaria < NodoAST
+  def initialize op
+    @op = op
   end
-  
-  def name; end
-  
-  def print_ast indent=""
-    self.name
-    puts "#{indent}#{self.class}:"
-    puts "#{indent}|  #{@lname}:"
-    @left.print_ast  indent+"|  |  " if @left.respond_to? :print_ast
-    puts "#{indent}|  #{@rname}:"
-    @right.print_ast indent+"|  |  " if @right.respond_to? :print_ast
+  def recorrer; return nil, @op; end     # Comportamiento por defecto
+end
+
+class Nodo_OpeBinaria < NodoAST
+  def initialize op1, op2
+    @op1, @op2 = op1, op2
+  end
+  def recorrer; return nil, @op1; end    # Comportamiento por defecto
+end
+
+
+# Nodos de OPERACIONES UNARIAS
+# ======================
+class Nodo_UMINUS < Nodo_OpeUnaria
+  def recorrer
+    raise ContextError if @op.nil?
+    t, v = @op.recorrer
+    raise ContextError if t!="number"
+    return t, -v
   end
 end
 
-# Declaración de la clase general para operaciones ternarias
-class TernaryOperation < AST
-  attr_accessor :left, :center, :right
-  
-  def initialize lh, ch, rh
-    @left = lh
-    @center = ch
-    @right = rh
-    @lname = ""
-    @rname = ""
-    @cname = ""
-  end
-  
-  def name;end
-  
-  def print_ast indent=""
-    self.name
-    puts "#{indent}#{self.class}:"
-    puts "#{indent}|  #{@lname}:"
-    @left.print_ast indent+"|  |  " if @left.respond_to? :print_ast
-    puts "#{indent}|  #{@cname}:"
-    @center.print_ast indent+"|  |  " if @center.respond_to? :print_ast
-    puts "#{indent}|  #{@rname}:"
-    @right.print_ast indent+"|  |  " if @right.respond_to? :print_ast
+class Nodo_Not < Nodo_OpeUnaria
+  def recorrer
+    raise ContextError if @op.nil?
+    t, v = @op.recorrer
+    raise ContextError if t!="boolean"
+    return t, (not v)
   end
 end
 
-# Declaración de la clase especial para el bloque for
-class ForBlock < AST
-  attr_accessor :it, :ini, :fin, :paso, :instr
+
+# Nodos de OPERACIONES BINARIAS ( NUMBER x NUMBER -> NUMBER )
+# ==============================================
+class Nodo_Suma < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!="number" or t2!="number"
+    return "number", (v1+v2)
+  end
+end
+
+class Nodo_Resta < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!="number" or t2!="number"
+    return "number", (v1-v2)
+  end
+end
+
+class Nodo_Multiplicacion < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!="number" or t2!="number"
+    return "number", (v1*v2)
+  end
+end
+
+class Nodo_DivisionReal < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!="number" or t2!="number"
+    return "number", (v1/v2)
+  end
+end
+
+class Nodo_DivisionEntera < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!="number" or t2!="number"
+    return "number", (v1/v2)
+  end
+end
+
+class Nodo_ModuloEntero < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!="number" or t2!="number"
+    return "number", (v1%v2)
+  end
+end
+
+class Nodo_ModuloReal < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!="number" or t2!="number"
+    return "number", (v1%v2)
+  end
+end
+
+
+# Nodos de OPERACIONES BINARIAS ( NUMBER x NUMBER -> BOOLEAN )
+# ==============================================
+class Nodo_MenorQue < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!="number" or t2!="number"
+    return "boolean", (v1<v2)
+  end
+end
+
+class Nodo_MayorQue < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!="number" or t2!="number"
+    return "boolean", (v1>v2)
+  end
+end
+
+class Nodo_MenorIgualQue < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!="number" or t2!="number"
+    return "boolean", (v1<=v2)
+  end
+end
+
+class Nodo_MayorIgualQue < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!="number" or t2!="number"
+    return "boolean", (v1>=v2)
+  end
+end
+
+
+# Nodos de OPERACIONES BINARIAS ( BOOLEAN x BOOLEAN -> BOOLEAN )
+# ==============================================
+class Nodo_Y < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!="boolean" or t2!="boolean"
+    return "boolean", (v1 and v2)
+  end
+end
+
+class Nodo_O < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!="boolean" or t2!="boolean"
+    return "boolean", (v1 or v2)
+  end
+end
+
+
+# Nodos de OPERACIONES BINARIAS ( num/bool x num/bool -> BOOLEAN )
+# ==============================================
+class Nodo_IgualQue < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!=t2
+    return "boolean", (v1==v2)
+  end
+end
+
+class Nodo_DiferenteDe < Nodo_OpeBinaria
+  def recorrer
+    raise ContextError if @op1.nil? or @op2.nil?
+    t1, v1 = @op1.recorrer
+    t2, v2 = @op2.recorrer
+    raise ContextError if t1!=t2
+    return "boolean", (v1!=v2)
+  end
+end
+
+
+# Nodos de INSTRUCCIONES SIMPLES
+# ==============================================
+class Nodo_Asignacion < NodoAST
+  def initialize quien, conque
+    @quien, @conque = quien, conque
+  end
+  def recorrer
+    raise ContextError if @quien.nil? or @conque.nil?
+    t1, v1 = @quien.recorrer
+    t2, v2 = @conque.recorrer
+    raise ContextError if t1!=t2
+    # Setear el nuevo valor de la variable de la tabla correspondiente
+    return t1, v2
+  end
+end
+
+class Nodo_Return < NodoAST
+  def initialize que
+    @que = que
+  end
+  def recorrer
+    raise ContextError if @que.nil?
+    # Debería lanzarle el return value a alguien PERO D= no sé como
+    return @que.recorrer
+  end
+end
+
+
+# Nodos de INSTRUCCIONES DE IO
+# ==============================================
+class Nodo_Read < NodoAST
+  def initialize que
+    @que = que
+  end
+  def recorrer
+    raise ContextError if @que.nil?
+    cosa = @que
+    #i = gets
+    # set value of symbol COSA to i.to_type
+    return nil, "READ"
+  end
+end
+
+class Nodo_Write < NodoAST
+  def initialize que, sep
+    @que = que
+    @sep = sep
+  end
+  def recorrer
+    raise ContextError if @que.nil?
+    cosas = @que.recorrer
+    cosas.each do |cosa|
+      print cosa[1] if not cosa.nil?
+    end
+    print @sep
+    return nil, "WRITE"
+  end
+end
+
+
+# Nodos de BUSQUEDAS DIRECTAS EN TABLAS
+# ==============================================
+class Nodo_LlamaFuncion < NodoAST
+  def initialize name, args
+    @name, @args = name, args
+  end
+  def recorrer
+    raise ContextError if @name.nil? or @args.nil?
+    # Verificar si existe funcion
+    #return @name.ejecutar args  # ???
+    return "tipo", ""
+  end
+end
+
+class Nodo_LlamaVariable < NodoAST
+  def initialize name
+    @name = name
+  end
+  def recorrer
+    # Verificar si existe variable
+    #return @name.buscar  # ???
+    return "tipo", ""
+  end
+end
+
+class Nodo_FunctionNewName < NodoAST
+  def initialize name
+    @name = name
+  end
+  def recorrer
+    # Verificar si existe, error si es así
+    # Devuelve t, v donde v es nombre de funcion
+    return ""
+  end
+end
+
+class Nodo_VariableNewName < NodoAST
+  def initialize name
+    @name = name
+  end
+  def recorrer
+    # Verificar si existe, error si es así
+    # Devuelve t, v donde v es nombre de variable
+    return ""
+  end
+end
+
+
+# Nodos de DECLARACIONES
+# ==============================================
+class Nodo_DeclaracionSimple < NodoAST
+  def initialize tipo, varid
+    @tipo = tipo
+    @varid = varid
+  end
   
+  def recorrer
+    nombre = @varid.recorrer
+    # Añadir variable a tabla con tippo @tipo (es un string)
+    
+    #PORSIA
+    # if @left.to_str == "number"
+    #   v = 0
+    # else
+    #   v = false
+    # end
+    # $stt.meta[-1].table += [Row.new(@right.to_str, @left.to_str, v)]
+    # $stt.meta[-1].table[-1].print_row indent
+  end
+end
+
+class Nodo_DeclaracionMultiple < NodoAST
+  def initialize tipo, varids
+    @tipo = tipo
+    @varids = varids
+  end
+  
+  def recorrer
+    nombres = @varid.recorrer if not @varid.nil?
+    # Añadir variables a tabla con tipo @tipo (es un string)
+    # @varid es tipo Nodo_Lista y al recorrer devuelve [blah,blah]
+    
+    #PORSIA
+    # if @left.to_str == "number"
+    #   v = 0
+    # else
+    #   v = false
+    # end
+    # $stt.meta[-1].table += [Row.new(@right.to_str, @left.to_str, v)]
+    # $stt.meta[-1].table[-1].print_row indent
+  end
+end
+
+class Nodo_DeclaracionCompleta < NodoAST
+  def initialize tipo, quien, que
+    @tipo = tipo
+    @quien = quien
+    @que = que
+  end
+  
+  def recorrer
+    nombre = @quien.recorrer
+    valor = @que.recorrer
+    
+    # Añadir variable a tabla con tipo @tipo (es un string) y valor valor
+    # nombre es string, tambien
+    
+    #PORSIA
+    # if @left.to_str == "number"
+    #   v = 0
+    # else
+    #   v = false
+    # end
+    # $stt.meta[-1].table += [Row.new(@right.to_str, @left.to_str, v)]
+    # $stt.meta[-1].table[-1].print_row indent
+  end
+end
+
+class Nodo_NewFunctionBody < NodoAST
+  def initialize id, param, type, instr
+    @id = id
+    @param = param
+    @type = type
+    @instr = instr
+  end
+
+  def recorrer
+    nombre = @id.recorrer
+    parametros = @param.recorrer
+    # Añadir funcion a tabla de simbolos.
+    # Verificar que interno está todo bien.
+    # Guardar de alguna forma las instrucciones para cuando sea llamada
+  end
+end
+
+
+# Nodos de BLOQUES
+# ==============================================
+class Nodo_Bloque < NodoAST
+  def recorrer
+    #abrir_scope
+    self.recorrer_body
+    #cerrar_scope
+    return nil, nil
+  end
+  def recorrer_body; end
+end
+
+class Nodo_BloqueRepeat < Nodo_Bloque
+  def initialize t, i
+    @times = t
+    @instructions = i
+  end
+  def recorrer_body
+    raise ContextError if @times.nil? or @instructions.nil?
+    t,v = @times.recorrer
+    v = v.to_i
+    raise ContextError if t!="number"
+    raise ContextError if v<0
+    while v>0
+      @instructions.recorrer
+      v-=1
+    end
+  end
+end
+
+class Nodo_BloqueWhile < Nodo_Bloque
+  def initialize e, i
+    @expression = e
+    @instructions = i
+  end
+  def recorrer_body
+    raise ContextError if @expression.nil? or @instructions.nil?
+    t,v = @expression.recorrer
+    raise ContextError if t!="boolean"
+    can = (v=="true")
+    while can
+      @instructions.recorrer
+      can = @expression.recorrer[1]
+    end
+  end
+end
+
+class Nodo_BloqueIfElse < Nodo_Bloque
+  def initialize i, t, e
+    @if = i
+    @then = t
+    @else = e
+  end
+  def recorrer_body
+    raise ContextError if @if.nil? or @then.nil? or @else.nil?
+    t,v = @if.recorrer
+    raise ContextError if t!="boolean"
+    if v == "true"
+      @then.recorrer
+    else
+      @else.recorrer
+    end
+  end
+end
+
+class Nodo_BloqueFor < Nodo_Bloque
   def initialize it, ini, fin, paso, instr
     @it = it
     @ini = ini
@@ -210,745 +644,42 @@ class ForBlock < AST
     @paso = paso
     @instr = instr
   end
-  
-  def print_ast indent=""
-    puts "#{indent}#{self.class}:"
-    puts "#{indent}|  Iterator:"
-    @it.print_ast indent+"|  |  " if @it.respond_to? :print_ast
-    puts "#{indent}|  From:"
-    @ini.print_ast indent+"|  |  " if @ini.respond_to? :print_ast
-    puts "#{indent}|  To:"
-    @fin.print_ast indent+"|  |  " if @fin.respond_to? :print_ast
-    puts "#{indent}|  Step:"
-    if @paso.respond_to? :print_ast
-      @paso.print_ast indent+"|  |  "
-    else
-      puts indent+"|  |  1"
-    end
-    puts "#{indent}|  Intructions:"
-    @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast
-  end
-  
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    puts "#{indent}ForBlock"
-    v,t,s = @it.recorrer indent+"|  "   if @it.respond_to? :recorrer
+  def recorrer_body
+    raise ContextError if @it.nil? or @ini.nil? or @fin.nil? or @paso.nil? or @instr.nil?
+    iterador = @it.recorrer
     
-    puts "#{indent}|  #{@it.to_str} : number"
-    $stt.meta += [(SymbolTable.new())]
-    v,t,s = @ini.recorrer indent+"|  "   if @ini.respond_to? :recorrer
-     if s == -1
-       $stderr.puts ContextError::new(0,"1 (Variable #{@ini.to_str} no ha sido declarada)",self.class)
-       exit 1
-     end
-    v,t,s = @fin.recorrer indent+"|  "   if @fin.respond_to? :recorrer
-     if s == -1
-       $stderr.puts ContextError::new(0,"1 (Variable #{@fin.to_str} no ha sido declarada)",self.class)
-       exit 1
-     end
-    v,t,s = @paso.recorrer indent+"|  "  if @paso.respond_to? :recorrer
-     if s == -1
-       $stderr.puts ContextError::new(0,"1 (Variable #{@paso.to_str} no ha sido declarada)",self.class)
-       exit 1
-     end
-    @instr.recorrer indent+"|  " if @instr.respond_to? :recorrer
-   
-    $stt.meta.pop
-  end
-end
-
-#-----------------------------------------------------------------------------------------------------------------------------------
-# Expresiones:
-#-----------------------------------------------------------------------------------------------------------------------------------
-
-# Declaración de la clase para expresiones del tipo Number
-class SingleNumber < AST
-  attr_accessor :number
-  
-  def initialize number
-    @number = number
-  end
-  
-  def print_ast indent=""
-    puts "#{indent}#{self.class}: #{@number.to_str}"
-  end
-  
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    return @number.to_str.to_f, "number" # Valor, Tipo
-  end
-end
-
-# Declaración de la clase para expresiones del tipo String
-class SingleString < AST
-  attr_accessor :string
-  
-  def initialize string
-    @string = string
-  end
-  
-  def print_ast indent=""
-    puts "#{indent}#{self.class}: #{@string.to_str}"
-  end
-  
-  def recorrer indent=""
-    return @string.to_str # Valor
-  end
-  
-  def to_str
-    "#{@string.to_str}"
-  end
-end
-
-# Declaración de la clase para expresiones del tipo Boolean
-class SingleBoolean < AST
-  attr_accessor :boolean
-  
-  def initialize boolean
-    @boolean = boolean
-  end
-  
-  def print_ast indent=""
-    puts "#{indent}#{self.class}: #{@boolean.to_str}"
-  end
-  
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    return (@boolean.to_str == "true"), "boolean" # Valor, Tipo
-  end
-end
-
-# Declaración de las clases individuales para las operaciones booleanas
-class NegationOperation < UnaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v,t = @operand.recorrer indent
-    if t != "boolean"
-      $stderr.puts ContextError::new(t,"boolean",self.class)
-      exit 1
-    else
-      return (not v), "boolean" # Valor, Tipo
-    end
-  end
-end        # Negación
-class ConjunctionOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != "boolean"
-      $stderr.puts ContextError::new(t1,"boolean",self.class)
-      exit 1
-    elsif t2!="boolean"
-      $stderr.puts ContextError::new(t2,"boolean",self.class)
-      exit 1
-    else
-      return (v1 and v2), "boolean" # Valor, Tipo
-    end
-  end
-end    # Conjunción
-class DisjunctionOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != "boolean"
-      $stderr.puts ContextError::new(t1,"boolean",self.class)
-      exit 1
-    elsif t2!="boolean"
-      $stderr.puts ContextError::new(t2,"boolean",self.class)
-      exit 1
-    else
-      return (v1 or v2), "boolean" # Valor, Tipo
-    end
-  end
-end    # Disyunción
-class EquivalentOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != t2
-      $stderr.puts ContextError::new(t1,t2,0)
-      exit 1
-    else
-      return (v1 == v2), "boolean" # Valor, Tipo
-    end
-  end
-end     # Equivalencia
-class DifferentOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != t2
-      $stderr.puts ContextError::new(t1,t2,0)
-      exit 1
-    else
-      return (v1 != v2), "boolean" # Valor, Tipo
-    end
-  end
-end       # Diferencia
-class GreaterOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != "number"
-      $stderr.puts ContextError::new(t1,"number",self.class)
-      exit 1
-    elsif t2!="number"
-      $stderr.puts ContextError::new(t2,"number",self.class)
-      exit 1
-    else
-      return (v1 > v2), "boolean" # Valor, Tipo
-    end
-  end
-end        # Mayor que
-class LessOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1,s1 = @left.recorrer indent
-    v2,t2,s2 = @right.recorrer indent
-    if t1 != "number"
-      $stderr.puts ContextError::new(t1,"number",self.class)
-      exit 1
-    elsif t2!="number"
-      $stderr.puts ContextError::new(t2,"number",self.class)
-      exit 1
-    else
-      return (v1 < v2), "boolean" # Valor, Tipo
-    end
-  end
-end           # Menor que
-class GreaterOrEqualOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != "number"
-      $stderr.puts ContextError::new(t1,"number",self.class)
-      exit 1
-    elsif t2!="number"
-      $stderr.puts ContextError::new(t2,"number",self.class)
-      exit 1
-    else
-      return (v1 >= v2), "boolean" # Valor, Tipo
-    end
-  end
-end # Mayor o igual que
-class LessOrEqualOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != "number"
-      $stderr.puts ContextError::new(t1,"number",self.class)
-      exit 1
-    elsif t2!="number"
-      $stderr.puts ContextError::new(t2,"number",self.class)
-      exit 1
-    else
-      return (v1 <= v2), "boolean" # Valor, Tipo
-    end
-  end
-end    # Menor o igual que
-
-# Declaración de las clases individuales para las operaciones aritmeticas
-class UnaryMinusOperation < UnaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v,t = @operand.recorrer indent
-    if t != "number"
-      $stderr.puts ContextError::new(t,"number",self.class)
-      exit 1
-    else
-      return (-v), "number"
-    end
-  end
-end      # Menos unitario
-class AdditionOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != "number"
-      $stderr.puts ContextError::new(t1,"number",self.class)
-      exit 1
-    elsif t2!="number"
-      $stderr.puts ContextError::new(t2,"number",self.class)
-      exit 1
-    else
-      return (v1 + v2), "number" # Valor, Tipo
-    end
-  end
-end       # Suma
-class SubtractionOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != "number"
-      $stderr.puts ContextError::new(t1,"number",self.class)
-      exit 1
-    elsif t2!="number"
-      $stderr.puts ContextError::new(t2,"number",self.class)
-      exit 1
-    else
-      return (v1 - v2), "number" # Valor, Tipo
-    end
-  end
-end    # Resta
-class MultiplicationOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != "number"
-      $stderr.puts ContextError::new(t1,"number",self.class)
-      exit 1
-    elsif t2!="number"
-      $stderr.puts ContextError::new(t2,"number",self.class)
-      exit 1
-    else
-      return (v1 * v2), "number" # Valor, Tipo
-    end
-  end
-end # Multiplicación
-class DivisionOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != "number"
-      $stderr.puts ContextError::new("#{t1.to_str}","number",self.class)
-      exit 1
-    elsif t2!="number"
-      $stderr.puts ContextError::new("#{t2.to_str}","number",self.class)
-      exit 1
-    else
-      return (v1 / v2), "number" # Valor, Tipo
-    end
-  end
-end       # División
-class IntDivisionOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != "number"
-      $stderr.puts ContextError::new(t1,"number",self.class)
-      exit 1
-    elsif t2!="number"
-      $stderr.puts ContextError::new(t2,"number",self.class)
-      exit 1
-    else
-      return (v1 / v2), "number" # Valor, Tipo
-    end
-  end
-end    # División entera
-class ModulusOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != "number"
-      $stderr.puts ContextError::new(t1,"number",self.class)
-      exit 1
-    elsif t2!="number"
-      $stderr.puts ContextError::new(t2,"number",self.class)
-      exit 1
-    else
-      return (v1 % v2), "number" # Valor, Tipo
-    end
-  end
-end        # Modulo
-class ExactModulusOperation < BinaryOperation
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    v1,t1 = @left.recorrer indent
-    v2,t2 = @right.recorrer indent
-    if t1 != "number"
-      $stderr.puts ContextError::new(t1,"number",self.class)
-      exit 1
-    elsif t2!="number"
-      $stderr.puts ContextError::new(t2,"number",self.class)
-      exit 1
-    else
-      return (v1 % v2), "number" # Valor, Tipo
-    end
-  end
-end   # Modulo exacto
-
-#-----------------------------------------------------------------------------------------------------------------------------------
-# Instrucciones:
-#-----------------------------------------------------------------------------------------------------------------------------------
-
-# Asignación
-class AssignmentInstruction < BinaryOperation
-  def name
-    @lname = "VarID"
-    @rname = "Value"
-  end
-  
-  def recorrer indent=""
-    v,t = @right.recorrer indent+"|  " if @right.respond_to? :recorrer
+    ti, vi = @ini.recorrer
+    raise ContextError if ti!="number"
+    tf, vf = @fin.recorrer
+    raise ContextError if tf!="number"
     
-    scope, type, value = $stt.lookfor @left.to_str
-    
-    if scope == -1
-      $stderr.puts ContextError::new("0","1 (La variable '#{@left.to_str}' no ha sido declarada.)",self.class)
-      exit 1
-    elsif t != type
-      $stderr.puts ContextError::new("#{type}","#{t} (Error de tipo!)",self.class)
-      exit 1
+    i,f,paso = vi.to_i, vf.to_i, @paso.to_i
+    while i<f
+      # Set variable iterador en tabla to value i
+      @instr.recorrer
+      i+=paso
     end
   end
 end
 
-# Instrucción de return
-class ReturnInstr < UnaryOperation
-  def name
-    @operand = "Value"
+class Nodo_BloqueWith < Nodo_Bloque
+  def initialize vs, is
+    @variables, @instructions = vs, is
   end
-  def recorrer indent=""
-    v,t,s = @operand.recorrer indent+"|  "   if @operand.respond_to? :recorrer
-     if s == -1
-       $stderr.puts ContextError::new(0,"1 (Variable #{@operand.to_str} no ha sido declarada)",self.class)
-       exit 1
-     end
-    return v,t,s
+  def recorrer_body
+    raise ContextError if @variables.nil? or @instructions.nil?
+    @variables.recorrer
+    @instructions.recorrer
   end
 end
 
-# Llamado de función o procedimiento
-class FunctionCall < BinaryOperation
-  def name
-    @lname = "Funcion"
-    @rname = "Arguments"
+class Nodo_BloqueProgram < Nodo_Bloque
+  def initialize is
+    @instructions = is
   end
-  def recorrer indent=""
-    scope, type, value = $stt.lookf @left.to_str
-    if scope == -1
-      $stderr.puts ContextError::new("0","1 (La función '#{@left.to_str}' nunca fue declarada!)",self.class)
-      exit 1
-    end
-    return 0, type
+  def recorrer_body
+    raise ContextError if @instructions.nil?
+    @instructions.recorrer
   end
 end
-
-# Bloque program
-class ProgramBlock < AST
-  attr_accessor :instrs
   
-  def initialize instrs
-    @instrs = instrs
-  end
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    $stt.meta += [(SymbolTable.new())]
-    puts "\nPROGRAMA"
-    ret, rt = @instrs.recorrer indent="|  " if instrs.respond_to? :recorrer
-    $stt.meta.pop
-    if ret == "return"
-      $stderr.puts ContextError::new("0","1 (Program NO debe retornar nada)",self.class)
-    end
-  end
-end
-
-# Bloque with
-class WithBlock < BinaryOperation
-  def name
-    @lname = "With"
-    @rname = "Do"
-  end
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    $stt.meta += [(SymbolTable.new())]
-    puts "#{indent}WithDo"
-    @left.recorrer indent+"|  " if left.respond_to? :recorrer
-    ret, rt = @right.recorrer indent+"|  " if right.respond_to? :recorrer
-    $stt.meta.pop
-    return ret, rt
-  end
-end
-
-# Bloque if
-class IfBlock < BinaryOperation
-  def name
-    @lname = "If"
-    @rname = "Then"
-  end
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    puts "#{indent}IfBlock"
-    v,t,s = @left.recorrer indent+"|  "   if @left.respond_to? :recorrer
-     if s == -1
-       $stderr.puts ContextError::new(0,"1 (Variable #{@left.to_str} no ha sido declarada)",self.class)
-       exit 1
-     end
-    @right.recorrer indent+"|  " if @right.respond_to? :recorrer
-  end
-end
-
-# Bloque if else
-class IfElseBlock < TernaryOperation
-  def name
-    @lname = "If"
-    @cname = "Then"
-    @rname = "Else"
-  end
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    puts "#{indent}IfElseBlock"
-    v,t,s = @left.recorrer indent+"|  "   if @left.respond_to? :recorrer
-     if s == -1
-       $stderr.puts ContextError::new(0,"1 (Variable #{@left.to_str} no ha sido declarada)",self.class)
-       exit 1
-     end
-    @center.recorrer indent+"|  " if @center.respond_to? :recorrer
-    @right.recorrer indent+"|  " if @right.respond_to? :recorrer
-  end
-end
-
-# Bloque while
-class WhileBlock < BinaryOperation
-  def name
-    @lname = "While"
-    @rname = "Do"
-  end
-  
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    puts "#{indent}WhileBlock"
-    v,t,s = @left.recorrer indent+"|  "   if @left.respond_to? :recorrer
-     if s == -1
-       $stderr.puts ContextError::new(0,"1 (Variable #{@left.to_str} no ha sido declarada)",self.class)
-       exit 1
-     end
-    @right.recorrer indent+"|  " if @right.respond_to? :recorrer
-  end
-end
-
-# Bloque repeat
-class RepeatBlock < BinaryOperation
-  def name
-    @lname = "Times"
-    @rname = "Instruction"
-  end
-  def recorrer indent=""
-    #        puts "#{indent}#{self.class}"
-    $stt.meta += [(SymbolTable.new())]
-    v,t,s = @left.recorrer indent if left.respond_to? :recorrer
-    if s == -1
-      $stderr.puts ContextError::new(0,"1 (Variable #{@left.to_str} no ha sido declarada)",self.class)
-      exit 1
-    end
-    ret, rt = @right.recorrer indent if right.respond_to? :recorrer
-    $stt.meta.pop
-    return ret, rt
-  end
-end
-
-class InputOperation < UnaryOperation
-  def recorrer indent=""
-    v,t,s = @operand.recorrer indent if @operand.respond_to? :recorrer
-    if s == -1
-      $stderr.puts ContextError::new(0,"1 (Variable #{@operand.to_str} no ha sido declarada)",self.class)
-      exit 1
-    end
-  end
-end  # Operaciones de entrada
-class OutputOperation < UnaryOperation
-  def recorrer indent=""
-    v,t,s = @operand.recorrer indent if @operand.respond_to? :recorrer
-    if s == -1
-      $stderr.puts ContextError::new(0,"1 (Variable #{@operand.to_str} no ha sido declarada)",self.class)
-      exit 1
-    end
-  end
-end # Operaciones de salida
-
-#-----------------------------------------------------------------------------------------------------------------------------------
-# Declaraciones:
-#-----------------------------------------------------------------------------------------------------------------------------------
-
-# Listas de variables
-class VarList < ASList
-  attr_accessor :l
-  
-  def recorrer indent=""
-    r = []
-    @l.each do |a|
-      r.push((a)) if a.respond_to? :recorrer
-    end
-    return r
-  end
-end
-
-# Declaración de variable simple
-class SimpleStatement < BinaryOperation
-  def name
-    @lname = "Type"
-    @rname = "VarID"
-  end
-  
-  def recorrer indent=""
-    if @left.to_str == "number"
-      v = 0
-    else
-      v = false
-    end
-    $stt.meta[-1].table += [Row.new(@right.to_str, @left.to_str, v)]
-    $stt.meta[-1].table[-1].print_row indent
-  end
-end
-
-# Declaración de variables simples
-class MultiStatement < BinaryOperation
-  def name
-    @lname = "Type"
-    @rname = "VarIDs"
-  end
-  
-  def recorrer indent=""
-    vs = @right.recorrer if @right.respond_to? :recorrer
-    
-    if @left.to_str == "number"
-      vv = 0
-    else
-      vv = false
-    end
-    
-    vs.each do |v|
-      if v.recorrer[2] == 0
-        $stderr.puts ContextError::new("0", "1 (La variable '#{v.to_str}' ya fue declarada en el scope actual).", self.class)
-        exit 1
-      end
-      $stt.meta[-1].table += [Row.new(v.to_str, @left.to_str, vv)]
-      $stt.meta[-1].table[-1].print_row indent
-    end
-  end
-end
-
-# Declaración de variable con asignación
-class AssignmentStatement < TernaryOperation
-  def name
-    @lname = "Type"
-    @cname = "VarID"
-    @rname = "Value"
-  end
-  def recorrer indent=""
-    v,t = @right.recorrer indent+"|  " if @right.respond_to? :recorrer
-    
-    scope, type, value = $stt.lookfor @center.to_str
-    
-    if scope == 0
-      $stderr.puts ContextError::new("0","1 (La variable '#{@center.to_str}' ya fue declarada en el scope actual.)",self.class)
-      exit 1
-    elsif @left.to_str != t
-      $stderr.puts ContextError::new("#{@left.to_str}","#{t} (Error de tipo!)",self.class)
-      exit 1
-    end
-    $stt.meta[-1].table += [Row.new(@center.to_str, @left.to_str, v)]
-    $stt.meta[-1].table[-1].print_row indent
-  end
-end
-
-# Declaración de función
-class FunctionStatement < AST
-  attr_accessor :id, :param, :type, :instr
-  def initialize id, param, type, instr
-    @id = id
-    @param = param
-    @type = type
-    @instr = instr
-  end
-  
-  def print_ast indent=""
-    puts "#{indent}#{self.class}:"; @id.print_ast indent+"|  " if @id.respond_to? :print_ast          # Imprimir identificados
-    puts "#{indent}|  Params:";  @param.print_ast indent+"|  |  " if @param.respond_to? :print_ast    # Imprimir parametros
-    if @type.respond_to? :print_ast
-      puts "#{indent}|  Type:"; @type.print_ast indent+"|  |  "                # Imprimir tipo de dato de retorno si exists
-    else
-      puts "#{indent}|  Type: None"
-    end                                                          # Imprimir None si no retorna nada
-    puts "#{indent}|  Instr:"; @instr.print_ast indent+"|  |  " if @instr.respond_to? :print_ast      # Imprimir conjunto de instrucciones de la función
-  end
-  
-  
-  def recorrer indent=""
-    v,t,s = @id.recorrer
-    if s!=-1
-      $stderr.puts ContextError::new("0", "1 (La funcion '#{@id.to_str}' ya fue declarada", self.class)
-      exit 1
-    elsif @type == {}
-      $stt.meta[-1].table += [Row.new(@id.to_str, "None")]
-    else
-      $stt.meta[-1].table += [Row.new(@id.to_str, @type.to_str)]
-    end
-    $stt.meta[-1].table[-1].print_row indent+"\nFUNCION "
-    
-    $stt.meta += [SymbolTable.new()]
-    @param.recorrer indent+"|  " if @param.respond_to? :recorrer
-    ret, rt = @instr.recorrer indent+"|  " if @instr.respond_to? :recorrer
-    if ret == "return"
-      if rt != @type
-        $stderr.puts ContextError::new(@type,rt,self.class)
-      end
-    end
-    $stt.meta.pop
-  end
-end
-
-#-----------------------------------------------------------------------------------------------------------------------------------
-# Tipos de datos:
-#-----------------------------------------------------------------------------------------------------------------------------------
-
-class Type < SingleString
-  def print_ast indent=""
-    puts "#{indent}#{@string.to_str}"
-  end
-  
-  def to_str
-    @string.to_str
-  end
-end
-
-#-----------------------------------------------------------------------------------------------------------------------------------
-# Identificadores:
-#-----------------------------------------------------------------------------------------------------------------------------------
-
-class VariableName < SingleString
-  def recorrer indent=""
-    scope, type, value = $stt.lookfor @string.to_str
-    return value, type, scope # Valor,Tipo
-  end
-end # Variables
-class FunctionName < SingleString
-  def recorrer indent=""
-    scope, type, value = $stt.lookfor @string.to_str
-    return value, type, scope # Valor,Tipo
-  end
-end # Funciones
-
-
-###
-####
-class ContextError < RuntimeError
-  
-  def initialize v1, v2, place
-    @v1 = v1
-    @v2 = v2
-    @place = place
-  end
-  
-  def to_s
-    "Error de contexto: #{@v1} != #{@v2}. En #{@place}"
-  end
-end
-
-
-####################################################################################################################################
-## FIN :)
-####################################################################################################################################

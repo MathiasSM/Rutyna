@@ -1,36 +1,27 @@
-####################################################################################################################################
-## DESCRIPCIÓN:
-####################################################################################################################################
+####################################################################################################
+## INFO:
+####################################################################################################
 
-# Lexer para el lenguaje Retina.
-# Basado en los ejemplos aportados por el preparador David Lilue y siguiendo las especificaciones dadas para el proyecto del curso
-# CI-3725 de la Universidad Simón Bolívar durante el trimestre Enero-Marzo 2017.
+# DESCRIPCIÓN
+# =====================
+# LEXER para el lenguaje Retina.
+# Basado en los ejemplos aportados por el preparador David Lilue y siguiendo las
+# especificaciones dadas para el proyecto del curso CI-3725 de la Universidad
+# Simón Bolívar durante el trimestre Enero-Marzo 2017.
 
-####################################################################################################################################
-## AUTORES:
-####################################################################################################################################
+# AUTORES
+# =====================
+# Carlos Serrada      13-11347    cserradag96@gmail.com
+# Mathias San Miguel  13-11310    mathiassanmiguel@gmail.com
 
-# Carlos Serrada, 13-11347, cserradag96@gmail.com
-# Mathias San Miguel, 13-11310, mathiassanmiguel@gmail.com
 
-####################################################################################################################################
-## Declaración de las clases necesarias para identificar las palabras pertenencientes a Retina:
-####################################################################################################################################
+####################################################################################################
+## REGEX de las palabras pertenencientes a Retina:
+####################################################################################################
 
-# Clase Token
-class Token
-    attr_reader :t
-
-    def initialize text
-        @t = text
-    end
-
-    def to_s; "linea #{$row}, columna #{$col}: signo '#{@t}'"; end
-end
-
-# Regex para tokens, en orden.
 $tokens = {
     # Operadores de comparación
+    # ==============================
     Equal:                 /\A\=\=/,
     NotEqual:              /\A\/\=/,
     GreaterOrEqualTo:      /\A\>\=/,
@@ -39,9 +30,11 @@ $tokens = {
     LessThan:              /\A\</,
 
     # Operadores especiales
+    # ==============================
     ReturnType:            /\A\-\>/,
 
     # Operadores aritméticos
+    # ==============================
     Plus:                  /\A\+/,
     Minus:                 /\A\-/,
     Asterisk:              /\A\*/,
@@ -50,7 +43,8 @@ $tokens = {
     Mod:                   /\Amod(?![a-zA-Z0-9_])/,
     Div:                   /\Adiv(?![a-zA-Z0-9_])/,
 
-    # Signos
+    # Otros Signos
+    # ==============================
     Assignment:            /\A\=/,
     OpenRoundBracket:      /\A\(/,
     CloseRoundBracket:     /\A\)/,
@@ -58,15 +52,18 @@ $tokens = {
     Comma:                 /\A,/,
 
     # Operadores lógicos
+    # ==============================
     Not:                   /\Anot(?![a-zA-Z0-9_])/,
     And:                   /\Aand(?![a-zA-Z0-9_])/,
     Or:                    /\Aor(?![a-zA-Z0-9_])/,
 
     # Constantes booleanas
+    # ==============================
     True:                  /\Atrue(?![a-zA-Z0-9_])/,
     False:                 /\Afalse(?![a-zA-Z0-9_])/,
 
     # Bloques
+    # ==============================
     Program:               /\Aprogram(?![a-zA-Z0-9_])/,
     End:                   /\Aend(?![a-zA-Z0-9_])/,
     With:                  /\Awith(?![a-zA-Z0-9_])/,
@@ -86,181 +83,186 @@ $tokens = {
     Return:                /\Areturn(?![a-zA-Z0-9_])/,
 
     # Tipos de datos
+    # ==============================
     Boolean:               /\Aboolean(?![a-zA-Z0-9_])/,
     Number:                /\Anumber(?![a-zA-Z0-9_])/,
 
     # Métodos de Entrada/Salida
+    # ==============================
     Read:                  /\Aread(?![a-zA-Z0-9_])/,
     Write:                 /\Awrite(?![a-zA-Z0-9_])/,
     WriteLine:             /\Awriteln(?![a-zA-Z0-9_])/,
 
     # Identificadores y literales
+    # ==============================
     NumberLiteral:         /\A\d+(\.\d+)?/,
     FunctionIdentifier:    /\A[a-z][a-zA-Z0-9_]*(?=\()/,
     VariableIdentifier:    /\A[a-z][a-zA-Z0-9_]*/,
     StringLiteral:         /\A"(\\.|[^\\"\n])*"/
 }
 
-# Reporte de caracter inválido
+####################################################################################################
+## CLASES para el uso de tokens:
+####################################################################################################
+
+# Clases padre
+#=======================================
+class Token
+  attr_reader :t, :row, :col
+
+  def initialize text
+    @t = text
+    @row = $row
+    @col = $col
+  end
+  
+  def to_s; "linea #{@row}, columna #{@col}: '#{@t}'"; end
+  def to_str; "#{@t}"; end
+end
+
+# 'TOKEN' para CARACTER INVÁLIDO
+#=======================================
 class LexicographicError < RuntimeError
-    def initialize t
-        @t = t
-    end
+  def initialize t
+    @t = t
+    @row = $row
+    @col = $col
+  end
 
-    def to_s; "linea #{$row}, columna #{$col}: caracter inesperado \'#{@t}\'"; end
+  def to_s; "linea #{@row}, columna #{@col}: caracter inesperado \'#{@t}\'"; end
 end
 
-# Declaración de las clases para los signos
-class Plus < Token; end
-class Minus < Token; end
-class Asterisk < Token; end
-class Slash < Token; end
-class Assignment < Token; end
-class Percent < Token; end
-class Mod < Token; end
-class Div < Token; end
-class Equal < Token; end
-class NotEqual < Token; end
-class GreaterOrEqualTo < Token; end
-class LessOrEqualTo < Token; end
-class GreaterThan < Token; end
-class LessThan < Token; end
-class Not < Token; end
-class And < Token; end
-class Or < Token; end
-class OpenRoundBracket < Token; end
-class CloseRoundBracket < Token; end
-class Semicolon < Token; end
-class Comma < Token; end
 
-# Declaración de las clases para las palabras reservadas
-class Program < Token;      def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class End < Token;          def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class With < Token;         def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class Do < Token;           def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class While < Token;        def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class If < Token;           def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class Then < Token;         def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class Else < Token;         def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class For < Token ;         def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class From < Token;         def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class By < Token;           def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class To < Token;           def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class Repeat < Token;       def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class Times < Token;        def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class Function < Token;     def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class Begin < Token;        def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class Return < Token;       def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end; end
-class ReturnType < Token;   end
+# TIPOS DE TOKENS
+#=======================================
 
-# Declaración de las clases para los métodos de entrada/salida
-class Read < Token;         def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-class Write < Token;        def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
-class WriteLine < Token;    def to_s;   "linea #{$row}, columna #{$col}: identificador \'#{@t}\'"; end; end
+class PalabraReservada    < Token; def to_s; "linea #{@row}, columna #{@col}: palabra reservada \'#{@t}\'";         end; end
+class Builtin             < Token; def to_s; "linea #{@row}, columna #{@col}: función builtin \'#{@t}\'";           end; end
+class TipoDeDato          < Token; def to_s; "linea #{@row}, columna #{@col}: tipo de dato \'#{@t}\'";              end; end
+class Signo               < Token; def to_s; "linea #{@row}, columna #{@col}: signo \'#{@t}\'";                     end; end
 
-# Tipos de dato Number
-class Number < Token
-    def to_s;   "linea #{$row}, columna #{$col}: tipo de dato \'#{@t}\'";  end
-    def to_str; "#{@t}"; end
-end
+class FunctionIdentifier  < Token; def to_s; "linea #{@row}, columna #{@col}: identificador de funcion \'#{@t}\'";  end; end
+class VariableIdentifier  < Token; def to_s; "linea #{@row}, columna #{@col}: identificador de variable \'#{@t}\'"; end; end
 
-# Tipos de dato Boolean
-class Boolean < Token
-    def to_s;   "linea #{$row}, columna #{$col}: tipo de dato \'#{@t}\'";  end
-    def to_str; "#{@t}"; end
-end
+class StringLiteral       < Token; def to_s; "linea #{@row}, columna #{@col}: literal de string \'#{@t[1..-2]}\'";  end; end
+class NumberLiteral       < Token; def to_s; "linea #{@row}, columna #{@col}: literal numérico \'#{@t}\'";          end; end
+class BooleanLiteral      < Token; def to_s; "linea #{@row}, columna #{@col}: literal booleano \'#{@t}\'";          end; end
 
-# Declaración de la clase para  el literal booleano: True
-class True < Token
-    def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end
-    def to_str; "#{@t}"; end
-end
+class True                < BooleanLiteral; end
+class False               < BooleanLiteral; end
 
-# Declaración de la clase para  el literal booleano: False
-class False < Token
-    def to_s;   "linea #{$row}, columna #{$col}: palabra reservada \'#{@t}\'"; end
-    def to_str; "#{@t}"; end
-end
+# SIGNOS
+#=======================================
+class Plus                < Signo; end
+class Minus               < Signo; end
+class Asterisk            < Signo; end
+class Slash               < Signo; end
+class Assignment          < Signo; end
+class Percent             < Signo; end
+class Mod                 < Signo; end
+class Div                 < Signo; end
+class Equal               < Signo; end
+class NotEqual            < Signo; end
+class GreaterOrEqualTo    < Signo; end
+class LessOrEqualTo       < Signo; end
+class GreaterThan         < Signo; end
+class LessThan            < Signo; end
+class Not                 < Signo; end
+class And                 < Signo; end
+class Or                  < Signo; end
+class OpenRoundBracket    < Signo; end
+class CloseRoundBracket   < Signo; end
+class Semicolon           < Signo; end
+class Comma               < Signo; end
 
-# Declaración de la clase para literales numérico
-class NumberLiteral < Token
-    def to_s;   "linea #{$row}, columna #{$col}: literal numérico \'#{@t}\'"; end
-    def to_str; "#{@t}"; end
-end
+# PALABRAS RESERVADAS
+#=======================================
+class Program             < PalabraReservada; end
+class End                 < PalabraReservada; end
+class With                < PalabraReservada; end
+class Do                  < PalabraReservada; end
+class While               < PalabraReservada; end
+class If                  < PalabraReservada; end
+class Then                < PalabraReservada; end
+class Else                < PalabraReservada; end
+class For                 < PalabraReservada; end
+class From                < PalabraReservada; end
+class By                  < PalabraReservada; end
+class To                  < PalabraReservada; end
+class Repeat              < PalabraReservada; end
+class Times               < PalabraReservada; end
+class Function            < PalabraReservada; end
+class Begin               < PalabraReservada; end
+class Return              < PalabraReservada; end
+class ReturnType          < PalabraReservada; end
 
-# Declaración de la clase para strings
-class StringLiteral < Token
-    def to_s;   "linea #{$row}, columna #{$col}: literal de cadena de caracteres \'#{@t[1..-2]}\'"; end
-    def to_str; "#{@t}"; end
-end
+# FUNCIONES BUILTIN
+#=======================================
+class Read                < Builtin; end
+class Write               < Builtin; end
+class WriteLine           < Builtin; end
 
-# Declaración de la clase para identificadores de funciones
-class FunctionIdentifier < Token
-    def to_s;   "linea #{$row}, columna #{$col}: identificador de funcion \'#{@t}\'"; end
-    def to_str; "#{@t}"; end
-end
+# ESPECIFICACIÓN DE TIPOS
+#=======================================
+class Number              < TipoDeDato; end
+class Boolean             < TipoDeDato; end
 
-# Declaración de la clase para identificadores de variables
-class VariableIdentifier < Token
-    def to_s;   "linea #{$row}, columna #{$col}: identificador de variable\'#{@t}\'"; end
-    def to_str; "#{@t}"; end
-end
 
-####################################################################################################################################
-## Declaración del Lexer:
-####################################################################################################################################
+
+####################################################################################################
+## LEXER:
+####################################################################################################
 
 class Lexer
-    attr_reader :tokens
+  attr_reader :tokens
 
-    # Inicialización
-    def initialize input
-        @tokens = []
-        @input = input
+  # Inicialización
+  # ================================
+  def initialize input
+      @tokens = []
+      @input = input
+  end
+
+  # Función para CAPTURAR los lexemas
+  # ================================
+  def catch_lexeme
+    while @input =~ /(\A[^\S\n\r]*(\#[^\n]*)?[\n\r])|(\A\#.*$)/ do    # Salta líneas blancas o con comentarios
+      @input = @input[$&.length..@input.length-1]
+      $row = $row+1                                                   # Ve línea por línea sumando a $row
+      $col = 1                                                        # Resetea $col a 1
+    end
+    @input =~ /\A[^\S\n\r]*/                                          # Ignora espacio en blanco inicial
+    return if @input.empty?                                           # Retorna nil si no hay input
+    $col = $col+$&.length if $&.length > 0                            # Pero lo suma a las columnas
+    @input = $'
+
+    class_to_be_instanciated = LexicographicError
+
+    # Chequeos con cada regex, en orden
+    $tokens.each do |k,v|
+      if @input =~ v
+        class_to_be_instanciated = Object::const_get(k)
+        break
+      end
     end
 
-    # Función para capturar los lexemas
-    def catch_lexeme
-        while @input =~ /(\A[^\S\n\r]*(\#[^\n]*)?[\n\r])|(\A\#.*$)/ do    # Salta líneas blancas o con comentarios
-            @input = @input[$&.length..@input.length-1]
-            $row = $row+1                                                 # Y suma a las lineas
-            $col = 1
-         end
-         @input =~ /\A[^\S\n\r]*/                                         # Ignora espacio en blanco inicial
-         return if @input.empty?                                          # Retorna nil si no hay input
-         $col = $col+$&.length if $&.length > 0                           # Pero lo suma a las columnas
-         @input = $'
+    # Si NO hay match, hay error, lo mete como token de error.
+    if $&.nil? and class_to_be_instanciated.eql? LexicographicError
+      @input =~ /\A(\w|\p{punct})/
+      @tokens << LexicographicError.new($&)
+      $col = $col + $&.length
 
-        class_to_be_instanciated = LexicographicError
-
-        # Chequeos con cada regex, en orden
-        $tokens.each do |k,v|
-            if @input =~ v
-                class_to_be_instanciated = Object::const_get(k)
-                break
-            end
-        end
-
-        # Si NO hay match, hay error, lo mete como tal.
-        if $&.nil? and class_to_be_instanciated.eql? LexicographicError
-            @input =~ /\A(\w|\p{punct})/
-            @tokens << LexicographicError.new($&)
-            #puts @tokens[-1]
-            $col = $col + $&.length
-
-        # Si SI hay match, mete lo que matcheó
-        else
-            @tokens << class_to_be_instanciated.new($&)
-            #puts @tokens[-1]
-            $col = $col + $&.length
-        end
-
-        # En ambos casos actualiza el $col
-        @input = @input[$&.length..@input.length-1]
-        return @tokens[-1]
+    # Si SI hay match, mete lo que matcheó
+    else
+      @tokens << class_to_be_instanciated.new($&)
+      $col = $col + $&.length
     end
+
+    # En ambos casos actualiza el $col
+    @input = @input[$&.length..@input.length-1]
+    return @tokens[-1]
+  end
 end
 
-####################################################################################################################################
-## FIN :)
-####################################################################################################################################
+####################################################################################################
+####################################################################################################
