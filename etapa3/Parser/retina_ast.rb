@@ -20,12 +20,13 @@
 ####################################################################################################
 
 class ContextError < RuntimeError
-  def initialize mensaje=""
+  def initialize nodo, mensaje=""
+    @nodo = nodo
     @mensaje = mensaje
   end
   
   def to_s
-    @mensaje=="" ? "Error de contexto" : "Error de contexto: #{@mensaje}"
+    "Error de contexto: #{@mensaje} (#{@nodo.class.to_s[5..-1]} en línea #{@nodo.row})"
   end
 end
 
@@ -104,23 +105,25 @@ end
 
 # AST para el árbol y AST_node para los nodos
 # =====================
-class AST
-  def initialize
-    @head = nil
-  end
-  
-  def to_s
-    @head.print_ast if @head.respond_to? :to_s
-  end
-  
-  def recorrer
-    return @head.recorrer if @head.respond_to? :recorrer
-  end
-end
+# class AST
+#   def initialize
+#     @head = nil
+#   end
+#
+#   def to_s
+#     @head.print_ast if @head.respond_to? :to_s
+#   end
+#
+#   def recorrer
+#     return @head.recorrer if @head.respond_to? :recorrer
+#   end
+# end
 
 class NodoAST
   def print_ast indent=""; puts "#{indent}#{self.class}:"; end
   def recorrer; end
+  def place r; @lugar = r; end
+  def row; return @lugar; end
 end
 
 class Nodo_Nulo < NodoAST; end
@@ -165,7 +168,7 @@ class Nodo_Literal < NodoAST
     @literal = literal
   end
   def recorrer
-    return self.class.const_get(:Tipo), @literal
+    return self.class.const_get(:Tipo), @literal.to_s
   end
 end
 
@@ -196,18 +199,18 @@ end
 # ======================
 class Nodo_UMINUS < Nodo_OpeUnaria
   def recorrer
-    raise ContextError if @op.nil?
+    raise (ContextError.new self) if @op.nil?
     t, v = @op.recorrer
-    raise ContextError if t!="number"
+    raise (ContextError.new self) if t!="number"
     return t, -v
   end
 end
 
 class Nodo_Not < Nodo_OpeUnaria
   def recorrer
-    raise ContextError if @op.nil?
+    raise (ContextError.new self) if @op.nil?
     t, v = @op.recorrer
-    raise ContextError if t!="boolean"
+    raise (ContextError.new self) if t!="boolean"
     return t, (not v)
   end
 end
@@ -217,70 +220,70 @@ end
 # ==============================================
 class Nodo_Suma < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!="number" or t2!="number"
+    raise (ContextError.new self) if t1!="number" or t2!="number"
     return "number", (v1+v2)
   end
 end
 
 class Nodo_Resta < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!="number" or t2!="number"
+    raise (ContextError.new self) if t1!="number" or t2!="number"
     return "number", (v1-v2)
   end
 end
 
 class Nodo_Multiplicacion < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!="number" or t2!="number"
+    raise (ContextError.new self) if t1!="number" or t2!="number"
     return "number", (v1*v2)
   end
 end
 
 class Nodo_DivisionReal < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!="number" or t2!="number"
+    raise (ContextError.new self) if t1!="number" or t2!="number"
     return "number", (v1/v2)
   end
 end
 
 class Nodo_DivisionEntera < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!="number" or t2!="number"
+    raise (ContextError.new self) if t1!="number" or t2!="number"
     return "number", (v1/v2)
   end
 end
 
 class Nodo_ModuloEntero < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!="number" or t2!="number"
+    raise (ContextError.new self) if t1!="number" or t2!="number"
     return "number", (v1%v2)
   end
 end
 
 class Nodo_ModuloReal < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!="number" or t2!="number"
+    raise (ContextError.new self) if t1!="number" or t2!="number"
     return "number", (v1%v2)
   end
 end
@@ -290,40 +293,40 @@ end
 # ==============================================
 class Nodo_MenorQue < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!="number" or t2!="number"
+    raise (ContextError.new self) if t1!="number" or t2!="number"
     return "boolean", (v1<v2)
   end
 end
 
 class Nodo_MayorQue < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!="number" or t2!="number"
+    raise (ContextError.new self) if t1!="number" or t2!="number"
     return "boolean", (v1>v2)
   end
 end
 
 class Nodo_MenorIgualQue < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!="number" or t2!="number"
+    raise (ContextError.new self) if t1!="number" or t2!="number"
     return "boolean", (v1<=v2)
   end
 end
 
 class Nodo_MayorIgualQue < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!="number" or t2!="number"
+    raise (ContextError.new self) if t1!="number" or t2!="number"
     return "boolean", (v1>=v2)
   end
 end
@@ -333,20 +336,20 @@ end
 # ==============================================
 class Nodo_Y < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!="boolean" or t2!="boolean"
+    raise (ContextError.new self) if t1!="boolean" or t2!="boolean"
     return "boolean", (v1 and v2)
   end
 end
 
 class Nodo_O < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!="boolean" or t2!="boolean"
+    raise (ContextError.new self) if t1!="boolean" or t2!="boolean"
     return "boolean", (v1 or v2)
   end
 end
@@ -356,20 +359,20 @@ end
 # ==============================================
 class Nodo_IgualQue < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!=t2
+    raise (ContextError.new self) if t1!=t2
     return "boolean", (v1==v2)
   end
 end
 
 class Nodo_DiferenteDe < Nodo_OpeBinaria
   def recorrer
-    raise ContextError if @op1.nil? or @op2.nil?
+    raise (ContextError.new self) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
-    raise ContextError if t1!=t2
+    raise (ContextError.new self) if t1!=t2
     return "boolean", (v1!=v2)
   end
 end
@@ -382,10 +385,10 @@ class Nodo_Asignacion < NodoAST
     @quien, @conque = quien, conque
   end
   def recorrer
-    raise ContextError if @quien.nil? or @conque.nil?
+    raise (ContextError.new self) if @quien.nil? or @conque.nil?
     t1, v1 = @quien.recorrer
     t2, v2 = @conque.recorrer
-    raise ContextError if t1!=t2
+    raise (ContextError.new self) if t1!=t2
     # Setear el nuevo valor de la variable de la tabla correspondiente
     return t1, v2
   end
@@ -396,7 +399,7 @@ class Nodo_Return < NodoAST
     @que = que
   end
   def recorrer
-    raise ContextError if @que.nil?
+    raise (ContextError.new self) if @que.nil?
     # Debería lanzarle el return value a alguien PERO D= no sé como
     return @que.recorrer
   end
@@ -410,7 +413,7 @@ class Nodo_Read < NodoAST
     @que = que
   end
   def recorrer
-    raise ContextError if @que.nil?
+    raise (ContextError.new self) if @que.nil?
     cosa = @que
     #i = gets
     # set value of symbol COSA to i.to_type
@@ -424,7 +427,7 @@ class Nodo_Write < NodoAST
     @sep = sep
   end
   def recorrer
-    raise ContextError if @que.nil?
+    raise (ContextError.new self) if @que.nil?
     cosas = @que.recorrer
     cosas.each do |cosa|
       print cosa[1] if not cosa.nil?
@@ -442,7 +445,7 @@ class Nodo_LlamaFuncion < NodoAST
     @name, @args = name, args
   end
   def recorrer
-    raise ContextError if @name.nil? or @args.nil?
+    raise (ContextError.new self) if @name.nil? or @args.nil?
     # Verificar si existe funcion
     #return @name.ejecutar args  # ???
     return "tipo", ""
@@ -589,11 +592,11 @@ class Nodo_BloqueRepeat < Nodo_Bloque
     @instructions = i
   end
   def recorrer_body
-    raise ContextError if @times.nil? or @instructions.nil?
+    raise (ContextError.new self) if @times.nil? or @instructions.nil?
     t,v = @times.recorrer
     v = v.to_i
-    raise ContextError if t!="number"
-    raise ContextError if v<0
+    raise (ContextError.new self) if t!="number"
+    raise (ContextError.new self) if v<0
     while v>0
       @instructions.recorrer
       v-=1
@@ -607,9 +610,9 @@ class Nodo_BloqueWhile < Nodo_Bloque
     @instructions = i
   end
   def recorrer_body
-    raise ContextError if @expression.nil? or @instructions.nil?
+    raise (ContextError.new self) if @expression.nil? or @instructions.nil?
     t,v = @expression.recorrer
-    raise ContextError if t!="boolean"
+    raise (ContextError.new self) if t!="boolean"
     can = (v=="true")
     while can
       @instructions.recorrer
@@ -625,9 +628,9 @@ class Nodo_BloqueIfElse < Nodo_Bloque
     @else = e
   end
   def recorrer_body
-    raise ContextError if @if.nil? or @then.nil? or @else.nil?
+    raise (ContextError.new self) if @if.nil? or @then.nil? or @else.nil?
     t,v = @if.recorrer
-    raise ContextError if t!="boolean"
+    raise (ContextError.new self) if t!="boolean"
     if v == "true"
       @then.recorrer
     else
@@ -645,13 +648,13 @@ class Nodo_BloqueFor < Nodo_Bloque
     @instr = instr
   end
   def recorrer_body
-    raise ContextError if @it.nil? or @ini.nil? or @fin.nil? or @paso.nil? or @instr.nil?
+    raise (ContextError.new self) if @it.nil? or @ini.nil? or @fin.nil? or @paso.nil? or @instr.nil?
     iterador = @it.recorrer
     
     ti, vi = @ini.recorrer
-    raise ContextError if ti!="number"
+    raise (ContextError.new self) if ti!="number"
     tf, vf = @fin.recorrer
-    raise ContextError if tf!="number"
+    raise (ContextError.new self) if tf!="number"
     
     i,f,paso = vi.to_i, vf.to_i, @paso.to_i
     while i<f
@@ -667,7 +670,7 @@ class Nodo_BloqueWith < Nodo_Bloque
     @variables, @instructions = vs, is
   end
   def recorrer_body
-    raise ContextError if @variables.nil? or @instructions.nil?
+    raise (ContextError.new self) if @variables.nil? or @instructions.nil?
     @variables.recorrer
     @instructions.recorrer
   end
@@ -678,7 +681,7 @@ class Nodo_BloqueProgram < Nodo_Bloque
     @instructions = is
   end
   def recorrer_body
-    raise ContextError if @instructions.nil?
+    raise (ContextError.new self) if @instructions.nil?
     @instructions.recorrer
   end
 end

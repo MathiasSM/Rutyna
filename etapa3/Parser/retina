@@ -75,23 +75,8 @@ def main
     rescue SyntacticError => e  # Al primer error de sintáxis salimos corriendo
       puts e
       exit 1
-    
-    rescue ContextError => e  # Al primer error de sintáxis salimos corriendo
-      puts e
-      exit 1
       
     else
-      # $stt = SymbolMetaTable.new
-      # # Añadimos Funciones del sistema a la tabla de símbolos
-      # $stt.meta[-1].table += [Row.new("home", "None")]
-      # $stt.meta[-1].table += [Row.new("openeye", "None")]
-      # $stt.meta[-1].table += [Row.new("closeeye", "None")]
-      # $stt.meta[-1].table += [Row.new("forward", "None")]
-      # $stt.meta[-1].table += [Row.new("backward", "None")]
-      # $stt.meta[-1].table += [Row.new("rotatel", "None")]
-      # $stt.meta[-1].table += [Row.new("rotater", "None")]
-      # $stt.meta[-1].table += [Row.new("setposition", "None")]
-      # $stt.meta[-1].table += [Row.new("arc", "None")]
       begin
         ast.recorrer
       rescue ContextError => e  # Al primer error de sintáxis salimos corriendo

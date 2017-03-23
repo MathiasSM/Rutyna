@@ -17,17 +17,13 @@ class SyntacticError < RuntimeError
   end
 
   def to_s
-    if false
-      "Error de Sintáxis: linea #{@token.row}, columna #{@token.col}: token inesperado"
-    else
-      "Error de Sintáxis: linea #{@token.row}, columna #{@token.col}: token inesperado \'#{@token.to_str}\'"
-    end
+    "Error de Sintáxis: linea #{@token.row}, columna #{@token.col}: token inesperado \'#{@token.to_str}\'"
   end
 end
 
 class Parser < Racc::Parser
 
-module_eval(<<'...end retina_parser.y/module_eval...', 'retina_parser.y', 257)
+module_eval(<<'...end retina_parser.y/module_eval...', 'retina_parser.y', 253)
 # Clase para captar los errores y producir una excepcion
 # generando una instancia de error de sintaxis
 def on_error(id, token, stack)
@@ -668,546 +664,546 @@ Racc_debug_parser = false
 
 module_eval(<<'.,.,', 'retina_parser.y', 117)
   def _reduce_1(val, _values, result)
-     result = Nodo_LitNumber.new( val[0] ) 
+     result = Nodo_LitNumber.new( val[0] ); 
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 118)
   def _reduce_2(val, _values, result)
-     result = Nodo_LitBoolean.new( val[0] ) 
+     result = Nodo_LitBoolean.new( val[0] ); 
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 119)
   def _reduce_3(val, _values, result)
-     result = Nodo_LitBoolean.new( val[0] ) 
+     result = Nodo_LitBoolean.new( val[0] ); 
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 120)
   def _reduce_4(val, _values, result)
-     result = Nodo_LitString.new( val[0] ) 
+     result = Nodo_LitString.new( val[0] ); 
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 121)
   def _reduce_5(val, _values, result)
-     result = Nodo_LlamaVariable.new( val[0] ) 
+     result = Nodo_LlamaVariable.new( val[0] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 122)
   def _reduce_6(val, _values, result)
-     result = Nodo_LlamaFuncion.new( val[0], val[2] ) 
+     result = Nodo_LlamaFuncion.new( val[0], val[2] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 123)
   def _reduce_7(val, _values, result)
-     result = Nodo_LlamaFuncion.new( val[0], Nodo_Lista.new() ) 
+     result = Nodo_LlamaFuncion.new( val[0], Nodo_Lista.new() ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 124)
   def _reduce_8(val, _values, result)
-     result = val[1] 
+     result = val[1];
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 126)
   def _reduce_9(val, _values, result)
-     result = Nodo_UMINUS.new( val[1] ) 
+     result = Nodo_UMINUS.new( val[1] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 127)
   def _reduce_10(val, _values, result)
-     result = Nodo_Not.new( val[1] ) 
+     result = Nodo_Not.new( val[1] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 129)
   def _reduce_11(val, _values, result)
-     result = Nodo_Multiplicacion.new( val[0], val[2] ) 
+     result = Nodo_Multiplicacion.new( val[0], val[2] ); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 130)
   def _reduce_12(val, _values, result)
-     result = Nodo_DivisionReal.new( val[0], val[2] ) 
+     result = Nodo_DivisionReal.new( val[0], val[2] ); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 131)
   def _reduce_13(val, _values, result)
-     result = Nodo_DivisionEntera.new( val[0], val[2] ) 
+     result = Nodo_DivisionEntera.new( val[0], val[2] ); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 132)
   def _reduce_14(val, _values, result)
-     result = Nodo_ModuloEntero.new( val[0], val[2] ) 
+     result = Nodo_ModuloEntero.new( val[0], val[2] ); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 133)
   def _reduce_15(val, _values, result)
-     result = Nodo_ModuloReal.new( val[0], val[2] ) 
+     result = Nodo_ModuloReal.new( val[0], val[2] ); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 134)
   def _reduce_16(val, _values, result)
-     result = Nodo_Suma.new( val[0], val[2] ) 
+     result = Nodo_Suma.new( val[0], val[2] ); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 135)
   def _reduce_17(val, _values, result)
-     result = Nodo_Resta.new( val[0], val[2] ) 
+     result = Nodo_Resta.new( val[0], val[2] ); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 137)
   def _reduce_18(val, _values, result)
-     result = Nodo_IgualQue.new(val[0], val[2]) 
+     result = Nodo_IgualQue.new(val[0], val[2]); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 138)
   def _reduce_19(val, _values, result)
-     result = Nodo_DiferenteDe.new(val[0], val[2]) 
+     result = Nodo_DiferenteDe.new(val[0], val[2]); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 140)
   def _reduce_20(val, _values, result)
-     result = Nodo_MenorIgualQue.new(val[0], val[2]) 
+     result = Nodo_MenorIgualQue.new(val[0], val[2]); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 141)
   def _reduce_21(val, _values, result)
-     result = Nodo_MayorIgualQue.new(val[0], val[2]) 
+     result = Nodo_MayorIgualQue.new(val[0], val[2]); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 142)
   def _reduce_22(val, _values, result)
-     result = Nodo_MenorQue.new( val[0], val[2] ) 
+     result = Nodo_MenorQue.new( val[0], val[2] ); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 143)
   def _reduce_23(val, _values, result)
-     result = Nodo_MayorQue.new( val[0], val[2] ) 
+     result = Nodo_MayorQue.new( val[0], val[2] ); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 145)
   def _reduce_24(val, _values, result)
-     result = Nodo_O.new( val[0], val[2] ) 
+     result = Nodo_O.new( val[0], val[2] ); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 146)
   def _reduce_25(val, _values, result)
-     result = Nodo_Y.new( val[0], val[2] ) 
+     result = Nodo_Y.new( val[0], val[2] ); result.place val[1].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 149)
   def _reduce_26(val, _values, result)
-     result = Nodo_Lista.new( val[0] ) 
+     result = Nodo_Lista.new( val[0] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 150)
   def _reduce_27(val, _values, result)
-     result = Nodo_Lista.new(val[2]).appendTo( val[0] ) 
+     result = Nodo_Lista.new(val[2]).appendTo( val[0] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 153)
   def _reduce_28(val, _values, result)
-     result = Nodo_VariableNewName.new( val[0] ) 
+     result = Nodo_VariableNewName.new( val[0] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 156)
   def _reduce_29(val, _values, result)
-     result = Nodo_Lista.new( val[0] ) 
+     result = Nodo_Lista.new( val[0] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 157)
   def _reduce_30(val, _values, result)
-     result = Nodo_Lista.new( val[2] ).appendTo( val[0] ) 
+     result = Nodo_Lista.new( val[2] ).appendTo( val[0] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 160)
   def _reduce_31(val, _values, result)
-     result = val[0] 
+     result = val[0];
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 161)
   def _reduce_32(val, _values, result)
-     result = val[0] 
+     result = val[0];
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 164)
   def _reduce_33(val, _values, result)
-     result = Nodo_DeclaracionMultiple.new(val[0], val[1]) 
+     result = Nodo_DeclaracionMultiple.new(val[0], val[1]); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 165)
   def _reduce_34(val, _values, result)
-     result = Nodo_DeclaracionCompleta.new(val[0], val[1], val[3]) 
+     result = Nodo_DeclaracionCompleta.new(val[0], val[1], val[3]); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 168)
   def _reduce_35(val, _values, result)
-     result = Nodo_Lista.new(val[0]) 
+     result = Nodo_Lista.new(val[0]); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 169)
   def _reduce_36(val, _values, result)
-     result = Nodo_Lista.new(val[1]).appendTo(val[0]) 
+     result = Nodo_Lista.new(val[1]).appendTo(val[0]); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 172)
   def _reduce_37(val, _values, result)
-     result = Nodo_Nulo.new 
+     result = Nodo_Nulo.new;
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 173)
   def _reduce_38(val, _values, result)
-     result = Nodo_Asignacion.new(              val[0],              val[2] ) 
+     result = Nodo_Asignacion.new(              val[0],              val[2] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 174)
   def _reduce_39(val, _values, result)
-     result = Nodo_BloqueWith.new(              val[1],              val[3] ) 
+     result = Nodo_BloqueWith.new(              val[1],              val[3] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 175)
   def _reduce_40(val, _values, result)
-     result = Nodo_BloqueWith.new(              val[1], Nodo_Lista.new(nil) ) 
+     result = Nodo_BloqueWith.new(              val[1], Nodo_Lista.new(nil) ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 176)
   def _reduce_41(val, _values, result)
-     result = Nodo_BloqueWith.new( Nodo_Lista.new(nil),              val[2] ) 
+     result = Nodo_BloqueWith.new( Nodo_Lista.new(nil),              val[2] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 177)
   def _reduce_42(val, _values, result)
-     result = Nodo_BloqueWith.new( Nodo_Lista.new(nil), Nodo_Lista.new(nil) ) 
+     result = Nodo_BloqueWith.new( Nodo_Lista.new(nil), Nodo_Lista.new(nil) ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 178)
   def _reduce_43(val, _values, result)
-     result = Nodo_BloqueWhile.new( val[1], val[3] ) 
+     result = Nodo_BloqueWhile.new( val[1], val[3] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 179)
   def _reduce_44(val, _values, result)
-     result = Nodo_BloqueFor.new( val[1], val[3], val[5],                  val[7],              val[9] ) 
+     result = Nodo_BloqueFor.new( val[1], val[3], val[5],                  val[7],              val[9] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 180)
   def _reduce_45(val, _values, result)
-     result = Nodo_BloqueFor.new( val[1], val[3], val[5],                  val[7], Nodo_Lista.new(nil) ) 
+     result = Nodo_BloqueFor.new( val[1], val[3], val[5],                  val[7], Nodo_Lista.new(nil) ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 181)
   def _reduce_46(val, _values, result)
-     result = Nodo_BloqueFor.new( val[1], val[3], val[5], Nodo_LitNumber.new( 1 ),              val[7] ) 
+     result = Nodo_BloqueFor.new( val[1], val[3], val[5], Nodo_LitNumber.new( 1 ),              val[7] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 182)
   def _reduce_47(val, _values, result)
-     result = Nodo_BloqueFor.new( val[1], val[3], val[5], Nodo_LitNumber.new( 1 ), Nodo_Lista.new(nil) ) 
+     result = Nodo_BloqueFor.new( val[1], val[3], val[5], Nodo_LitNumber.new( 1 ), Nodo_Lista.new(nil) ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 183)
   def _reduce_48(val, _values, result)
-     result = Nodo_BloqueIfElse.new( val[1],              val[3], Nodo_Lista.new(nil) ) 
+     result = Nodo_BloqueIfElse.new( val[1],              val[3], Nodo_Lista.new(nil) ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 184)
   def _reduce_49(val, _values, result)
-     result = Nodo_BloqueIfElse.new( val[1], Nodo_Lista.new(nil), Nodo_Lista.new(nil) ) 
+     result = Nodo_BloqueIfElse.new( val[1], Nodo_Lista.new(nil), Nodo_Lista.new(nil) ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 185)
   def _reduce_50(val, _values, result)
-     result = Nodo_BloqueIfElse.new( val[1],              val[3],              val[5] ) 
+     result = Nodo_BloqueIfElse.new( val[1],              val[3],              val[5] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 186)
   def _reduce_51(val, _values, result)
-     result = Nodo_BloqueIfElse.new( val[1],              val[3], Nodo_Lista.new(nil) ) 
+     result = Nodo_BloqueIfElse.new( val[1],              val[3], Nodo_Lista.new(nil) ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 187)
   def _reduce_52(val, _values, result)
-     result = Nodo_BloqueIfElse.new( val[1], Nodo_Lista.new(nil),              val[4] ) 
+     result = Nodo_BloqueIfElse.new( val[1], Nodo_Lista.new(nil),              val[4] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 188)
   def _reduce_53(val, _values, result)
-     result = Nodo_BloqueIfElse.new( val[1], Nodo_Lista.new(nil), Nodo_Lista.new(nil) ) 
+     result = Nodo_BloqueIfElse.new( val[1], Nodo_Lista.new(nil), Nodo_Lista.new(nil) ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 189)
   def _reduce_54(val, _values, result)
-     result = Nodo_BloqueRepeat.new( val[1],             val[3]  ) 
+     result = Nodo_BloqueRepeat.new( val[1],             val[3]  ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 190)
   def _reduce_55(val, _values, result)
-     result = Nodo_BloqueRepeat.new( val[1], Nodo_Lista.new(nil) ) 
+     result = Nodo_BloqueRepeat.new( val[1], Nodo_Lista.new(nil) ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 191)
   def _reduce_56(val, _values, result)
-     result = Nodo_Read.new( val[1] ) 
+     result = Nodo_Read.new( val[1] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 192)
   def _reduce_57(val, _values, result)
-     result = Nodo_Write.new( val[1],   '' ) 
+     result = Nodo_Write.new( val[1],   '' ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 193)
   def _reduce_58(val, _values, result)
-     result = Nodo_Write.new( val[1], '\n' ) 
+     result = Nodo_Write.new( val[1], '\n' ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 194)
   def _reduce_59(val, _values, result)
-     result = Nodo_Return.new( val[1] ) 
+     result = Nodo_Return.new( val[1] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 195)
   def _reduce_60(val, _values, result)
-     result = Nodo_LlamaFuncion.new( val[0],              val[2] ) 
+     result = Nodo_LlamaFuncion.new( val[0],              val[2] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 196)
   def _reduce_61(val, _values, result)
-     result = Nodo_LlamaFuncion.new( val[0], Nodo_Lista.new(nil) ) 
+     result = Nodo_LlamaFuncion.new( val[0], Nodo_Lista.new(nil) ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 199)
   def _reduce_62(val, _values, result)
-     result = Nodo_Lista.new(val[0]) 
+     result = Nodo_Lista.new(val[0]); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 200)
   def _reduce_63(val, _values, result)
-     result = Nodo_Lista.new(val[1]).appendTo(val[0]) 
+     result = Nodo_Lista.new(val[1]).appendTo(val[0]); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 203)
   def _reduce_64(val, _values, result)
-     result = Nodo_Lista.new( Nodo_DeclaracionSimple.new( val[0], val[1] ) ) 
+     result = Nodo_Lista.new( Nodo_DeclaracionSimple.new( val[0], val[1] ) ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 204)
   def _reduce_65(val, _values, result)
-     result = Nodo_Lista.new( Nodo_DeclaracionSimple.new( val[2], val[3] ) ).appendTo( val[0] ) 
+     result = Nodo_Lista.new( Nodo_DeclaracionSimple.new( val[2], val[3] ) ).appendTo( val[0] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 207)
   def _reduce_66(val, _values, result)
-     result = Nodo_BloqueProgram.new( val[1] ) 
+     result = Nodo_BloqueProgram.new( val[1] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 208)
   def _reduce_67(val, _values, result)
-     result = Nodo_BloqueProgram.new(    nil ) 
+     result = Nodo_BloqueProgram.new(    nil ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 211)
   def _reduce_68(val, _values, result)
-     result =                val[1] 
+     result =                val[1];
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 212)
   def _reduce_69(val, _values, result)
-     result = Nodo_Lista.new( nil ) 
+     result = Nodo_Lista.new( nil ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 215)
   def _reduce_70(val, _values, result)
-     result = Nodo_FunctionNewName.new( val[0] ) 
+     result = Nodo_FunctionNewName.new( val[0] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 218)
   def _reduce_71(val, _values, result)
-     result = Nodo_NewFunctionBody.new( val[1],                val[3],                val[6], val[7] ) 
+     result = Nodo_NewFunctionBody.new( val[1],                val[3],                val[6], val[7] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 219)
   def _reduce_72(val, _values, result)
-     result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ),                val[5], val[6] ) 
+     result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ),                val[5], val[6] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 220)
   def _reduce_73(val, _values, result)
-     result = Nodo_NewFunctionBody.new( val[1],                val[3], Nodo_Lista.new( nil ), val[5] ) 
+     result = Nodo_NewFunctionBody.new( val[1],                val[3], Nodo_Lista.new( nil ), val[5] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 221)
   def _reduce_74(val, _values, result)
-     result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ), Nodo_Lista.new( nil ), val[4] ) 
+     result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ), Nodo_Lista.new( nil ), val[4] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 224)
   def _reduce_75(val, _values, result)
-     result = Nodo_Lista.new( val[0] ) 
+     result = Nodo_Lista.new( val[0] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 225)
   def _reduce_76(val, _values, result)
-     result = Nodo_Lista.new( val[1] ).appendTo( val[0] ) 
+     result = Nodo_Lista.new( val[1] ).appendTo( val[0] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 228)
   def _reduce_77(val, _values, result)
-     result = Nodo_Lista.new( val[0] ) 
+     result = Nodo_Lista.new( val[0] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 229)
   def _reduce_78(val, _values, result)
-     result = Nodo_Lista.new( val[1] ).appendTo( val[0] ) 
+     result = Nodo_Lista.new( val[1] ).appendTo( val[0] ); result.place val[0].row
     result
   end
 .,.,

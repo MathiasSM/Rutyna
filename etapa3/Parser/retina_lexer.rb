@@ -110,10 +110,10 @@ $tokens = {
 class Token
   attr_reader :t, :row, :col
 
-  def initialize text
+  def initialize text, row=$row, col=$col
     @t = text
-    @row = $row
-    @col = $col
+    @row = row
+    @col = col
   end
   
   def to_s; "linea #{@row}, columna #{@col}: '#{@t}'"; end
