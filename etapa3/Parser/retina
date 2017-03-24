@@ -69,8 +69,7 @@ def main
       $row = 1; $col = 1        # Contamos líneas y columnas desde 1
       lexer = Lexer.new input   # Inicializamos Lexer con el input del archivo
       parser = Parser.new       # Inicializamos Parser
-      ast = parser.parse lexer  # Creamos el AST a partir del output del Parser
-      # ast.print_ast           # Imprimimos el AST
+      ast = parser.parse lexer  # Creamos el AST de prueba a partir del output del Parser
       
     rescue SyntacticError => e  # Al primer error de sintáxis salimos corriendo
       puts e
@@ -78,6 +77,8 @@ def main
       
     else
       begin
+        $tl = TableList.new
+        
         ast.recorrer
       rescue ContextError => e  # Al primer error de sintáxis salimos corriendo
         puts e

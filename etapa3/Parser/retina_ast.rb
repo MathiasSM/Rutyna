@@ -31,78 +31,6 @@ class ContextError < RuntimeError
 end
 
 
-####################################################################################################
-## TABLA DE SIMBOLOS
-####################################################################################################
-
-# SIMBOLOS
-# =====================
-class VarSymbol
-  attr_accessor :name, :type, :value
-  
-  def initialize name, type=nil, value=nil
-    @name = name
-    @type = type
-    @value = value
-  end
-end
-
-class FunSymbol < VarSymbol; end  # Se utiliza el atributo .value para el cuerpo de la función
-  
-  
-# TABLA
-# =====================
-class SymbolTable
-  attr_accessor :table
-  
-  def initialize
-    @table
-  end
-end
-
-
-# LISTA DE TABLAS (mayor índice == scope más interno)
-# =====================
-class TableList
-  attr_accessor :meta
-  
-  def initialize
-    @varlist = [SymbolTable.new()]  # Lista de tablas de VarSymbols
-    @funtable = SymbolTable.new()   # Una única tabla de FunSymbols
-  end
-  
-  def var_exists? symbol_name
-    scope_dist = 0
-    @varlist.reverse.each do |scope|
-      scope.table.each do |symbol|
-        if symbol.name == symbol_name
-          return scope_dist, (symbol.type), (symbol.value)
-        end
-      end
-      scope_dist += 1
-    end
-    return -1, "None", 0 # Doesn't exist? Return these
-  end
-  
-  def fun_exists? symbol_name
-    @funtable.each do |function|
-      if function.name == symbol_name
-        return 1, function.type
-      end
-    end
-    return 0, ""
-  end
-  
-  def exec_fun symbol_name
-    @funtable.each do |function|
-      if function.name == symbol_name
-        # Execute here, we asume it exists
-      end
-    end
-  end
-end
-
-
 
 ####################################################################################################
 ## Abstract Syntax NODES
@@ -155,14 +83,11 @@ class Nodo_Literal < NodoAST
   def initialize literal
     @literal = literal
   end
-  def recorrer
-    return self.class.const_get(:Tipo), @literal.to_s
-  end
 end
 
-class Nodo_LitNumber < Nodo_Literal;  Tipo = "number"; end
-class Nodo_LitBoolean < Nodo_Literal; Tipo = "boolean";  end
-class Nodo_LitString < Nodo_Literal;  Tipo = "string";  end
+class Nodo_LitNumber < Nodo_Literal;  def recorrer; return "number",  @literal.to_str.to_i; end; end
+class Nodo_LitBoolean < Nodo_Literal; def recorrer; return "boolean", (@literal.to_str == "true"); end; end
+class Nodo_LitString < Nodo_Literal;  def recorrer; return "string",  @literal.to_str;      end; end
 
 
 # Nodos de OPERACIONES (SUPER CLASES)
@@ -172,14 +97,12 @@ class Nodo_OpeUnaria < NodoAST
   def initialize op
     @op = op
   end
-  def recorrer; return nil, @op; end     # Comportamiento por defecto
 end
 
 class Nodo_OpeBinaria < NodoAST
   def initialize op1, op2
     @op1, @op2 = op1, op2
   end
-  def recorrer; return nil, @op1; end    # Comportamiento por defecto
 end
 
 
@@ -190,7 +113,7 @@ class Nodo_UMINUS < Nodo_OpeUnaria
     raise (ContextError.new(self, "Operador nulo")) if @op.nil?
     t, v = @op.recorrer
     raise (ContextError.new(self, "Tipo de operador no es 'number'")) if t!="number"
-    return t, -v
+    return "number", -v
   end
 end
 
@@ -199,7 +122,7 @@ class Nodo_Not < Nodo_OpeUnaria
     raise (ContextError.new(self, "Operador nulo")) if @op.nil?
     t, v = @op.recorrer
     raise (ContextError.new(self, "Tipo de #{@op} no es 'boolean'")) if t!="boolean"
-    return t, (not v)
+    return "boolean", (not v)
   end
 end
 
@@ -447,8 +370,9 @@ class Nodo_LlamaFuncion < NodoAST
   end
   def recorrer
     raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @name.nil? or @args.nil?
-    # Verificar si existe funcion
-    #return @name.ejecutar args  # ???
+    raise (ContextError.new(self, "Función #{name} no ha sido declarada")) if not $tl.exist_fun? @name
+    args = @args.recorrer
+    return $tl.exec_fun @name args  # ???
     return "tipo", ""
   end
 end

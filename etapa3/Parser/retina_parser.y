@@ -234,8 +234,9 @@ rule
 ## USER BLOCKS
 ####################################################################################################
 ---- header
-require_relative "retina_lexer"  # Importar el lexer de retina
-require_relative "retina_ast"    # Importar el AST de retina
+require_relative "retina_lexer"     # Importar el lexer de retina
+require_relative "retina_ast"       # Importar el AST de retina
+require_relative "retina_simtable"  # Importar el SIMTAB de retina
 
 # CLASE de ERROR DE SINTÁXISz
 #=======================================
