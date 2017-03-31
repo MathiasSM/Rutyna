@@ -60,11 +60,6 @@ def main
   # Atrapa LEXEMAS
   # ================================
   begin
-    ## Análisis lexicográfico previo
-    # $row = 1; $col = 1        # Contamos líneas y columnas desde 1
-    # lexer = Lexer.new input   # Inicializamos Lexer con el input del archivo
-    # while lexer.catch_lexeme; end
-    
     begin
       $row = 1; $col = 1        # Contamos líneas y columnas desde 1
       lexer = Lexer.new input   # Inicializamos Lexer con el input del archivo
@@ -75,10 +70,10 @@ def main
       puts e
       exit 1
       
-    # rescue ContextError => e  # Al primer error de sintáxis salimos corriendo
-    #   puts e
-    #   exit 1
-    #
+    rescue ContextError => e  # Al primer error de sintáxis salimos corriendo
+      puts e
+      exit 1
+    
     else
       begin
         ast.execute
