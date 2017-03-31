@@ -389,15 +389,15 @@ end
 # ==============================================
 class Nodo_Asignacion < NodoAST
   def initialize quien, conque
-    @quien, @conque = quien, conque
+    @quien, @conque = quien.to_str, conque
   end
   def recorrer
     puts "Recorriendo #{self.class}" if $debug
     raise (InterpreterError.new(self, "Valor nulo")) if @quien.nil? or @conque.nil?
-    t1, v1 = $tl.var_exists? @quien.to_str
+    t1, v1 = $tl.var_exists? @quien
     t2, v2 = @conque.recorrer
     raise (ContextError.new(self, "Tipo de variable difiere del tipo de la expresión (#{t1} != #{t2})")) if t1!=t2
-    # TODO Setear el nuevo valor de la variable de la tabla correspondiente
+    $tl.var_mod(@quien, v2)
     return t1, v2
   end
 end
@@ -419,14 +419,26 @@ end
 # ==============================================
 class Nodo_Read < NodoAST
   def initialize que
-    @que = que
+    @que = que.to_str
   end
   def recorrer
     puts "Recorriendo #{self.class}" if $debug
     raise (InterpreterError.new(self, "Valor nulo")) if @que.nil?
-    cosa = $tl.var_exists? @que.to_str
-    #i = gets
-    # TODO set value of symbol COSA to i.to_type
+    cosa = $tl.var_exists? @que
+    if cosa==false
+      raise (ContextError.new(self, "Variable '#{@que}' no ha sido declarada en este scope"))
+    end
+    # begin
+    #   i = gets
+    #   if cosa[0]=="boolean"
+    #     i = i.to_b
+    #   else
+    #     i = i.to_i
+    #   end
+    #   $tl.var_mod(@que, i)
+    # rescue Exception
+    #   raise (ContextError.new(self, "No se pudo interpretar '#{i}' como '#{cosa[0]}'"))
+    # end
     return nil, "READ"
   end
 end
@@ -645,7 +657,7 @@ class Nodo_BloqueFor < Nodo_Scope
     
     i,f = vi, vf
     while i<f
-      # Set variable iterador en tabla to value i
+      $tl.var_mod(@it, i)
       @instr.recorrer
       i+=paso
     end
@@ -683,9 +695,6 @@ class Nodo_NewFunctionBody < NodoAST
       parametros = @params.recorrer
       $tl.push_fun(nombre, @tipo, self)
       @instr.recorrer
-      # $tl.funtable.table.each do |s|
-      #   puts "#{s.name[0..6]}\t#{s.type.nil? ? 'None' : s.type}\t#{s.value}"
-      # end
     $tl.close_level
   end
  

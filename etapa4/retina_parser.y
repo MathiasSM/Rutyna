@@ -171,7 +171,7 @@ rule
   ;
 
   INSTRUCTION:                                                                              { result = Nodo_Nulo.new;}
-              | VariableID '=' EXPRESSION                                                        { result = Nodo_Asignacion.new(              val[0],              val[2] ); result.place val[0].row}
+              | VariableID '=' EXPRESSION                                                   { result = Nodo_Asignacion.new(              val[0],              val[2] ); result.place val[0].row}
               | with STATEMENTs do INSTRUCTIONs 'end'                                       { result = Nodo_BloqueWith.new(              val[1],              val[3] ); result.place val[0].row}
               | with STATEMENTs do 'end'                                                    { result = Nodo_BloqueWith.new(              val[1], Nodo_Lista.new(nil) ); result.place val[0].row}
               | with  do INSTRUCTIONs 'end'                                                 { result = Nodo_BloqueWith.new( Nodo_Lista.new(nil),              val[2] ); result.place val[0].row}

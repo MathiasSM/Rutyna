@@ -90,27 +90,34 @@ class TableList
   end
   
   def var_exists? symbol_name
-    scope_dist = 0
     @varlist[-1].reverse.each do |scope|
       scope.table.each do |symbol|
         if symbol.name == symbol_name
           return (symbol.type), (symbol.value)
         end
       end
-      scope_dist += 1
     end
-    return false # Doesn't exist? Return these
+    return false
+  end
+  
+  def var_mod symbol_name, nu_val
+    @varlist[-1].reverse.each do |scope|
+      scope.table.each do |symbol|
+        if symbol.name == symbol_name
+          symbol.value = nu_val
+          return (symbol.type), (symbol.value)
+        end
+      end
+    end
+    return false
   end
   
   def fun_exists? symbol_name
-    #puts symbol_name + " exists?"
     @funtable.table.each do |function|
       if function.name == symbol_name
-        #puts function.name + "! YES"
         return true, function.type
       end
     end
-    #puts "NEIN"
     return false, ""
   end
   
