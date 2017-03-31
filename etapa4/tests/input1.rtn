@@ -1,0 +1,46 @@
+func min(number x, number y) -> number
+begin
+    with
+        boolean b = false;
+    do
+        b = x < y;
+        b = 1;
+        if b then
+            return x;
+        end;
+        return b;
+    end;
+end;
+
+func incremental_forward(number i)
+begin
+    for i from 1 to steps do
+        forward(i);
+    end;
+    for j from 0 to 9 by 3 do
+      write "hola";
+    end;
+end;
+
+func circle(number radio)
+begin
+    arc(360, radio);
+end;
+
+program
+    write "Insert a number : ";
+    with
+        number n;
+    do
+        read n; # I suggest that this number be a multiple of 360
+        with
+            number angle = n;
+        do
+            while angle <= 360 do
+                rotater(n);
+                circle(100);
+                angle = angle + true;
+            end;
+        end;
+    end;
+end;
