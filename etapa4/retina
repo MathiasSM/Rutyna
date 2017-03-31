@@ -51,14 +51,14 @@ def main
     puts "Tipo de archivo no reconocido\nPor favor utilice un archivo 'file.rtn'"
     exit 1
   end
-  
+
   begin
     input = File::read(ARGV[0])
   rescue
     puts "No se encontró el archivo"
     exit 1
   end
-  
+
   # Atrapa LEXEMAS
   # ================================
   begin
@@ -66,7 +66,7 @@ def main
     # $row = 1; $col = 1        # Contamos líneas y columnas desde 1
     # lexer = Lexer.new input   # Inicializamos Lexer con el input del archivo
     # while lexer.catch_lexeme; end
-    
+
     begin
       $debug = true
       $row = 1; $col = 1        # Contamos líneas y columnas desde 1
@@ -78,14 +78,15 @@ def main
     rescue SyntacticError => e  # Al primer error de sintáxis salimos corriendo
       puts e
       exit 1
-      
+
     rescue ContextError => e  # Al primer error de sintáxis salimos corriendo
       puts e
       exit 1
-    
+
     else
       begin
         ast.execute
+        crearImagen procesarCapa
       rescue ContextError => e  # Al primer error de sintáxis salimos corriendo
         puts e
         exit 1

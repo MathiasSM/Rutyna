@@ -23,19 +23,6 @@ require_relative "retina_geometry" # Importar libreria de funciones geometricas 
 ## CLASE DE LAS INSTRUCCIONES:
 ####################################################################################################
 
-class Instrucciones
-  attr_accessor :id, :args
-  # id: identificador de la función
-  # args: argumentos de la función
-
-  def initialize id, args=[]
-    @id = id
-    @args = args
-  end
-end
-
-#$paint
-
 # Intenta adaptar tu código a usar esta clase en vez de Instrucciones. Me facilita el usar lo de var = method :C
 # Clase CapasPintura que tiene .cola una lista de instrucciones por pintar
 class CapasPintura
@@ -161,7 +148,7 @@ def procesarCapa
     elsif a.id == 4                       # Si la instruccion es 4) forward():
       ini = tortuga.punto
       dir = tortuga.angulo
-      len = a.args[0]
+      len = a.args[0][1]
 
       tortuga.punto = desplazar ini, dir, len
 
@@ -174,7 +161,7 @@ def procesarCapa
     elsif a.id == 5                       # Si la instruccion es 5) backward():
       ini = tortuga.punto
       dir = tortuga.angulo
-      len = -a.args[0]
+      len = -a.args[0][1]
 
       tortuga.punto = desplazar ini, dir, len
 
@@ -184,15 +171,15 @@ def procesarCapa
         segmentos += puntos
       end
 
-    elsif a.id == 6                       # Si la instruccion es 6) rotatel(x):
-      tortuga.rotateL(a.args[0])          # Rotar tortuga a la izquierda
+    elsif a.id == 6                          # Si la instruccion es 6) rotatel(x):
+      tortuga.rotateL(a.args[0][1])          # Rotar tortuga a la izquierda
 
-    elsif a.id == 7                       # Si la instruccion es 7) rotater(x):
-      tortuga.rotateR(a.args[0])          # Rotar tortuga a la derecha
+    elsif a.id == 7                          # Si la instruccion es 7) rotater(x):
+      tortuga.rotateR(a.args[0][1])          # Rotar tortuga a la derecha
 
-    else                                  # Si la instruccion es 8) setposition(x, y):
-      x = a.args[0]
-      y = a.args[1]
+    else                                     # Si la instruccion es 8) setposition(x, y):
+      x = a.args[0][1]
+      y = a.args[1][1]
       tortuga.punto = Punto.new(x, y)
     end
   end
@@ -214,7 +201,9 @@ def crearImagen segmentos
   for punto in segmentos     # Para todo punto en segmentos
     i = 500 - punto.y        # Calcula la fila del arreglo
     j = 500 + punto.x        # Calcula la columa del arreglo
-    bits[i][j] = 1           # Enciende el bit
+    if i.between?(0, 1000) && j.between?(0, 1000)
+      bits[i][j] = 1           # Enciende el bit
+    end
   end
 
   # Generar salida
@@ -272,8 +261,3 @@ def dibujar_poligono n
     $paint.addCapa(6, [angulo])
   end
 end
-
-$paint = CapasPintura.new
-dibujar_poligono 7
-segments = procesarCapa
-crearImagen segments
