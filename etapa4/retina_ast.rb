@@ -200,7 +200,7 @@ class Nodo_Suma < Nodo_OpeBinaria
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de primer operador no es 'number' (Es '#{t1}')")) if t1!="number"
-    raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2} (Es '#{t1}')}')")) if t2!="number"
+    raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2}')")) if t2!="number"
     return "number", (v1+v2)
   end
 end
@@ -469,11 +469,14 @@ class Nodo_LlamaFuncion < NodoAST
     @name, @args = name.to_str, args
   end
   def recorrer
-    puts "Recorriendo #{self.class}" if $debug
+    puts "Recorriendo #{self.class}: #{@name}" if $debug
     raise (InterpreterError.new(self, "Valor nulo")) if @name.nil? or @args.nil?
     raise (ContextError.new(self, "Función '#{@name}' no ha sido declarada")) if not ($tl.fun_exists? @name)[0]
     args = @args.recorrer[1]
-    return $tl.exec_fun(@name, args)
+    puts "Args done"
+    ret = $tl.exec_fun(@name, args)
+    puts "Recorriendo / #{self.class}" if $debug
+    return ret
   end
 end
 
@@ -497,6 +500,7 @@ class Nodo_FunctionNewName < NodoAST
     raise (ContextError.new(self, "Funcion '#{@name}' ya ha sido declarada en este scope")) if ($tl.fun_exists? @name)[0]
     return @name
   end
+  def to_str; return @name; end
 end
 
 class Nodo_VariableNewName < NodoAST
@@ -596,7 +600,7 @@ class Nodo_BloqueWhile < NodoAST
     raise (InterpreterError.new(self, "Valor nulo")) if @expression.nil? or @instructions.nil?
     t,v = @expression.recorrer
     raise (ContextError.new(self, "Tipo de expresión no es 'boolean' (Es #{t})")) if t!="boolean"
-    can = (v=="true")
+    can = (v==true)
     while can
       @instructions.recorrer
       can = @expression.recorrer[1]
@@ -624,7 +628,6 @@ end
 
 class Nodo_Scope < NodoAST
   def recorrer
-    puts "Recorriendo #{self.class}" if $debug
     $tl.open_scope
     self.recorrer_body
     $tl.close_scope
@@ -699,6 +702,7 @@ class Nodo_NewFunctionBody < NodoAST
   end
  
   def execute args
+    puts "Ejecutando #{@id.to_str}"
     $tl.open_level
     parametros = @params.recorrer # Esto debería meter los parámetros al symtable
     # Cambiar los valores de los parametros en la symtable

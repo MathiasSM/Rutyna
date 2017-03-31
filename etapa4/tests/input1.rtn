@@ -40,7 +40,7 @@ program
             while angle <= 360 do
                 rotater(n);
                 circle(100);
-                angle = angle + true;
+                angle = angle + 5;
                 incremental_forward(n);
             end;
         end;
