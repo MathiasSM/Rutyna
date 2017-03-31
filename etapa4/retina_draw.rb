@@ -34,6 +34,8 @@ class Instrucciones
   end
 end
 
+#$paint
+
 # Intenta adaptar tu código a usar esta clase en vez de Instrucciones. Me facilita el usar lo de var = method :C
 # Clase CapasPintura que tiene .cola una lista de instrucciones por pintar
 class CapasPintura
@@ -41,6 +43,7 @@ class CapasPintura
   # Subclase Capa que tiene name y args, para tu uso en for cola do |elemCola| blah
   # No te pasaré los id, sácalos tú xD
   class Capa
+    attr_accessor :id, :args
     def initialize id, args=[]
       @id = id
       @args = args
@@ -135,16 +138,17 @@ def get_line a, b
   return points
 end
 
+
 # Funcion que lee las instrucciones y devuelve un arreglo con los segmentos de rectas que deben ser
 # dibujados
 #  Argumentos:
 #   - instrucciones: arreglo de instrucciones de las funciones de dibujo
 #  Retorna: un arreglo de la clase Segmento, que contiene todos los segmentos dibujados
 
-def procesarCapa instrucciones
+def procesarCapa
   tortuga = Turtle.new()                  # Se crea la tortuga con sus valores por defecto
   segmentos  = []                         # Arreglo en el que se van agregando los segmentos conseguidos
-  for a in instrucciones
+  for a in $paint.cola
     if a.id == 1                          # Si la instruccion es 1) home():
       tortuga.punto = Punto.new(0, 0)     # Devuelve a la tortuga a la posicion inicial
 
@@ -233,50 +237,43 @@ end
 ####################################################################################################
 
 def dosCuadrados
-  instrucciones = []
   for i in 0..3
-    instrucciones += [Instrucciones.new(4, [200])]
-    instrucciones += [Instrucciones.new(7, [90])]
+    $paint.addCapa(4, [200])
+    $paint.addCapa(7, [90])
   end
 
   for i in 0..3
-    instrucciones += [Instrucciones.new(5, [200])]
-    instrucciones += [Instrucciones.new(7, [90])]
+    $paint.addCapa(5, [200])
+    $paint.addCapa(7, [90])
   end
-  return instrucciones
 end
 
 def dibujar_hexagono
-  instrucciones = []
-  instrucciones += [Instrucciones.new(7, [90])]
+  $paint.addCapa(7, [90])
   for i in 0..5
-    instrucciones += [Instrucciones.new(5, [200])]
-    instrucciones += [Instrucciones.new(6, [60])]
+    $paint.addCapa(5, [200])
+    $paint.addCapa(6, [60])
   end
-  return instrucciones
 end
 
 def dibujar_triangulo
-  instrucciones = []
-  instrucciones += [Instrucciones.new(7, [90])]
+  $paint.addCapa(7, [90])
   for i in 0..5
-    instrucciones += [Instrucciones.new(5, [200])]
-    instrucciones += [Instrucciones.new(6, [-120])]
+    $paint.addCapa(5, [200])
+    $paint.addCapa(6, [-120])
   end
-  return instrucciones
 end
 
 def dibujar_poligono n
-  instrucciones = []
-  instrucciones += [Instrucciones.new(7, [90])]
+  $paint.addCapa(7, [90])
   angulo = 360.00/n
   for i in 0..(n-1)
-    instrucciones += [Instrucciones.new(4, [200])]
-    instrucciones += [Instrucciones.new(6, [angulo])]
+    $paint.addCapa(4, [200])
+    $paint.addCapa(6, [angulo])
   end
-  return instrucciones
 end
 
-#poligono = dosCuadrados
-#segments = procesarCapa poligono
-#crearImagen segments
+$paint = CapasPintura.new
+dibujar_poligono 7
+segments = procesarCapa
+crearImagen segments
