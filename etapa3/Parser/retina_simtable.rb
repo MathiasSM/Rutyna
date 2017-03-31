@@ -33,6 +33,17 @@ class VarSymbol
 end
 
 class FunSymbol < VarSymbol; end  # Se utiliza el atributo .value para el cuerpo de la función
+
+class RubynaFunction
+  def initialize name, fun
+    @name = name
+    @type = nil
+    @value = fun
+  end
+  def execute args
+    @value.call args
+  end
+end
   
   
 # TABLA
@@ -41,7 +52,7 @@ class SymbolTable
   attr_accessor :table
   
   def initialize
-    @table
+    @table = []
   end
 end
 
@@ -49,42 +60,74 @@ end
 # LISTA DE TABLAS (mayor índice == scope más interno)
 # =====================
 class TableList
-  attr_accessor :meta
+  attr_accessor :meta, :funtable
   
   def initialize
-    @varlist = [SymbolTable.new()]  # Lista de tablas de VarSymbols
-    @funtable = SymbolTable.new()   # Una única tabla de FunSymbols
+    @varlist = [[SymbolTable.new()]]            # Lista de tablas de VarSymbols
+    @funtable = SymbolTable.new()               # Una única tabla de FunSymbols
+    self.addRetinaMagic
+  end
+  
+  def addRetinaMagic
+    
+  end
+  
+  def open_level;   @varlist.push [SymbolTable.new()]; end
+  def close_level;  @varlist.pop; end
+  
+  def open_scope;   @varlist[-1].push SymbolTable.new(); end
+  def close_scope;  @varlist[-1].pop; end
+  
+  def push_var symbol_name, type=nil, value=nil
+    @varlist[-1][-1].table.push VarSymbol.new(symbol_name, type, value)
+  end
+  
+  def push_fun symbol_name, type=nil, value=nil
+    @funtable.table.push FunSymbol.new(symbol_name, type, value)
   end
   
   def var_exists? symbol_name
     scope_dist = 0
-    @varlist.reverse.each do |scope|
+    puts "\n\nSearching for "+symbol_name
+    @varlist[-1].reverse.each do |scope|
+      i=scope_dist
+      while i>0; print "  "; i=-1; end
+      puts "====SCOPE #"+scope_dist.to_s+" ================="
       scope.table.each do |symbol|
+        i=scope_dist
+        while i>0; print "  "; i=-1; end
+        puts "checking: #{symbol_name} == #{symbol.name} ? "
         if symbol.name == symbol_name
-          return scope_dist, (symbol.type), (symbol.value)
+          puts "====> DIS "+symbol_name+ " EXISTS. Type:#{symbol.type} Val:#{symbol.value}"
+          return (symbol.type), (symbol.value)
         end
       end
       scope_dist += 1
     end
-    return -1, "None", 0 # Doesn't exist? Return these
+    puts "====> NEIN"
+    return false # Doesn't exist? Return these
   end
   
   def fun_exists? symbol_name
-    @funtable.each do |function|
+    puts symbol_name + " exists?"
+    @funtable.table.each do |function|
       if function.name == symbol_name
+        puts function.name + "! YES"
         return true, function.type
       end
     end
+    puts "NEIN"
     return false, ""
   end
   
-  def exec_fun symbol_name
+  def exec_fun symbol_name, args
     @funtable.each do |function|
       if function.name == symbol_name
-        # Execute here
-        return "type", 1
+        $tl.open_level
+          return function.value.execute args
+        $tl.close_level
       end
     end
-    return "Error", -1  # If not found
+    raise (ContextError.new(self, "Función #{@name} no ha sido declarada"))
   end
 end

@@ -171,16 +171,16 @@ rule
   ;
 
   INSTRUCTION:                                                                              { result = Nodo_Nulo.new;}
-              | VARID '=' EXPRESSION                                                        { result = Nodo_Asignacion.new(              val[0],              val[2] ); result.place val[0].row}
+              | VariableID '=' EXPRESSION                                                        { result = Nodo_Asignacion.new(              val[0],              val[2] ); result.place val[0].row}
               | with STATEMENTs do INSTRUCTIONs 'end'                                       { result = Nodo_BloqueWith.new(              val[1],              val[3] ); result.place val[0].row}
               | with STATEMENTs do 'end'                                                    { result = Nodo_BloqueWith.new(              val[1], Nodo_Lista.new(nil) ); result.place val[0].row}
               | with  do INSTRUCTIONs 'end'                                                 { result = Nodo_BloqueWith.new( Nodo_Lista.new(nil),              val[2] ); result.place val[0].row}
               | with  do  'end'                                                             { result = Nodo_BloqueWith.new( Nodo_Lista.new(nil), Nodo_Lista.new(nil) ); result.place val[0].row}
               | while EXPRESSION do INSTRUCTIONs 'end'                                      { result = Nodo_BloqueWhile.new( val[1], val[3] ); result.place val[0].row}
-              | for VARID from EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs 'end' { result = Nodo_BloqueFor.new( val[1], val[3], val[5],                  val[7],              val[9] ); result.place val[0].row}
-              | for VARID from EXPRESSION to EXPRESSION by EXPRESSION do 'end'              { result = Nodo_BloqueFor.new( val[1], val[3], val[5],                  val[7], Nodo_Lista.new(nil) ); result.place val[0].row}
-              | for VARID from EXPRESSION to EXPRESSION do INSTRUCTIONs 'end'               { result = Nodo_BloqueFor.new( val[1], val[3], val[5], Nodo_LitNumber.new( 1 ),              val[7] ); result.place val[0].row}
-              | for VARID from EXPRESSION to EXPRESSION do 'end'                            { result = Nodo_BloqueFor.new( val[1], val[3], val[5], Nodo_LitNumber.new( 1 ), Nodo_Lista.new(nil) ); result.place val[0].row}
+              | for VariableID from EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs 'end' { result = Nodo_BloqueFor.new( val[1], val[3], val[5],                  val[7],              val[9] ); result.place val[0].row}
+              | for VariableID from EXPRESSION to EXPRESSION by EXPRESSION do 'end'              { result = Nodo_BloqueFor.new( val[1], val[3], val[5],                  val[7], Nodo_Lista.new(nil) ); result.place val[0].row}
+              | for VariableID from EXPRESSION to EXPRESSION do INSTRUCTIONs 'end'               { result = Nodo_BloqueFor.new( val[1], val[3], val[5], Nodo_LitNumber.new( 1 ),              val[7] ); result.place val[0].row}
+              | for VariableID from EXPRESSION to EXPRESSION do 'end'                            { result = Nodo_BloqueFor.new( val[1], val[3], val[5], Nodo_LitNumber.new( 1 ), Nodo_Lista.new(nil) ); result.place val[0].row}
               | if EXPRESSION then INSTRUCTIONs 'end'                                       { result = Nodo_BloqueIfElse.new( val[1],              val[3], Nodo_Lista.new(nil) ); result.place val[0].row}
               | if EXPRESSION then 'end'                                                    { result = Nodo_BloqueIfElse.new( val[1], Nodo_Lista.new(nil), Nodo_Lista.new(nil) ); result.place val[0].row}
               | if EXPRESSION then INSTRUCTIONs else INSTRUCTIONs 'end'                     { result = Nodo_BloqueIfElse.new( val[1],              val[3],              val[5] ); result.place val[0].row}
@@ -222,12 +222,12 @@ rule
               | func FUNID '(' ')' BEGINEND                                                 { result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ), Nodo_Lista.new( nil ), val[4] ); result.place val[0].row}
   ;
 
-  FUNCTIONs: FUNCTION ';'                                                                   { result = Nodo_Lista.new( val[0] ); result.place val[0].row}
+  FUNCTIONs:    FUNCTION ';'                                                                { result = Nodo_Lista.new( val[0] ); result.place val[0].row}
               | FUNCTIONs FUNCTION ';'                                                      { result = Nodo_Lista.new( val[1] ).appendTo( val[0] ); result.place val[0].row}
   ;
 
-  RETINA:   PROGRAM ';'                                                                     { result = Nodo_Lista.new( val[0] ); result.place val[0].row}
-              | FUNCTIONs PROGRAM ';'                                                       { result = Nodo_Lista.new( val[1] ).appendTo( val[0] ); result.place val[0].row}
+  RETINA:       PROGRAM ';'                                                                 { result = AST.new( val[0] ); result.place val[0].row}
+              | FUNCTIONs PROGRAM ';'                                                       { result = AST.new( val[1], val[0] ); result.place val[0].row}
   ;
 
 ####################################################################################################
