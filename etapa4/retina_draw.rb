@@ -86,7 +86,7 @@ def leerInstrucciones instrucciones
 
     elsif a.id == 4                       # Si la instruccion es 4) forward():
       ini = tortuga.punto
-      dir = tortuga.angle
+      dir = tortuga.angulo
       len = a.args[0]
 
       tortuga.punto = desplazar ini, dir, len
@@ -97,7 +97,7 @@ def leerInstrucciones instrucciones
 
     elsif a.id == 5                       # Si la instruccion es 5) backward():
       ini = tortuga.punto
-      dir = tortuga.angle
+      dir = tortuga.angulo
       len = -a.args[0]
 
       tortuga.punto = desplazar ini, dir, len
@@ -129,27 +129,30 @@ end
 
 def crearImagen segmentos
   # Crear mapa de bits (Arreglo de 1001 arreglos de 1001 elementos == Matriz 1001x1001)
-  row = []
-  for i in 0..1000
-    row += [0]
-  end
+  bits = Array.new(1001) {|i| i = Array.new(1001, 0)}
 
-  bits = []
-  for i in 0..1000
-    bits += row
-  end
 
   # Time to draw! (Llenar el mapa con la información de los segmentos)
   for x in -500..500
     for y in -500..500
       segmentos.each do |seg|       # Para todos segmento s en segmentos
         punto = Punto.new(x, y)
-        if estaEnSegmento punto seg
+        if estaEnSegmento punto, seg
           i = 500 + x               # Calcula la fila del arreglo
           j = 500 - y               # Calcula la columa del arreglo
-          bits[i][j] = 1            # Enciende el bit
+          bits[i][j] = 1           # Enciende el bit
         end
       end
+    end
+  end
+
+  File.open('42.pbm', 'w') do |line|
+    line.print "P1\n1001 1001\n"
+    for i in 0..1000
+      for j in 0..1000
+        line.print bits[i][j]
+      end
+      line.print "\n"
     end
   end
 end
@@ -158,9 +161,8 @@ end
 ## Test:
 ####################################################################################################
 
-tortuga = Turtle.new()
-puts tortuga.angulo
-tortuga.rotateL(20)
-puts tortuga.angulo
-tortuga.rotateR(45)
-puts tortuga.angulo
+instrucciones = []
+instrucciones += [Instrucciones.new(4, [500])]
+instrucciones += [Instrucciones.new(8, [500, 500])]
+segments = leerInstrucciones instrucciones
+crearImagen segments
