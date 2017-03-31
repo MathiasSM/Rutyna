@@ -34,6 +34,28 @@ class Instrucciones
   end
 end
 
+# Intenta adaptar tu código a usar esta clase en vez de Instrucciones. Me facilita el usar lo de var = method :C
+# Clase CapasPintura que tiene .cola una lista de instrucciones por pintar
+class CapasPintura
+  attr_accessor :cola
+  # Subclase Capa que tiene name y args, para tu uso en for cola do |elemCola| blah
+  # No te pasaré los id, sácalos tú xD
+  class Capa
+    def initialize id, args=[]
+      @id = id
+      @args = args
+    end
+  end
+
+  def initialize
+    @cola = []
+  end
+  def addCapa id, args
+    @cola.push Capa.new(id, args)
+    return nil
+  end
+end
+
 ####################################################################################################
 ## CLASE DE LA TORTUGA:
 ####################################################################################################
