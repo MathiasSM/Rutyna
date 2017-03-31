@@ -39,16 +39,16 @@ rule 34 STATEMENT: DATATYPE VARID "=" EXPRESSION
 rule 35 STATEMENTs: STATEMENT ";"
 rule 36 STATEMENTs: STATEMENTs STATEMENT ";"
 rule 37 INSTRUCTION: 
-rule 38 INSTRUCTION: VARID "=" EXPRESSION
+rule 38 INSTRUCTION: VariableID "=" EXPRESSION
 rule 39 INSTRUCTION: with STATEMENTs do INSTRUCTIONs "end"
 rule 40 INSTRUCTION: with STATEMENTs do "end"
 rule 41 INSTRUCTION: with do INSTRUCTIONs "end"
 rule 42 INSTRUCTION: with do "end"
 rule 43 INSTRUCTION: while EXPRESSION do INSTRUCTIONs "end"
-rule 44 INSTRUCTION: for VARID from EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs "end"
-rule 45 INSTRUCTION: for VARID from EXPRESSION to EXPRESSION by EXPRESSION do "end"
-rule 46 INSTRUCTION: for VARID from EXPRESSION to EXPRESSION do INSTRUCTIONs "end"
-rule 47 INSTRUCTION: for VARID from EXPRESSION to EXPRESSION do "end"
+rule 44 INSTRUCTION: for VariableID from EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs "end"
+rule 45 INSTRUCTION: for VariableID from EXPRESSION to EXPRESSION by EXPRESSION do "end"
+rule 46 INSTRUCTION: for VariableID from EXPRESSION to EXPRESSION do INSTRUCTIONs "end"
+rule 47 INSTRUCTION: for VariableID from EXPRESSION to EXPRESSION do "end"
 rule 48 INSTRUCTION: if EXPRESSION then INSTRUCTIONs "end"
 rule 49 INSTRUCTION: if EXPRESSION then "end"
 rule 50 INSTRUCTION: if EXPRESSION then INSTRUCTIONs else INSTRUCTIONs "end"
@@ -98,7 +98,7 @@ rule 78 RETINA: FUNCTIONs PROGRAM ";"
     on right: 6 27 57 58 60
     on left : 26 27
   VARID (58)
-    on right: 29 30 34 38 44 45 46 47 64 65
+    on right: 29 30 34 64 65
     on left : 28
   VARIDs (59)
     on right: 30 33
@@ -189,7 +189,7 @@ rule 78 RETINA: FUNCTIONs PROGRAM ";"
   writeln (47) 58
   NumberLiteral (48) 1
   FunctionID (49) 6 7 60 61 70
-  VariableID (50) 5 28 56
+  VariableID (50) 5 28 38 44 45 46 47 56
   StringLiteral (51) 4
   UMINUS (52) 
   noassoc (53) 
@@ -218,23 +218,22 @@ state 2
   66) PROGRAM : program _ INSTRUCTIONs "end"
   67) PROGRAM : program _ "end"
 
-  "end"         shift, and go to state 22
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  "end"         shift, and go to state 21
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
-  INSTRUCTION   go to state 20
-  INSTRUCTIONs  go to state 21
+  INSTRUCTION   go to state 19
+  INSTRUCTIONs  go to state 20
 
 state 3
 
@@ -243,15 +242,15 @@ state 3
   73) FUNCTION : func _ FUNID "(" PARAMS ")" BEGINEND
   74) FUNCTION : func _ FUNID "(" ")" BEGINEND
 
-  FunctionID    shift, and go to state 23
+  FunctionID    shift, and go to state 22
 
-  FUNID         go to state 24
+  FUNID         go to state 23
 
 state 4
 
   75) FUNCTIONs : FUNCTION _ ";"
 
-  ";"           shift, and go to state 25
+  ";"           shift, and go to state 24
 
 
 state 5
@@ -262,79 +261,71 @@ state 5
   program       shift, and go to state 2
   func          shift, and go to state 3
 
-  FUNCTION      go to state 26
-  PROGRAM       go to state 27
+  FUNCTION      go to state 25
+  PROGRAM       go to state 26
 
 state 6
 
   77) RETINA : PROGRAM _ ";"
 
-  ";"           shift, and go to state 28
+  ";"           shift, and go to state 27
 
 
 state 7
 
 
-  $end          shift, and go to state 29
+  $end          shift, and go to state 28
 
 
 state 8
 
-  28) VARID : VariableID _
+  38) INSTRUCTION : VariableID _ "=" EXPRESSION
 
-  $default      reduce using rule 28 (VARID)
+  "="           shift, and go to state 29
 
 
 state 9
-
-  38) INSTRUCTION : VARID _ "=" EXPRESSION
-
-  "="           shift, and go to state 30
-
-
-state 10
 
   39) INSTRUCTION : with _ STATEMENTs do INSTRUCTIONs "end"
   40) INSTRUCTION : with _ STATEMENTs do "end"
   41) INSTRUCTION : with _ do INSTRUCTIONs "end"
   42) INSTRUCTION : with _ do "end"
 
-  do            shift, and go to state 36
-  boolean       shift, and go to state 31
-  number        shift, and go to state 32
+  do            shift, and go to state 35
+  boolean       shift, and go to state 30
+  number        shift, and go to state 31
 
-  DATATYPE      go to state 33
-  STATEMENT     go to state 34
-  STATEMENTs    go to state 35
+  DATATYPE      go to state 32
+  STATEMENT     go to state 33
+  STATEMENTs    go to state 34
 
-state 11
+state 10
 
   43) INSTRUCTION : while _ EXPRESSION do INSTRUCTIONs "end"
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
-  EXPRESSION    go to state 46
+  EXPRESSION    go to state 45
+
+state 11
+
+  44) INSTRUCTION : for _ VariableID from EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs "end"
+  45) INSTRUCTION : for _ VariableID from EXPRESSION to EXPRESSION by EXPRESSION do "end"
+  46) INSTRUCTION : for _ VariableID from EXPRESSION to EXPRESSION do INSTRUCTIONs "end"
+  47) INSTRUCTION : for _ VariableID from EXPRESSION to EXPRESSION do "end"
+
+  VariableID    shift, and go to state 46
+
 
 state 12
-
-  44) INSTRUCTION : for _ VARID from EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs "end"
-  45) INSTRUCTION : for _ VARID from EXPRESSION to EXPRESSION by EXPRESSION do "end"
-  46) INSTRUCTION : for _ VARID from EXPRESSION to EXPRESSION do INSTRUCTIONs "end"
-  47) INSTRUCTION : for _ VARID from EXPRESSION to EXPRESSION do "end"
-
-  VariableID    shift, and go to state 8
-
-  VARID         go to state 47
-
-state 13
 
   48) INSTRUCTION : if _ EXPRESSION then INSTRUCTIONs "end"
   49) INSTRUCTION : if _ EXPRESSION then "end"
@@ -343,306 +334,304 @@ state 13
   52) INSTRUCTION : if _ EXPRESSION then else INSTRUCTIONs "end"
   53) INSTRUCTION : if _ EXPRESSION then else "end"
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
+
+  EXPRESSION    go to state 47
+
+state 13
+
+  54) INSTRUCTION : repeat _ EXPRESSION times INSTRUCTIONs "end"
+  55) INSTRUCTION : repeat _ EXPRESSION times "end"
+
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 48
 
 state 14
 
-  54) INSTRUCTION : repeat _ EXPRESSION times INSTRUCTIONs "end"
-  55) INSTRUCTION : repeat _ EXPRESSION times "end"
+  56) INSTRUCTION : read _ VariableID
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  VariableID    shift, and go to state 49
 
-  EXPRESSION    go to state 49
 
 state 15
 
-  56) INSTRUCTION : read _ VariableID
+  57) INSTRUCTION : write _ EXPRESSIONs
 
-  VariableID    shift, and go to state 50
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
+  EXPRESSION    go to state 50
+  EXPRESSIONs   go to state 51
 
 state 16
 
-  57) INSTRUCTION : write _ EXPRESSIONs
+  58) INSTRUCTION : writeln _ EXPRESSIONs
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
-  EXPRESSION    go to state 51
+  EXPRESSION    go to state 50
   EXPRESSIONs   go to state 52
 
 state 17
 
-  58) INSTRUCTION : writeln _ EXPRESSIONs
-
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
-
-  EXPRESSION    go to state 51
-  EXPRESSIONs   go to state 53
-
-state 18
-
   59) INSTRUCTION : return _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
-  EXPRESSION    go to state 54
+  EXPRESSION    go to state 53
 
-state 19
+state 18
 
   60) INSTRUCTION : FunctionID _ "(" EXPRESSIONs ")"
   61) INSTRUCTION : FunctionID _ "(" ")"
 
-  "("           shift, and go to state 55
+  "("           shift, and go to state 54
+
+
+state 19
+
+  62) INSTRUCTIONs : INSTRUCTION _ ";"
+
+  ";"           shift, and go to state 55
 
 
 state 20
 
-  62) INSTRUCTIONs : INSTRUCTION _ ";"
-
-  ";"           shift, and go to state 56
-
-
-state 21
-
   63) INSTRUCTIONs : INSTRUCTIONs _ INSTRUCTION ";"
   66) PROGRAM : program INSTRUCTIONs _ "end"
 
-  "end"         shift, and go to state 58
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  "end"         shift, and go to state 57
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
-  INSTRUCTION   go to state 57
+  INSTRUCTION   go to state 56
 
-state 22
+state 21
 
   67) PROGRAM : program "end" _
 
   $default      reduce using rule 67 (PROGRAM)
 
 
-state 23
+state 22
 
   70) FUNID : FunctionID _
 
   $default      reduce using rule 70 (FUNID)
 
 
-state 24
+state 23
 
   71) FUNCTION : func FUNID _ "(" PARAMS ")" "->" DATATYPE BEGINEND
   72) FUNCTION : func FUNID _ "(" ")" "->" DATATYPE BEGINEND
   73) FUNCTION : func FUNID _ "(" PARAMS ")" BEGINEND
   74) FUNCTION : func FUNID _ "(" ")" BEGINEND
 
-  "("           shift, and go to state 59
+  "("           shift, and go to state 58
 
 
-state 25
+state 24
 
   75) FUNCTIONs : FUNCTION ";" _
 
   $default      reduce using rule 75 (FUNCTIONs)
 
 
-state 26
+state 25
 
   76) FUNCTIONs : FUNCTIONs FUNCTION _ ";"
+
+  ";"           shift, and go to state 59
+
+
+state 26
+
+  78) RETINA : FUNCTIONs PROGRAM _ ";"
 
   ";"           shift, and go to state 60
 
 
 state 27
 
-  78) RETINA : FUNCTIONs PROGRAM _ ";"
-
-  ";"           shift, and go to state 61
-
-
-state 28
-
   77) RETINA : PROGRAM ";" _
 
   $default      reduce using rule 77 (RETINA)
 
 
-state 29
+state 28
 
 
   $default      accept
 
 
+state 29
+
+  38) INSTRUCTION : VariableID "=" _ EXPRESSION
+
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
+
+  EXPRESSION    go to state 61
+
 state 30
-
-  38) INSTRUCTION : VARID "=" _ EXPRESSION
-
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
-
-  EXPRESSION    go to state 62
-
-state 31
 
   31) DATATYPE : boolean _
 
   $default      reduce using rule 31 (DATATYPE)
 
 
-state 32
+state 31
 
   32) DATATYPE : number _
 
   $default      reduce using rule 32 (DATATYPE)
 
 
-state 33
+state 32
 
   33) STATEMENT : DATATYPE _ VARIDs
   34) STATEMENT : DATATYPE _ VARID "=" EXPRESSION
 
-  VariableID    shift, and go to state 8
+  VariableID    shift, and go to state 62
 
   VARID         go to state 63
   VARIDs        go to state 64
 
-state 34
+state 33
 
   35) STATEMENTs : STATEMENT _ ";"
 
   ";"           shift, and go to state 65
 
 
-state 35
+state 34
 
   36) STATEMENTs : STATEMENTs _ STATEMENT ";"
   39) INSTRUCTION : with STATEMENTs _ do INSTRUCTIONs "end"
   40) INSTRUCTION : with STATEMENTs _ do "end"
 
   do            shift, and go to state 67
-  boolean       shift, and go to state 31
-  number        shift, and go to state 32
+  boolean       shift, and go to state 30
+  number        shift, and go to state 31
 
-  DATATYPE      go to state 33
+  DATATYPE      go to state 32
   STATEMENT     go to state 66
 
-state 36
+state 35
 
   41) INSTRUCTION : with do _ INSTRUCTIONs "end"
   42) INSTRUCTION : with do _ "end"
 
   "end"         shift, and go to state 69
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
   INSTRUCTIONs  go to state 68
-  INSTRUCTION   go to state 20
+  INSTRUCTION   go to state 19
 
-state 37
+state 36
 
    1) EXPRESSION : NumberLiteral _
 
   $default      reduce using rule 1 (EXPRESSION)
 
 
-state 38
+state 37
 
    2) EXPRESSION : true _
 
   $default      reduce using rule 2 (EXPRESSION)
 
 
-state 39
+state 38
 
    3) EXPRESSION : false _
 
   $default      reduce using rule 3 (EXPRESSION)
 
 
-state 40
+state 39
 
    4) EXPRESSION : StringLiteral _
 
   $default      reduce using rule 4 (EXPRESSION)
 
 
-state 41
+state 40
 
    5) EXPRESSION : VariableID _
 
   $default      reduce using rule 5 (EXPRESSION)
 
 
-state 42
+state 41
 
    6) EXPRESSION : FunctionID _ "(" EXPRESSIONs ")"
    7) EXPRESSION : FunctionID _ "(" ")"
@@ -650,55 +639,55 @@ state 42
   "("           shift, and go to state 70
 
 
-state 43
+state 42
 
    8) EXPRESSION : "(" _ EXPRESSION ")"
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 71
 
-state 44
+state 43
 
    9) EXPRESSION : "-" _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 72
 
-state 45
+state 44
 
   10) EXPRESSION : not _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 73
 
-state 46
+state 45
 
   11) EXPRESSION : EXPRESSION _ "*" EXPRESSION
   12) EXPRESSION : EXPRESSION _ "/" EXPRESSION
@@ -735,17 +724,17 @@ state 46
   do            shift, and go to state 89
 
 
-state 47
+state 46
 
-  44) INSTRUCTION : for VARID _ from EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs "end"
-  45) INSTRUCTION : for VARID _ from EXPRESSION to EXPRESSION by EXPRESSION do "end"
-  46) INSTRUCTION : for VARID _ from EXPRESSION to EXPRESSION do INSTRUCTIONs "end"
-  47) INSTRUCTION : for VARID _ from EXPRESSION to EXPRESSION do "end"
+  44) INSTRUCTION : for VariableID _ from EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs "end"
+  45) INSTRUCTION : for VariableID _ from EXPRESSION to EXPRESSION by EXPRESSION do "end"
+  46) INSTRUCTION : for VariableID _ from EXPRESSION to EXPRESSION do INSTRUCTIONs "end"
+  47) INSTRUCTION : for VariableID _ from EXPRESSION to EXPRESSION do "end"
 
   from          shift, and go to state 90
 
 
-state 48
+state 47
 
   11) EXPRESSION : EXPRESSION _ "*" EXPRESSION
   12) EXPRESSION : EXPRESSION _ "/" EXPRESSION
@@ -787,7 +776,7 @@ state 48
   then          shift, and go to state 91
 
 
-state 49
+state 48
 
   11) EXPRESSION : EXPRESSION _ "*" EXPRESSION
   12) EXPRESSION : EXPRESSION _ "/" EXPRESSION
@@ -825,14 +814,14 @@ state 49
   times         shift, and go to state 92
 
 
-state 50
+state 49
 
   56) INSTRUCTION : read VariableID _
 
   $default      reduce using rule 56 (INSTRUCTION)
 
 
-state 51
+state 50
 
   11) EXPRESSION : EXPRESSION _ "*" EXPRESSION
   12) EXPRESSION : EXPRESSION _ "/" EXPRESSION
@@ -869,7 +858,7 @@ state 51
   $default      reduce using rule 26 (EXPRESSIONs)
 
 
-state 52
+state 51
 
   27) EXPRESSIONs : EXPRESSIONs _ "," EXPRESSION
   57) INSTRUCTION : write EXPRESSIONs _
@@ -878,7 +867,7 @@ state 52
   $default      reduce using rule 57 (INSTRUCTION)
 
 
-state 53
+state 52
 
   27) EXPRESSIONs : EXPRESSIONs _ "," EXPRESSION
   58) INSTRUCTION : writeln EXPRESSIONs _
@@ -887,7 +876,7 @@ state 53
   $default      reduce using rule 58 (INSTRUCTION)
 
 
-state 54
+state 53
 
   11) EXPRESSION : EXPRESSION _ "*" EXPRESSION
   12) EXPRESSION : EXPRESSION _ "/" EXPRESSION
@@ -924,47 +913,47 @@ state 54
   $default      reduce using rule 59 (INSTRUCTION)
 
 
-state 55
+state 54
 
   60) INSTRUCTION : FunctionID "(" _ EXPRESSIONs ")"
   61) INSTRUCTION : FunctionID "(" _ ")"
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
   ")"           shift, and go to state 95
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
-  EXPRESSION    go to state 51
+  EXPRESSION    go to state 50
   EXPRESSIONs   go to state 94
 
-state 56
+state 55
 
   62) INSTRUCTIONs : INSTRUCTION ";" _
 
   $default      reduce using rule 62 (INSTRUCTIONs)
 
 
-state 57
+state 56
 
   63) INSTRUCTIONs : INSTRUCTIONs INSTRUCTION _ ";"
 
   ";"           shift, and go to state 96
 
 
-state 58
+state 57
 
   66) PROGRAM : program INSTRUCTIONs "end" _
 
   $default      reduce using rule 66 (PROGRAM)
 
 
-state 59
+state 58
 
   71) FUNCTION : func FUNID "(" _ PARAMS ")" "->" DATATYPE BEGINEND
   72) FUNCTION : func FUNID "(" _ ")" "->" DATATYPE BEGINEND
@@ -972,27 +961,27 @@ state 59
   74) FUNCTION : func FUNID "(" _ ")" BEGINEND
 
   ")"           shift, and go to state 99
-  boolean       shift, and go to state 31
-  number        shift, and go to state 32
+  boolean       shift, and go to state 30
+  number        shift, and go to state 31
 
   DATATYPE      go to state 97
   PARAMS        go to state 98
 
-state 60
+state 59
 
   76) FUNCTIONs : FUNCTIONs FUNCTION ";" _
 
   $default      reduce using rule 76 (FUNCTIONs)
 
 
-state 61
+state 60
 
   78) RETINA : FUNCTIONs PROGRAM ";" _
 
   $default      reduce using rule 78 (RETINA)
 
 
-state 62
+state 61
 
   11) EXPRESSION : EXPRESSION _ "*" EXPRESSION
   12) EXPRESSION : EXPRESSION _ "/" EXPRESSION
@@ -1009,7 +998,7 @@ state 62
   23) EXPRESSION : EXPRESSION _ ">" EXPRESSION
   24) EXPRESSION : EXPRESSION _ or EXPRESSION
   25) EXPRESSION : EXPRESSION _ and EXPRESSION
-  38) INSTRUCTION : VARID "=" EXPRESSION _
+  38) INSTRUCTION : VariableID "=" EXPRESSION _
 
   "=="          shift, and go to state 81
   "/="          shift, and go to state 82
@@ -1027,6 +1016,13 @@ state 62
   and           shift, and go to state 88
   or            shift, and go to state 87
   $default      reduce using rule 38 (INSTRUCTION)
+
+
+state 62
+
+  28) VARID : VariableID _
+
+  $default      reduce using rule 28 (VARID)
 
 
 state 63
@@ -1067,22 +1063,21 @@ state 67
   40) INSTRUCTION : with STATEMENTs do _ "end"
 
   "end"         shift, and go to state 104
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
   INSTRUCTIONs  go to state 103
-  INSTRUCTION   go to state 20
+  INSTRUCTION   go to state 19
 
 state 68
 
@@ -1090,21 +1085,20 @@ state 68
   63) INSTRUCTIONs : INSTRUCTIONs _ INSTRUCTION ";"
 
   "end"         shift, and go to state 105
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
-  INSTRUCTION   go to state 57
+  INSTRUCTION   go to state 56
 
 state 69
 
@@ -1118,19 +1112,19 @@ state 70
    6) EXPRESSION : FunctionID "(" _ EXPRESSIONs ")"
    7) EXPRESSION : FunctionID "(" _ ")"
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
   ")"           shift, and go to state 107
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSIONs   go to state 106
-  EXPRESSION    go to state 51
+  EXPRESSION    go to state 50
 
 state 71
 
@@ -1217,15 +1211,15 @@ state 74
 
   11) EXPRESSION : EXPRESSION "*" _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 109
 
@@ -1233,15 +1227,15 @@ state 75
 
   12) EXPRESSION : EXPRESSION "/" _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 110
 
@@ -1249,15 +1243,15 @@ state 76
 
   13) EXPRESSION : EXPRESSION div _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 111
 
@@ -1265,15 +1259,15 @@ state 77
 
   14) EXPRESSION : EXPRESSION mod _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 112
 
@@ -1281,15 +1275,15 @@ state 78
 
   15) EXPRESSION : EXPRESSION "%" _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 113
 
@@ -1297,15 +1291,15 @@ state 79
 
   16) EXPRESSION : EXPRESSION "+" _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 114
 
@@ -1313,15 +1307,15 @@ state 80
 
   17) EXPRESSION : EXPRESSION "-" _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 115
 
@@ -1329,15 +1323,15 @@ state 81
 
   18) EXPRESSION : EXPRESSION "==" _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 116
 
@@ -1345,15 +1339,15 @@ state 82
 
   19) EXPRESSION : EXPRESSION "/=" _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 117
 
@@ -1361,15 +1355,15 @@ state 83
 
   20) EXPRESSION : EXPRESSION "<=" _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 118
 
@@ -1377,15 +1371,15 @@ state 84
 
   21) EXPRESSION : EXPRESSION ">=" _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 119
 
@@ -1393,15 +1387,15 @@ state 85
 
   22) EXPRESSION : EXPRESSION "<" _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 120
 
@@ -1409,15 +1403,15 @@ state 86
 
   23) EXPRESSION : EXPRESSION ">" _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 121
 
@@ -1425,15 +1419,15 @@ state 87
 
   24) EXPRESSION : EXPRESSION or _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 122
 
@@ -1441,15 +1435,15 @@ state 88
 
   25) EXPRESSION : EXPRESSION and _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 123
 
@@ -1457,39 +1451,38 @@ state 89
 
   43) INSTRUCTION : while EXPRESSION do _ INSTRUCTIONs "end"
 
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
   INSTRUCTIONs  go to state 124
-  INSTRUCTION   go to state 20
+  INSTRUCTION   go to state 19
 
 state 90
 
-  44) INSTRUCTION : for VARID from _ EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs "end"
-  45) INSTRUCTION : for VARID from _ EXPRESSION to EXPRESSION by EXPRESSION do "end"
-  46) INSTRUCTION : for VARID from _ EXPRESSION to EXPRESSION do INSTRUCTIONs "end"
-  47) INSTRUCTION : for VARID from _ EXPRESSION to EXPRESSION do "end"
+  44) INSTRUCTION : for VariableID from _ EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs "end"
+  45) INSTRUCTION : for VariableID from _ EXPRESSION to EXPRESSION by EXPRESSION do "end"
+  46) INSTRUCTION : for VariableID from _ EXPRESSION to EXPRESSION do INSTRUCTIONs "end"
+  47) INSTRUCTION : for VariableID from _ EXPRESSION to EXPRESSION do "end"
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 125
 
@@ -1503,23 +1496,22 @@ state 91
   53) INSTRUCTION : if EXPRESSION then _ else "end"
 
   "end"         shift, and go to state 127
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
   else          shift, and go to state 128
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
   INSTRUCTIONs  go to state 126
-  INSTRUCTION   go to state 20
+  INSTRUCTION   go to state 19
 
 state 92
 
@@ -1527,36 +1519,35 @@ state 92
   55) INSTRUCTION : repeat EXPRESSION times _ "end"
 
   "end"         shift, and go to state 130
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
   INSTRUCTIONs  go to state 129
-  INSTRUCTION   go to state 20
+  INSTRUCTION   go to state 19
 
 state 93
 
   27) EXPRESSIONs : EXPRESSIONs "," _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 131
 
@@ -1587,7 +1578,7 @@ state 97
 
   64) PARAMS : DATATYPE _ VARID
 
-  VariableID    shift, and go to state 8
+  VariableID    shift, and go to state 62
 
   VARID         go to state 133
 
@@ -1615,15 +1606,15 @@ state 100
 
   34) STATEMENT : DATATYPE VARID "=" _ EXPRESSION
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 139
 
@@ -1631,7 +1622,7 @@ state 101
 
   30) VARIDs : VARIDs "," _ VARID
 
-  VariableID    shift, and go to state 8
+  VariableID    shift, and go to state 62
 
   VARID         go to state 140
 
@@ -1648,21 +1639,20 @@ state 103
   63) INSTRUCTIONs : INSTRUCTIONs _ INSTRUCTION ";"
 
   "end"         shift, and go to state 141
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
-  INSTRUCTION   go to state 57
+  INSTRUCTION   go to state 56
 
 state 104
 
@@ -2122,21 +2112,20 @@ state 124
   63) INSTRUCTIONs : INSTRUCTIONs _ INSTRUCTION ";"
 
   "end"         shift, and go to state 143
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
-  INSTRUCTION   go to state 57
+  INSTRUCTION   go to state 56
 
 state 125
 
@@ -2155,10 +2144,10 @@ state 125
   23) EXPRESSION : EXPRESSION _ ">" EXPRESSION
   24) EXPRESSION : EXPRESSION _ or EXPRESSION
   25) EXPRESSION : EXPRESSION _ and EXPRESSION
-  44) INSTRUCTION : for VARID from EXPRESSION _ to EXPRESSION by EXPRESSION do INSTRUCTIONs "end"
-  45) INSTRUCTION : for VARID from EXPRESSION _ to EXPRESSION by EXPRESSION do "end"
-  46) INSTRUCTION : for VARID from EXPRESSION _ to EXPRESSION do INSTRUCTIONs "end"
-  47) INSTRUCTION : for VARID from EXPRESSION _ to EXPRESSION do "end"
+  44) INSTRUCTION : for VariableID from EXPRESSION _ to EXPRESSION by EXPRESSION do INSTRUCTIONs "end"
+  45) INSTRUCTION : for VariableID from EXPRESSION _ to EXPRESSION by EXPRESSION do "end"
+  46) INSTRUCTION : for VariableID from EXPRESSION _ to EXPRESSION do INSTRUCTIONs "end"
+  47) INSTRUCTION : for VariableID from EXPRESSION _ to EXPRESSION do "end"
 
   "=="          shift, and go to state 81
   "/="          shift, and go to state 82
@@ -2186,22 +2175,21 @@ state 126
   63) INSTRUCTIONs : INSTRUCTIONs _ INSTRUCTION ";"
 
   "end"         shift, and go to state 145
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
   else          shift, and go to state 146
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
-  INSTRUCTION   go to state 57
+  INSTRUCTION   go to state 56
 
 state 127
 
@@ -2216,22 +2204,21 @@ state 128
   53) INSTRUCTION : if EXPRESSION then else _ "end"
 
   "end"         shift, and go to state 148
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
   INSTRUCTIONs  go to state 147
-  INSTRUCTION   go to state 20
+  INSTRUCTION   go to state 19
 
 state 129
 
@@ -2239,21 +2226,20 @@ state 129
   63) INSTRUCTIONs : INSTRUCTIONs _ INSTRUCTION ";"
 
   "end"         shift, and go to state 149
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
-  INSTRUCTION   go to state 57
+  INSTRUCTION   go to state 56
 
 state 130
 
@@ -2317,8 +2303,8 @@ state 134
 
   65) PARAMS : PARAMS "," _ DATATYPE VARID
 
-  boolean       shift, and go to state 31
-  number        shift, and go to state 32
+  boolean       shift, and go to state 30
+  number        shift, and go to state 31
 
   DATATYPE      go to state 150
 
@@ -2338,29 +2324,28 @@ state 136
   69) BEGINEND : begin _ "end"
 
   "end"         shift, and go to state 154
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
-  INSTRUCTION   go to state 20
+  INSTRUCTION   go to state 19
   INSTRUCTIONs  go to state 153
 
 state 137
 
   72) FUNCTION : func FUNID "(" ")" "->" _ DATATYPE BEGINEND
 
-  boolean       shift, and go to state 31
-  number        shift, and go to state 32
+  boolean       shift, and go to state 30
+  number        shift, and go to state 31
 
   DATATYPE      go to state 155
 
@@ -2438,20 +2423,20 @@ state 143
 
 state 144
 
-  44) INSTRUCTION : for VARID from EXPRESSION to _ EXPRESSION by EXPRESSION do INSTRUCTIONs "end"
-  45) INSTRUCTION : for VARID from EXPRESSION to _ EXPRESSION by EXPRESSION do "end"
-  46) INSTRUCTION : for VARID from EXPRESSION to _ EXPRESSION do INSTRUCTIONs "end"
-  47) INSTRUCTION : for VARID from EXPRESSION to _ EXPRESSION do "end"
+  44) INSTRUCTION : for VariableID from EXPRESSION to _ EXPRESSION by EXPRESSION do INSTRUCTIONs "end"
+  45) INSTRUCTION : for VariableID from EXPRESSION to _ EXPRESSION by EXPRESSION do "end"
+  46) INSTRUCTION : for VariableID from EXPRESSION to _ EXPRESSION do INSTRUCTIONs "end"
+  47) INSTRUCTION : for VariableID from EXPRESSION to _ EXPRESSION do "end"
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 156
 
@@ -2468,22 +2453,21 @@ state 146
   51) INSTRUCTION : if EXPRESSION then INSTRUCTIONs else _ "end"
 
   "end"         shift, and go to state 158
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
   INSTRUCTIONs  go to state 157
-  INSTRUCTION   go to state 20
+  INSTRUCTION   go to state 19
 
 state 147
 
@@ -2491,21 +2475,20 @@ state 147
   63) INSTRUCTIONs : INSTRUCTIONs _ INSTRUCTION ";"
 
   "end"         shift, and go to state 159
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
-  INSTRUCTION   go to state 57
+  INSTRUCTION   go to state 56
 
 state 148
 
@@ -2525,7 +2508,7 @@ state 150
 
   65) PARAMS : PARAMS "," DATATYPE _ VARID
 
-  VariableID    shift, and go to state 8
+  VariableID    shift, and go to state 62
 
   VARID         go to state 160
 
@@ -2533,8 +2516,8 @@ state 151
 
   71) FUNCTION : func FUNID "(" PARAMS ")" "->" _ DATATYPE BEGINEND
 
-  boolean       shift, and go to state 31
-  number        shift, and go to state 32
+  boolean       shift, and go to state 30
+  number        shift, and go to state 31
 
   DATATYPE      go to state 161
 
@@ -2551,21 +2534,20 @@ state 153
   68) BEGINEND : begin INSTRUCTIONs _ "end"
 
   "end"         shift, and go to state 162
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
-  INSTRUCTION   go to state 57
+  INSTRUCTION   go to state 56
 
 state 154
 
@@ -2599,10 +2581,10 @@ state 156
   23) EXPRESSION : EXPRESSION _ ">" EXPRESSION
   24) EXPRESSION : EXPRESSION _ or EXPRESSION
   25) EXPRESSION : EXPRESSION _ and EXPRESSION
-  44) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION _ by EXPRESSION do INSTRUCTIONs "end"
-  45) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION _ by EXPRESSION do "end"
-  46) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION _ do INSTRUCTIONs "end"
-  47) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION _ do "end"
+  44) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION _ by EXPRESSION do INSTRUCTIONs "end"
+  45) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION _ by EXPRESSION do "end"
+  46) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION _ do INSTRUCTIONs "end"
+  47) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION _ do "end"
 
   "=="          shift, and go to state 81
   "/="          shift, and go to state 82
@@ -2629,21 +2611,20 @@ state 157
   63) INSTRUCTIONs : INSTRUCTIONs _ INSTRUCTION ";"
 
   "end"         shift, and go to state 166
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
-  INSTRUCTION   go to state 57
+  INSTRUCTION   go to state 56
 
 state 158
 
@@ -2690,43 +2671,42 @@ state 163
 
 state 164
 
-  44) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION by _ EXPRESSION do INSTRUCTIONs "end"
-  45) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION by _ EXPRESSION do "end"
+  44) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION by _ EXPRESSION do INSTRUCTIONs "end"
+  45) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION by _ EXPRESSION do "end"
 
-  "-"           shift, and go to state 44
-  "("           shift, and go to state 43
-  not           shift, and go to state 45
-  true          shift, and go to state 38
-  false         shift, and go to state 39
-  NumberLiteral  shift, and go to state 37
-  FunctionID    shift, and go to state 42
-  VariableID    shift, and go to state 41
-  StringLiteral  shift, and go to state 40
+  "-"           shift, and go to state 43
+  "("           shift, and go to state 42
+  not           shift, and go to state 44
+  true          shift, and go to state 37
+  false         shift, and go to state 38
+  NumberLiteral  shift, and go to state 36
+  FunctionID    shift, and go to state 41
+  VariableID    shift, and go to state 40
+  StringLiteral  shift, and go to state 39
 
   EXPRESSION    go to state 168
 
 state 165
 
-  46) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION do _ INSTRUCTIONs "end"
-  47) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION do _ "end"
+  46) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION do _ INSTRUCTIONs "end"
+  47) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION do _ "end"
 
   "end"         shift, and go to state 170
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
   INSTRUCTIONs  go to state 169
-  INSTRUCTION   go to state 20
+  INSTRUCTION   go to state 19
 
 state 166
 
@@ -2759,8 +2739,8 @@ state 168
   23) EXPRESSION : EXPRESSION _ ">" EXPRESSION
   24) EXPRESSION : EXPRESSION _ or EXPRESSION
   25) EXPRESSION : EXPRESSION _ and EXPRESSION
-  44) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION by EXPRESSION _ do INSTRUCTIONs "end"
-  45) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION by EXPRESSION _ do "end"
+  44) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION by EXPRESSION _ do INSTRUCTIONs "end"
+  45) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION by EXPRESSION _ do "end"
 
   "=="          shift, and go to state 81
   "/="          shift, and go to state 82
@@ -2782,95 +2762,92 @@ state 168
 
 state 169
 
-  46) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION do INSTRUCTIONs _ "end"
+  46) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION do INSTRUCTIONs _ "end"
   63) INSTRUCTIONs : INSTRUCTIONs _ INSTRUCTION ";"
 
   "end"         shift, and go to state 172
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
-  INSTRUCTION   go to state 57
+  INSTRUCTION   go to state 56
 
 state 170
 
-  47) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION do "end" _
+  47) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION do "end" _
 
   $default      reduce using rule 47 (INSTRUCTION)
 
 
 state 171
 
-  44) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION by EXPRESSION do _ INSTRUCTIONs "end"
-  45) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION by EXPRESSION do _ "end"
+  44) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION by EXPRESSION do _ INSTRUCTIONs "end"
+  45) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION by EXPRESSION do _ "end"
 
   "end"         shift, and go to state 174
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
   INSTRUCTIONs  go to state 173
-  INSTRUCTION   go to state 20
+  INSTRUCTION   go to state 19
 
 state 172
 
-  46) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION do INSTRUCTIONs "end" _
+  46) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION do INSTRUCTIONs "end" _
 
   $default      reduce using rule 46 (INSTRUCTION)
 
 
 state 173
 
-  44) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs _ "end"
+  44) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs _ "end"
   63) INSTRUCTIONs : INSTRUCTIONs _ INSTRUCTION ";"
 
   "end"         shift, and go to state 175
-  with          shift, and go to state 10
-  while         shift, and go to state 11
-  if            shift, and go to state 13
-  for           shift, and go to state 12
-  repeat        shift, and go to state 14
-  return        shift, and go to state 18
-  read          shift, and go to state 15
-  write         shift, and go to state 16
-  writeln       shift, and go to state 17
-  FunctionID    shift, and go to state 19
+  with          shift, and go to state 9
+  while         shift, and go to state 10
+  if            shift, and go to state 12
+  for           shift, and go to state 11
+  repeat        shift, and go to state 13
+  return        shift, and go to state 17
+  read          shift, and go to state 14
+  write         shift, and go to state 15
+  writeln       shift, and go to state 16
+  FunctionID    shift, and go to state 18
   VariableID    shift, and go to state 8
   $default      reduce using rule 37 (INSTRUCTION)
 
-  VARID         go to state 9
-  INSTRUCTION   go to state 57
+  INSTRUCTION   go to state 56
 
 state 174
 
-  45) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION by EXPRESSION do "end" _
+  45) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION by EXPRESSION do "end" _
 
   $default      reduce using rule 45 (INSTRUCTION)
 
 
 state 175
 
-  44) INSTRUCTION : for VARID from EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs "end" _
+  44) INSTRUCTION : for VariableID from EXPRESSION to EXPRESSION by EXPRESSION do INSTRUCTIONs "end" _
 
   $default      reduce using rule 44 (INSTRUCTION)
 

@@ -70,16 +70,18 @@ def main
       lexer = Lexer.new input   # Inicializamos Lexer con el input del archivo
       parser = Parser.new       # Inicializamos Parser
       ast = parser.parse lexer  # Creamos el AST de prueba a partir del output del Parser
-      
+
     rescue SyntacticError => e  # Al primer error de sintáxis salimos corriendo
       puts e
       exit 1
       
+    # rescue ContextError => e  # Al primer error de sintáxis salimos corriendo
+    #   puts e
+    #   exit 1
+    #
     else
       begin
-        $tl = TableList.new
-        
-        ast.recorrer
+        ast.execute
       rescue ContextError => e  # Al primer error de sintáxis salimos corriendo
         puts e
         exit 1

@@ -4,7 +4,7 @@ begin
         boolean b = false;
     do
         b = x < y;
-        b = 1;
+        b = false;
         if b then
             return x;
         end;
@@ -14,7 +14,7 @@ end;
 
 func incremental_forward(number i)
 begin
-    for i from 1 to steps do
+    for i from 1 to 2 do
         forward(i);
     end;
     for j from 0 to 9 by 3 do
