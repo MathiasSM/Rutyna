@@ -23,7 +23,16 @@ require_relative "retina_geometry" # Importar libreria de funciones geometricas 
 ## CLASE DE LAS INSTRUCCIONES:
 ####################################################################################################
 
-# Clase para guardar la info necesaria de las llamadas a funciones de la tortuga
+class Instrucciones
+  attr_accessor :id, :args
+  # id: identificador de la función
+  # args: argumentos de la función
+
+  def initialize id, args=[]
+    @id = id
+    @args = args
+  end
+end
 
 ####################################################################################################
 ## CLASE DE LA TORTUGA:
@@ -42,6 +51,14 @@ class Turtle
     @punto = punto
     @ojo = ojo
   end
+
+  def rotateL x
+    @angulo = (@angulo+x) - (360*(((@angulo+x)/360.00).floor))
+  end
+
+  def rotateR x
+    @angulo = (@angulo-x) - (360*(((@angulo-x)/360.00).floor))
+  end
 end
 
 ####################################################################################################
@@ -58,34 +75,51 @@ def leerInstrucciones instrucciones
   tortuga = Turtle.new()                  # Se crea la tortuga con sus valores por defecto
   segmentos  = []                         # Arreglo en el que se van agregando los segmentos conseguidos
   instrucciones.each do |a|
-    if a == 1                             # Si la instruccion es 1) home():
+    if a.id == 1                          # Si la instruccion es 1) home():
       tortuga.punto = Punto.new(0, 0)     # Devuelve a la tortuga a la posicion inicial
 
-    elsif a == 2                          # Si la instruccion es 2) openeye():
+    elsif a.id == 2                       # Si la instruccion es 2) openeye():
       tortuga.ojo = true                  # Activar el ojo para marcar
 
-    elsif a == 3                          # Si la instruccion es 3) closeeye():
+    elsif a.id == 3                       # Si la instruccion es 3) closeeye():
       tortuga.ojo = false                 # Desactivar el ojo
 
-    elsif a == 4                          # Si la instruccion es 4) forward():
-      tortuga.punto = Punto.new(0, 0)     # Esto es un poquito mas complicado, lo  dejaremos de ultimo
+    elsif a.id == 4                       # Si la instruccion es 4) forward():
+      ini = tortuga.punto
+      dir = tortuga.angle
+      len = a.args[0]
 
-    elsif a == 5                          # Si la instruccion es 5) backward():
-      tortuga.punto = Punto.new(0, 0)     # Esto es un poquito mas complicado, lo  dejaremos de ultimo
+      tortuga.punto = desplazar ini, dir, len
 
-    elsif a == 6                          # Si la instruccion es 6) rotatel(x):
-      tortuga.dir = tortuga.dir + x       # Es una formula un poco mas complicada, pero es mejor tener lo otro antes de hacer esto
+      if tortuga.ojo
+        segmentos += [Segmento.new(ini, dir, len)]
+      end
 
-    elsif a == 7                          # Si la instruccion es 7) rotater(x):
-      tortuga.dir = tortuga.dir - x       # Es una formula un poco mas complicada, pero es mejor tener lo otro antes de hacer esto
+    elsif a.id == 5                       # Si la instruccion es 5) backward():
+      ini = tortuga.punto
+      dir = tortuga.angle
+      len = -a.args[0]
 
-    else a == 8                           # Si la instruccion es 8) setposition(x, y):
+      tortuga.punto = desplazar ini, dir, len
+
+      if tortuga.ojo
+        segmentos += [Segmento.new(ini, dir, len)]
+      end
+
+    elsif a.id == 6                       # Si la instruccion es 6) rotatel(x):
+      tortuga.rotateL(a.args[0])          # Rotar tortuga a la izquierda
+
+    elsif a.id == 7                       # Si la instruccion es 7) rotater(x):
+      tortuga.rotateR(a.args[0])          # Rotar tortuga a la derecha
+
+    else                                  # Si la instruccion es 8) setposition(x, y):
+      x = a.args[0]
+      y = a.args[1]
       tortuga.punto = Punto.new(x, y)
     end
   end
   return segmentos
 end
-
 
 # Funcion que crea un arreglo de bits que representa la imagen
 #  Atributos:
@@ -119,3 +153,14 @@ def crearImagen segmentos
     end
   end
 end
+
+####################################################################################################
+## Test:
+####################################################################################################
+
+tortuga = Turtle.new()
+puts tortuga.angulo
+tortuga.rotateL(20)
+puts tortuga.angulo
+tortuga.rotateR(45)
+puts tortuga.angulo
