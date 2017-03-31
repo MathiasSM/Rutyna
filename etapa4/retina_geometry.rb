@@ -90,7 +90,7 @@ end
 # Atributos
 #   inicio:     punto de inicio del segmento
 #   direccion:  angulo del segmento con respecto al eje x
-#   longitud:   longitud del segmento
+#   longitud:   longitud del segmento 
 class Segmento
    attr_accessor :inicio, :direccion, :longitud
 
@@ -111,7 +111,7 @@ end
 #   false:  si el punto p no esta en el segmento s
 def estaEnSegmento p, s
   a = s.inicio                                                            # Punto inicial del segmento
-  b = desplazar p, s.direccion, s.longitud                                # Punto final del segmento
+  b = desplazar a, s.direccion, s.longitud                                # Punto final del segmento
   dist = distPuntoSegmento a, b, p                                        # Distancia del punto al segmento
   if dist < (Math.sqrt 1.9)*0.5
       return true
@@ -133,7 +133,7 @@ def desplazar p, dir, l
   y       = Math.sin(alpha)*l
   return sum p, Punto.new(x, y)
 end
-
+   
 
 
 
@@ -144,7 +144,7 @@ punto2 = Punto.new(2, 0)
 punto3 = sum punto1, punto2
 
 def imprimirPunto p
-  puts "Punto:"
+  puts "Punto:"  
   puts p.x
   puts p.y
 end
@@ -153,6 +153,6 @@ end
 # puts punto3.y
 # puts dist2 punto1, punto2
 # puts dist punto1, punto2
-#imprimirPunto (proyectar punto1, punto2, Punto.new(1, 1))
-#puts distPuntoSegmento punto1, punto2, Punto.new(1, 1)
-#puts estaEnSegmento punto2, Segmento.new(punto1, 0, 7)
+# imprimirPunto (proyectar punto1, punto2, Punto.new(1, 1))
+# puts distPuntoSegmento punto1, punto2, Punto.new(1, 1)
+# puts estaEnSegmento punto2, Segmento.new(punto1, 0, 7) 

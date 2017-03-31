@@ -34,28 +34,6 @@ class Instrucciones
   end
 end
 
-# Intenta adaptar tu código a usar esta clase en vez de Instrucciones. Me facilita el usar lo de var = method :C
-# Clase CapasPintura que tiene .cola una lista de instrucciones por pintar
-class CapasPintura
-  attr_accessor :cola
-  # Subclase Capa que tiene name y args, para tu uso en for cola do |elemCola| blah
-  # No te pasaré los id, sácalos tú xD
-  class Capa
-    def initialize id, args=[]
-      @id = id
-      @args = args
-    end
-  end
-  
-  def initialize
-    @cola = []
-  end
-  def addCapa id, args
-    @cola.push Capa.new(id, args)
-    return nil
-  end
-end
-
 ####################################################################################################
 ## CLASE DE LA TORTUGA:
 ####################################################################################################
@@ -110,23 +88,19 @@ def leerInstrucciones instrucciones
       ini = tortuga.punto
       dir = tortuga.angulo
       len = a.args[0]
-
-      tortuga.punto = desplazar ini, dir, len
-
       if tortuga.ojo
         segmentos += [Segmento.new(ini, dir, len)]
       end
+      tortuga.punto = desplazar ini, dir, len
 
     elsif a.id == 5                       # Si la instruccion es 5) backward():
       ini = tortuga.punto
       dir = tortuga.angulo
       len = -a.args[0]
-
-      tortuga.punto = desplazar ini, dir, len
-
       if tortuga.ojo
         segmentos += [Segmento.new(ini, dir, len)]
       end
+      tortuga.punto = desplazar ini, dir, len
 
     elsif a.id == 6                       # Si la instruccion es 6) rotatel(x):
       tortuga.rotateL(a.args[0])          # Rotar tortuga a la izquierda
@@ -157,18 +131,21 @@ def crearImagen segmentos
   # Time to draw! (Llenar el mapa con la información de los segmentos)
   for x in -500..500
     for y in -500..500
-      segmentos.each do |seg|       # Para todos segmento s en segmentos
+    segmentos.each do |seg|       # Para todos segmento s en segmentos
         punto = Punto.new(x, y)
         if estaEnSegmento punto, seg
-          i = 500 + x               # Calcula la fila del arreglo
-          j = 500 - y               # Calcula la columa del arreglo
+          i = 500 - y               # Calcula la fila del arreglo
+          j = 500 + x               # Calcula la columa del arreglo
           bits[i][j] = 1           # Enciende el bit
         end
       end
     end
   end
 
-  File.open('42.pbm', 'w') do |line|
+
+
+    
+  File.open('7.pbm', 'w') do |line|
     line.print "P1\n1001 1001\n"
     for i in 0..1000
       for j in 0..1000
@@ -183,8 +160,54 @@ end
 ## Test:
 ####################################################################################################
 
-instrucciones = []
-instrucciones += [Instrucciones.new(4, [500])]
-instrucciones += [Instrucciones.new(8, [500, 500])]
-segments = leerInstrucciones instrucciones
+
+
+
+def dosCuadrados
+  instrucciones = []  
+  for i in 0..3
+    instrucciones += [Instrucciones.new(4, [200])]
+    instrucciones += [Instrucciones.new(7, [90])]
+  end
+
+  for i in 0..3
+    instrucciones += [Instrucciones.new(5, [200])]
+    instrucciones += [Instrucciones.new(7, [90])]
+  end
+  return instrucciones
+end
+
+def dibujar_hexagono
+  instrucciones = []  
+  instrucciones += [Instrucciones.new(7, [90])]  
+  for i in 0..5
+    instrucciones += [Instrucciones.new(5, [200])]
+    instrucciones += [Instrucciones.new(6, [60])]
+  end
+  return instrucciones
+end
+
+def dibujar_triangulo
+  instrucciones = []  
+  instrucciones += [Instrucciones.new(7, [90])]  
+  for i in 0..5
+    instrucciones += [Instrucciones.new(5, [200])]
+    instrucciones += [Instrucciones.new(6, [-120])]
+  end
+  return instrucciones
+end
+
+def dibujar_poligono n
+  instrucciones = []
+  instrucciones += [Instrucciones.new(7, [90])]
+  angulo = 360.00/n
+  for i in 0..(n-1)
+    instrucciones += [Instrucciones.new(4, [200])]
+    instrucciones += [Instrucciones.new(6, [angulo])]
+  end
+  return instrucciones
+end
+
+poligono = dibujar_poligono 7
+segments = leerInstrucciones poligono
 crearImagen segments
