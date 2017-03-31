@@ -35,13 +35,12 @@ end
 class FunSymbol < VarSymbol; end  # Se utiliza el atributo .value para el cuerpo de la función
 
 class RubynaFunction
-  def initialize name, fun
+  def initialize name, rubycode
     @name = name
-    @type = nil
-    @value = fun
+    @rubycode = rubycode
   end
   def execute args
-    @value.call args
+    @rubycode.call( @name, args)
   end
 end
   
@@ -56,7 +55,6 @@ class SymbolTable
   end
 end
 
-
 # LISTA DE TABLAS (mayor índice == scope más interno)
 # =====================
 class TableList
@@ -65,11 +63,16 @@ class TableList
   def initialize
     @varlist = [[SymbolTable.new()]]            # Lista de tablas de VarSymbols
     @funtable = SymbolTable.new()               # Una única tabla de FunSymbols
+    @capas_pintura = []
     self.addRetinaMagic
   end
   
   def addRetinaMagic
-    
+    funcionesRetina = ["home","openeye","closeeye","forward","backward","rotatel","rotater","setposition"]
+    funcionesRetina.each_with_index do |name,i|
+      puts $paint.class
+      self.push_fun( name, nil, RubynaFunction.new(i+1, $paint.method(:addCapa)))
+    end
   end
   
   def open_level;   @varlist.push [SymbolTable.new()]; end
@@ -121,7 +124,7 @@ class TableList
   end
   
   def exec_fun symbol_name, args
-    @funtable.each do |function|
+    @funtable.table.each do |function|
       if function.name == symbol_name
         $tl.open_level
           return function.value.execute args
