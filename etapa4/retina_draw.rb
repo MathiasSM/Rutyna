@@ -109,7 +109,7 @@ def get_line a, b
     ystep = -1
   end
 
-  for x in a.x.round..b.x.round
+  for x in a.x.ceil..b.x.round
     if steep
       points += [Punto.new(y, x)]
     else
@@ -261,3 +261,5 @@ def dibujar_poligono n
     $paint.addCapa(6, [angulo])
   end
 end
+
+

@@ -1,48 +1,9 @@
-func min(number x, number y) -> number
-begin
-    with
-        boolean b = false;
-    do
-        b = x < y;
-        b = false;
-        if b then
-            return x;
-        end;
-        b=b;
-        return b;
-    end;
-end;
-
-func incremental_forward(number i)
-begin
-    for i from 1 to 2 do
-        forward(i);
-    end;
-    for j from 0 to 9 by 3 do
-      write "hola";
-    end;
-end;
-
-func circle(number radio)
-begin
-    forward(360, radio);
-end;
-
 program
-    write "Insert a number : ";
     with
-        number n;
     do
-        read n; # I suggest that this number be a multiple of 360
-        with
-            number angle = n;
-        do
-            while angle <= 360 do
-                rotater(n);
-                circle(100);
-                angle = angle + 5;
-                incremental_forward(n);
-            end;
+        for i from 1 to 100 do
+            forward(i * 2); # Traza una línea por 50 puntos
+            rotater(90); # Gira 90 grados sentido horario
         end;
     end;
 end;
