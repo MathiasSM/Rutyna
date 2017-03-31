@@ -68,9 +68,9 @@ class TableList
   end
   
   def addRetinaMagic
-    funcionesRetina = ["home","openeye","closeeye","forward","backward","rotatel","rotater","setposition"]
+    funcionesRetina = ["home","openeye","closeeye","forward","backward","rotatel","rotater","setposition","arc"]
     funcionesRetina.each_with_index do |name,i|
-      puts $paint.class
+      #puts $paint.class
       self.push_fun( name, nil, RubynaFunction.new(i+1, $paint.method(:addCapa)))
     end
   end
@@ -91,44 +91,33 @@ class TableList
   
   def var_exists? symbol_name
     scope_dist = 0
-    puts "\n\nSearching for "+symbol_name
     @varlist[-1].reverse.each do |scope|
-      i=scope_dist
-      while i>0; print "  "; i=-1; end
-      puts "====SCOPE #"+scope_dist.to_s+" ================="
       scope.table.each do |symbol|
-        i=scope_dist
-        while i>0; print "  "; i=-1; end
-        puts "checking: #{symbol_name} == #{symbol.name} ? "
         if symbol.name == symbol_name
-          puts "====> DIS "+symbol_name+ " EXISTS. Type:#{symbol.type} Val:#{symbol.value}"
           return (symbol.type), (symbol.value)
         end
       end
       scope_dist += 1
     end
-    puts "====> NEIN"
     return false # Doesn't exist? Return these
   end
   
   def fun_exists? symbol_name
-    puts symbol_name + " exists?"
+    #puts symbol_name + " exists?"
     @funtable.table.each do |function|
       if function.name == symbol_name
-        puts function.name + "! YES"
+        #puts function.name + "! YES"
         return true, function.type
       end
     end
-    puts "NEIN"
+    #puts "NEIN"
     return false, ""
   end
   
   def exec_fun symbol_name, args
     @funtable.table.each do |function|
       if function.name == symbol_name
-        $tl.open_level
-          return function.value.execute args
-        $tl.close_level
+        return function.value.execute args
       end
     end
     raise (ContextError.new(self, "Función #{@name} no ha sido declarada"))

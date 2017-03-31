@@ -216,10 +216,10 @@ rule
   FUNID:        FunctionID                                                                  { result = Nodo_FunctionNewName.new( val[0] ); result.place val[0].row}
   ;
   
-  FUNCTION:     func FUNID '(' PARAMS ')' '->' DATATYPE BEGINEND                            { result = Nodo_NewFunctionBody.new( val[1],                val[3],                val[6], val[7] ); result.place val[0].row}
-              | func FUNID '(' ')' '->' DATATYPE BEGINEND                                   { result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ),                val[5], val[6] ); result.place val[0].row}
-              | func FUNID '(' PARAMS ')' BEGINEND                                          { result = Nodo_NewFunctionBody.new( val[1],                val[3], Nodo_Lista.new( nil ), val[5] ); result.place val[0].row}
-              | func FUNID '(' ')' BEGINEND                                                 { result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ), Nodo_Lista.new( nil ), val[4] ); result.place val[0].row}
+  FUNCTION:     func FUNID '(' PARAMS ')' '->' DATATYPE BEGINEND                            { result = Nodo_NewFunctionBody.new( val[1],                val[3], val[6], val[7] ); result.place val[0].row}
+              | func FUNID '(' ')' '->' DATATYPE BEGINEND                                   { result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ), val[5], val[6] ); result.place val[0].row}
+              | func FUNID '(' PARAMS ')' BEGINEND                                          { result = Nodo_NewFunctionBody.new( val[1],                val[3],    nil, val[5] ); result.place val[0].row}
+              | func FUNID '(' ')' BEGINEND                                                 { result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ),    nil, val[4] ); result.place val[0].row}
   ;
 
   FUNCTIONs:    FUNCTION ';'                                                                { result = Nodo_Lista.new( val[0] ); result.place val[0].row}

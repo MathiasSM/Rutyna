@@ -1155,28 +1155,28 @@ module_eval(<<'.,.,', 'retina_parser.y', 215)
 
 module_eval(<<'.,.,', 'retina_parser.y', 218)
   def _reduce_71(val, _values, result)
-     result = Nodo_NewFunctionBody.new( val[1],                val[3],                val[6], val[7] ); result.place val[0].row
+     result = Nodo_NewFunctionBody.new( val[1],                val[3], val[6], val[7] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 219)
   def _reduce_72(val, _values, result)
-     result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ),                val[5], val[6] ); result.place val[0].row
+     result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ), val[5], val[6] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 220)
   def _reduce_73(val, _values, result)
-     result = Nodo_NewFunctionBody.new( val[1],                val[3], Nodo_Lista.new( nil ), val[5] ); result.place val[0].row
+     result = Nodo_NewFunctionBody.new( val[1],                val[3],    nil, val[5] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 221)
   def _reduce_74(val, _values, result)
-     result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ), Nodo_Lista.new( nil ), val[4] ); result.place val[0].row
+     result = Nodo_NewFunctionBody.new( val[1], Nodo_Lista.new( nil ),    nil, val[4] ); result.place val[0].row
     result
   end
 .,.,

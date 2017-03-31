@@ -8,6 +8,7 @@ begin
         if b then
             return x;
         end;
+        b=b;
         return b;
     end;
 end;
@@ -24,7 +25,7 @@ end;
 
 func circle(number radio)
 begin
-    arc(360, radio);
+    forward(360, radio);
 end;
 
 program
@@ -40,6 +41,7 @@ program
                 rotater(n);
                 circle(100);
                 angle = angle + true;
+                incremental_forward(n);
             end;
         end;
     end;

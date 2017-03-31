@@ -145,7 +145,10 @@ class FunctionIdentifier  < Token; def to_s; "linea #{@row}, columna #{@col}: id
 class VariableIdentifier  < Token; def to_s; "linea #{@row}, columna #{@col}: identificador de variable \'#{@t}\'"; end; end
 
 class StringLiteral       < Token; def to_s; "linea #{@row}, columna #{@col}: literal de string \'#{@t[1..-2]}\'";  end; end
-class NumberLiteral       < Token; def to_s; "linea #{@row}, columna #{@col}: literal numérico \'#{@t}\'";          end; end
+class NumberLiteral       < Token
+  def to_s; "linea #{@row}, columna #{@col}: literal numérico \'#{@t}\'";          end;
+  def to_i; self.to_str.to_i; end;
+end
 class BooleanLiteral      < Token; def to_s; "linea #{@row}, columna #{@col}: literal booleano \'#{@t}\'";          end; end
 
 class True                < BooleanLiteral; end

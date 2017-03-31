@@ -52,6 +52,7 @@ class CapasPintura
   end
   def addCapa id, args
     @cola.push Capa.new(id, args)
+    return nil
   end
 end
 

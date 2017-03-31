@@ -29,6 +29,16 @@ class ContextError < RuntimeError
     "Error de contexto: #{@mensaje} (#{@nodo.class.to_s[5..-1]} en línea #{@nodo.row})"
   end
 end
+class InterpreterError < RuntimeError
+  def initialize nodo, mensaje=""
+    @nodo = nodo
+    @mensaje = mensaje
+  end
+  
+  def to_s
+    "Error del Interpretador (bug): #{@mensaje} (#{@nodo.class.to_s[5..-1]} con línea #{@nodo.row})"
+  end
+end
 
 ####################################################################################################
 ## Manejo de VALORES DE RETORNO
@@ -38,29 +48,6 @@ class ReturnValueE < StandardError
   def initialize nodo, mensaje=""
     @nodo = nodo
     @mensaje = mensaje
-  end
-end
-
-
-
-####################################################################################################
-## Abstract Syntax Tree
-####################################################################################################
-
-class AST
-  def initialize program, functions=nil
-    $tl = TableList.new
-    @program = program
-    @functions = functions
-    @functions.recorrer if not @functions.nil?
-  end
-  def execute
-    begin
-      $executing = true
-      @program.recorrer
-    ensure
-      $executing = false
-    end
   end
 end
   
@@ -81,6 +68,30 @@ class Nodo_Nulo < NodoAST; end
 
 
 ####################################################################################################
+## Abstract Syntax Tree
+####################################################################################################
+
+class AST < NodoAST
+  def initialize program, functions=nil
+    $tl = TableList.new
+    @program = program
+    @functions = functions
+    @functions.recorrer if not @functions.nil?
+  end
+  def execute
+    begin
+      puts "\n===============  TODO PARECE NORMAL ALLÁ ARRIBA ================\n" if $debug
+      $executing = true
+      @program.recorrer
+    ensure
+      $executing = false
+    end
+  end
+end
+
+
+
+####################################################################################################
 ## Tipos de Nodos
 ####################################################################################################
 
@@ -95,12 +106,13 @@ class Nodo_Lista < NodoAST
   end
   
   def appendTo nl=nil
-    return self if nl.nil?
+    if nl.nil?; return self; end
     @lista = nl.lista + @lista
     return self
   end
   
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     cosas = []
     @lista.each do |a|
       cosas.push a.recorrer if not a.nil?
@@ -120,9 +132,24 @@ class Nodo_Literal < NodoAST
   end
 end
 
-class Nodo_LitNumber < Nodo_Literal;  def recorrer; return "number",   @literal.to_str.to_i;        end; end
-class Nodo_LitBoolean < Nodo_Literal; def recorrer; return "boolean", (@literal.to_str == "true");  end; end
-class Nodo_LitString < Nodo_Literal;  def recorrer; return "string",   @literal.to_str;             end; end
+class Nodo_LitNumber < Nodo_Literal
+  def recorrer
+    puts "Recorriendo #{self.class}" if $debug
+    return "number",   @literal.to_i
+  end
+end
+class Nodo_LitBoolean < Nodo_Literal
+  def recorrer
+    puts "Recorriendo #{self.class}" if $debug
+    return "boolean", (@literal.to_str == "true")
+  end
+end
+class Nodo_LitString < Nodo_Literal
+  def recorrer
+    puts "Recorriendo #{self.class}" if $debug
+    return "string",   @literal.to_str
+  end
+end
 
 
 # Nodos de OPERACIONES (SUPER CLASES)
@@ -145,6 +172,7 @@ end
 # ======================
 class Nodo_UMINUS < Nodo_OpeUnaria
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     raise (ContextError.new(self, "Operador nulo")) if @op.nil?
     t, v = @op.recorrer
     raise (ContextError.new(self, "Tipo de operador no es 'number' (Es '#{t}')")) if t!="number"
@@ -154,6 +182,7 @@ end
 
 class Nodo_Not < Nodo_OpeUnaria
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     raise (ContextError.new(self, "Operador nulo")) if @op.nil?
     t, v = @op.recorrer
     raise (ContextError.new(self, "Tipo de #{@op} no es 'boolean' (Es '#{t}')")) if t!="boolean"
@@ -166,17 +195,19 @@ end
 # ==============================================
 class Nodo_Suma < Nodo_OpeBinaria
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     raise (ContextError.new(self, "Algún operador nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de primer operador no es 'number' (Es '#{t1}')")) if t1!="number"
-    raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2 (Es '#{t1}')}')")) if t2!="number"
+    raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2} (Es '#{t1}')}')")) if t2!="number"
     return "number", (v1+v2)
   end
 end
 
 class Nodo_Resta < Nodo_OpeBinaria
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     raise (ContextError.new(self, "Algún operador nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
@@ -188,6 +219,7 @@ end
 
 class Nodo_Multiplicacion < Nodo_OpeBinaria
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     raise (ContextError.new(self, "Algún operador nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
@@ -199,6 +231,7 @@ end
 
 class Nodo_DivisionReal < Nodo_OpeBinaria
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     raise (ContextError.new(self, "Algún operador nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
@@ -211,6 +244,7 @@ end
 
 class Nodo_DivisionEntera < Nodo_OpeBinaria
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     raise (ContextError.new(self, "Algún operador nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
@@ -223,6 +257,7 @@ end
 
 class Nodo_ModuloEntero < Nodo_OpeBinaria
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     raise (ContextError.new(self, "Algún operador nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
@@ -235,7 +270,8 @@ end
 
 class Nodo_ModuloReal < Nodo_OpeBinaria
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @op1.nil? or @op2.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de primer operador no es 'number' (Es '#{t1}')")) if t1!="number"
@@ -250,7 +286,8 @@ end
 # ==============================================
 class Nodo_MenorQue < Nodo_OpeBinaria
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @op1.nil? or @op2.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de primer operador no es 'number' (Es '#{t1}')")) if t1!="number"
@@ -261,7 +298,8 @@ end
 
 class Nodo_MayorQue < Nodo_OpeBinaria
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @op1.nil? or @op2.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de primer operador no es 'number' (Es '#{t1}')")) if t1!="number"
@@ -272,7 +310,8 @@ end
 
 class Nodo_MenorIgualQue < Nodo_OpeBinaria
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @op1.nil? or @op2.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de primer operador no es 'number' (Es '#{t1}')")) if t1!="number"
@@ -283,7 +322,8 @@ end
 
 class Nodo_MayorIgualQue < Nodo_OpeBinaria
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @op1.nil? or @op2.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de primer operador no es 'number' (Es '#{t1}')")) if t1!="number"
@@ -297,7 +337,8 @@ end
 # ==============================================
 class Nodo_Y < Nodo_OpeBinaria
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @op1.nil? or @op2.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de primer operador no es 'boolean' (Es '#{t1}')")) if t1!="boolean"
@@ -308,6 +349,7 @@ end
 
 class Nodo_O < Nodo_OpeBinaria
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     raise (ContextError.new(self, "INTERPRETADOR, valor nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
@@ -322,7 +364,8 @@ end
 # ==============================================
 class Nodo_IgualQue < Nodo_OpeBinaria
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @op1.nil? or @op2.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de ambos operadores difiere")) if t1!=t2
@@ -332,7 +375,8 @@ end
 
 class Nodo_DiferenteDe < Nodo_OpeBinaria
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @op1.nil? or @op2.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @op1.nil? or @op2.nil?
     t1, v1 = @op1.recorrer
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de ambos operadores difiere")) if t1!=t2
@@ -348,7 +392,8 @@ class Nodo_Asignacion < NodoAST
     @quien, @conque = quien, conque
   end
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @quien.nil? or @conque.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @quien.nil? or @conque.nil?
     t1, v1 = $tl.var_exists? @quien.to_str
     t2, v2 = @conque.recorrer
     raise (ContextError.new(self, "Tipo de variable difiere del tipo de la expresión (#{t1} != #{t2})")) if t1!=t2
@@ -362,9 +407,10 @@ class Nodo_Return < NodoAST
     @que = que
   end
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @que.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @que.nil?
     ret = @que.recorrer
-    raise (ReturnValueE.new(ret[1])) if $executing# Lanza el return al controlador de la función
+    raise (ReturnValueE.new(ret[1])) if $executing # Lanza el return al controlador de la función
   end
 end
 
@@ -376,8 +422,9 @@ class Nodo_Read < NodoAST
     @que = que
   end
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @que.nil?
-    cosa = $tl.var_exists? @que.recorrer
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @que.nil?
+    cosa = $tl.var_exists? @que.to_str
     #i = gets
     # TODO set value of symbol COSA to i.to_type
     return nil, "READ"
@@ -390,12 +437,14 @@ class Nodo_Write < NodoAST
     @sep = sep
   end
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @que.nil?
-    cosas = @que.recorrer
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @que.nil?
+    cosas = @que.recorrer[1]
     cosas.each do |cosa|
-      print cosa[1] if not cosa.nil?
+      print cosa[1][1..-2]
     end
     print @sep
+    STDOUT.flush
     return nil, "WRITE"
   end
 end
@@ -408,9 +457,10 @@ class Nodo_LlamaFuncion < NodoAST
     @name, @args = name.to_str, args
   end
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @name.nil? or @args.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @name.nil? or @args.nil?
     raise (ContextError.new(self, "Función '#{@name}' no ha sido declarada")) if not ($tl.fun_exists? @name)[0]
-    args = @args.recorrer
+    args = @args.recorrer[1]
     return $tl.exec_fun(@name, args)
   end
 end
@@ -420,6 +470,7 @@ class Nodo_LlamaVariable < NodoAST
     @name = name.to_str
   end
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     raise (ContextError.new(self, "Variable '#{@name}' no ha sido declarada en este scope")) if not $tl.var_exists? @name
     return $tl.var_exists? @name
   end
@@ -430,6 +481,7 @@ class Nodo_FunctionNewName < NodoAST
     @name = name.to_str
   end
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     raise (ContextError.new(self, "Funcion '#{@name}' ya ha sido declarada en este scope")) if ($tl.fun_exists? @name)[0]
     return @name
   end
@@ -440,6 +492,7 @@ class Nodo_VariableNewName < NodoAST
     @name = name.to_str
   end
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     raise (ContextError.new(self, "Variable '#{@name}' ya ha sido declarada en este scope")) if $tl.var_exists? @name
     return @name
   end
@@ -455,6 +508,7 @@ class Nodo_DeclaracionSimple < NodoAST
   end
   
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     v = @tipo == "number" ? 0 : false
     nombre = @varid.recorrer.to_str
     $tl.push_var(nombre, @tipo, v)
@@ -469,11 +523,11 @@ class Nodo_DeclaracionMultiple < NodoAST
   end
   
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     ret = []
-    nombres = @varid.recorrer if not @varid.nil?
+    nombres = @varids.recorrer[1] if not @varids.nil?
     v = @tipo == "number" ? 0 : false
     nombres.each do |nombre|
-      nombre = @varid.recorrer.to_str
       $tl.push_var(nombre, @tipo, v)
       ret.push( [@tipo, nombre] )
     end
@@ -489,6 +543,7 @@ class Nodo_DeclaracionCompleta < NodoAST
   end
   
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     nombre = @quien.recorrer.to_str
     valor = @que.recorrer[1]
     $tl.push_var(nombre, @tipo, valor)
@@ -506,7 +561,8 @@ class Nodo_BloqueRepeat < NodoAST
     @instructions = i
   end
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @times.nil? or @instructions.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @times.nil? or @instructions.nil?
     t,v = @times.recorrer
     v = v.to_i
     raise (ContextError.new(self, "Tipo de expresión no es 'number' en el número de pasos (Es #{t})")) if t!="number"
@@ -524,7 +580,8 @@ class Nodo_BloqueWhile < NodoAST
     @instructions = i
   end
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @expression.nil? or @instructions.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @expression.nil? or @instructions.nil?
     t,v = @expression.recorrer
     raise (ContextError.new(self, "Tipo de expresión no es 'boolean' (Es #{t})")) if t!="boolean"
     can = (v=="true")
@@ -542,17 +599,20 @@ class Nodo_BloqueIfElse < NodoAST
     @else = e
   end
   def recorrer
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @if.nil? or @then.nil? or @else.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @if.nil? or @then.nil? or @else.nil?
     t,v = @if.recorrer
     raise (ContextError.new(self, "Tipo de expresión evaluada por el IF no es 'boolean' (Es #{t})")) if t!="boolean"
-    if v == "true"; @then.recorrer
-    else;           @else.recorrer
+    if $executing and v == "true"; @then.recorrer
+    elsif $executing;              @else.recorrer
+    else;                          @then.recorrer; @else.recorrer
     end
   end
 end
 
 class Nodo_Scope < NodoAST
   def recorrer
+    puts "Recorriendo #{self.class}" if $debug
     $tl.open_scope
     self.recorrer_body
     $tl.close_scope
@@ -569,16 +629,21 @@ class Nodo_BloqueFor < Nodo_Scope
     @instr = instr
   end
   def recorrer_body
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @it.nil? or @ini.nil? or @fin.nil? or @paso.nil? or @instr.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @it.nil? or @ini.nil? or @fin.nil? or @paso.nil? or @instr.nil?
     
     $tl.push_var(@it, "number")
     
     ti, vi = @ini.recorrer
-    raise (ContextError.new(self, "Tipo de expresión de inicio no es 'number' (Es #{t})")) if ti!="number"
+    raise (ContextError.new(self, "Tipo de expresión de inicio no es 'number' (Es #{ti})")) if ti!="number"
     tf, vf = @fin.recorrer
-    raise (ContextError.new(self, "Tipo de expresión de parada no es 'number' (Es #{t})")) if tf!="number"
+    vi, vf, paso = vi.to_s.to_i, vf.to_s.to_i, @paso.recorrer
+    tp, paso = paso[0], paso[1].to_i
+    raise (ContextError.new(self, "Tipo de expresión de parada no es 'number' (Es #{tf})")) if tf!="number"
+    raise (ContextError.new(self, "Tipo de expresión de paso no es 'number' (Es #{tp})")) if tp!="number"
+    raise (ContextError.new(self, "Expresión de parada iguala cero, ciclo infinito")) if paso==0
     
-    i,f,paso = vi.to_s.to_i, vf.to_s.to_i, @paso.to_s.to_i
+    i,f = vi, vf
     while i<f
       # Set variable iterador en tabla to value i
       @instr.recorrer
@@ -592,7 +657,8 @@ class Nodo_BloqueWith < Nodo_Scope
     @variables, @instructions = vs, is
   end
   def recorrer_body
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @variables.nil? or @instructions.nil?
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @variables.nil? or @instructions.nil?
     @variables.recorrer
     @instructions.recorrer
   end
@@ -602,27 +668,39 @@ class Nodo_NewFunctionBody < NodoAST
   def initialize id, params, tipo, instr
     @id = id
     @params = params
-    @tipo = tipo
+    if tipo.nil?
+      @tipo=tipo
+    else
+      @tipo=tipo.to_str
+    end
     @instr = instr
   end
 
   def recorrer
-    puts "hi"
-    nombre = @id.recorrer
-    parametros = @params.recorrer
-    @instr.recorrer
-    puts "pushing"
-    $tl.push_fun(nombre, @tipo, self)
+    puts "Recorriendo #{self.class}" if $debug
+    $tl.open_level
+      nombre = @id.recorrer.to_str
+      parametros = @params.recorrer
+      $tl.push_fun(nombre, @tipo, self)
+      @instr.recorrer
+      # $tl.funtable.table.each do |s|
+      #   puts "#{s.name[0..6]}\t#{s.type.nil? ? 'None' : s.type}\t#{s.value}"
+      # end
+    $tl.close_level
   end
  
   def execute args
-    parametros = @params.recorrer # Esto mete los parámetros al symtable
+    $tl.open_level
+    parametros = @params.recorrer # Esto debería meter los parámetros al symtable
     # Cambiar los valores de los parametros en la symtable
-    $tl.push_fun(nombre, @tipo, self)
     begin
       @instr.recorrer
     rescue ReturnValueE => e
+      puts "Someone returned #{e}" if $debug
       return e
+      puts "Me going" if $debug
+    ensure
+      $tl.close_level
     end
     return nil
   end
@@ -632,8 +710,9 @@ class Nodo_BloqueProgram < NodoAST
   def initialize is
     @instructions = is
   end
-  def recorrer_body
-    raise (ContextError.new(self, "Error del interpretador, valor nulo")) if @instructions.nil?
+  def recorrer
+    puts "Recorriendo #{self.class}" if $debug
+    raise (InterpreterError.new(self, "Valor nulo")) if @instructions.nil?
     @instructions.recorrer
   end
 end
