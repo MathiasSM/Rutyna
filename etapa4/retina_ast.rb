@@ -675,8 +675,8 @@ class Nodo_BloqueFor < Nodo_Scope
     raise (ContextError.new(self, "Expresión de paso igual a cero, ciclo infinito")) if paso==0
     raise (ContextError.new(self, "Expresión de paso negativo, prohibido")) if paso<0
 
-    i,f = vi, vf
-    while i<f-0.0000000001
+    i,f = vi.floor, vf.floor
+    while i<=f+0.0000000001
       $tl.var_mod(@it, i)
       @instr.recorrer
       i+=paso
@@ -723,22 +723,6 @@ class Nodo_NewFunctionBody < NodoAST
     $tl.open_level
     begin
       parametros = @params.recorrer[1] # Esto debería meter los parámetros al symtable
-      
-      # # Debug
-      # print  "Teorico: "
-      # parametros.each do |a|
-      #   print a; print '  '
-      # end
-      # print " // Total: #{parametros.length}\n"
-      # print  "Practic: "
-      # args.each do |a|
-      #   print a; print '  '
-      # end
-      # print " // Total: #{args.length}\n"
-      # (0..parametros.length-1).each do |i|
-      #   puts "ESTE: "+parametros[i.to_i].to_s
-      #   puts "HI:"+parametros[i][0].to_s+parametros[i][1].to_s if parametros[i][0]!=parametros[i][0]
-      # end
       raise (ContextError.new(self, "Número de argumentos inválido")) if parametros.length != args.length
       for i in 0..parametros.length-1
         raise (ContextError.new(self, "Tipo de argumento ##{i+1} difiere del tipo definido (#{args[i][0]} != #{parametros[i][0]})")) if parametros[i][0] != args[i][0]
