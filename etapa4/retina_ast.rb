@@ -459,12 +459,15 @@ class Nodo_Write < NodoAST
     @que = que
     @sep = sep
   end
+  def escapa s
+    eval %Q{"#{s}"}
+  end
   def recorrer
     puts "Recorriendo #{self.class}" if $debug
     raise (InterpreterError.new(self, "Valor nulo")) if @que.nil?
     cosas = @que.recorrer[1]
     cosas.each do |cosa|
-      print cosa[1]
+      print self.escapa(cosa[1].to_s)
     end
     print @sep
     STDOUT.flush

@@ -11,4 +11,6 @@ program
   writeln -12 mod 5 ;
   writeln 12  mod -5 ;
   writeln -12 mod -5;
+  writeln "Hola\\ Como están?";
+  writeln "Hola!!! \n Como están?";
 end;
