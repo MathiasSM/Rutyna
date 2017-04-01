@@ -1,4 +1,2 @@
 # Errores detectados
-1 - write no imprime nada
-2 - writeln siempre imprime \n (literal)
-3 -
+1 -

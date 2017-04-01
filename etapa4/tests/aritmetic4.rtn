@@ -5,6 +5,8 @@ program
     do
         i = 2;
         j = 15;
-        writeln i*j*i;
+
+        if true then writeln "Yeah"; else writeln "No :(", i*j*i; end;
+
     end;
 end;
