@@ -46,9 +46,14 @@ end
 ####################################################################################################
 
 class ReturnValueE < StandardError
-  def initialize nodo, mensaje=""
+  def initialize nodo, tipo="number", valor=nil
     @nodo = nodo
-    @mensaje = mensaje
+    @tipo = tipo
+    @valor = valor
+  end
+  
+  def eval
+    return [@tipo, @valor]
   end
 end
 
@@ -415,7 +420,8 @@ class Nodo_Return < NodoAST
     puts "Recorriendo #{self.class}" if $debug
     raise (InterpreterError.new(self, "Valor nulo")) if @que.nil?
     ret = @que.recorrer
-    raise (ReturnValueE.new(ret[1])) if $executing # Lanza el return al controlador de la función
+    puts "HEY: "+ret.to_s
+    raise (ReturnValueE.new(self,ret[0],ret[1])) if $executing # Lanza el return al controlador de la función
   end
 end
 
@@ -514,7 +520,7 @@ class Nodo_VariableNewName < NodoAST
   end
   def recorrer
     puts "Recorriendo #{self.class}" if $debug
-    raise (ContextError.new(self, "Variable '#{@name}' ya ha sido declarada en este scope")) if $tl.var_exists? @name
+    #raise (ContextError.new(self, "Variable '#{@name}' ya ha sido declarada en este scope")) if $tl.var_exists? @name
     return @name
   end
 end
@@ -713,7 +719,7 @@ class Nodo_NewFunctionBody < NodoAST
     begin
       @instr.recorrer
     rescue ReturnValueE => e
-      return e
+      return e.eval
     ensure
       $tl.close_level
     end

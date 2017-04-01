@@ -13,7 +13,9 @@ program
           boolean i;
         do
           i = true;
+          writeln i;
         end;
       j = 78 + i;
+      writeln i,j;
   end;
 end;
