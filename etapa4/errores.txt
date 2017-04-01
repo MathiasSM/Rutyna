@@ -1,2 +1,2 @@
 # Errores detectados
-1 -
+1 - Los if siempre evaluan falso aunque la expresión sea verdadera
