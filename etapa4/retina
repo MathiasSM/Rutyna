@@ -68,7 +68,7 @@ def main
     # while lexer.catch_lexeme; end
 
     begin
-      $debug = true
+      $debug = false
       $row = 1; $col = 1        # Contamos líneas y columnas desde 1
       lexer = Lexer.new input   # Inicializamos Lexer con el input del archivo
       parser = Parser.new       # Inicializamos Parser

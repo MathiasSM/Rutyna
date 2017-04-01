@@ -6,9 +6,10 @@ end;
 program
   with
       number i;
-      number j = 78 + plus(4, 3);
+      number j = 78 + plus(4.32, 3);
   do
       i = plus(3,2);
+      writeln i, " ",j;
         with
           boolean i;
         do
@@ -16,6 +17,6 @@ program
           writeln i;
         end;
       j = 78 + i;
-      writeln i,j;
+      writeln i, " ",j;
   end;
 end;

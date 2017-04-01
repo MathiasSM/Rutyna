@@ -420,7 +420,7 @@ class Nodo_Return < NodoAST
     puts "Recorriendo #{self.class}" if $debug
     raise (InterpreterError.new(self, "Valor nulo")) if @que.nil?
     ret = @que.recorrer
-    puts "HEY: "+ret.to_s
+    #puts "HEY: "+ret.to_s
     raise (ReturnValueE.new(self,ret[0],ret[1])) if $executing # Lanza el return al controlador de la función
   end
 end
@@ -441,7 +441,6 @@ class Nodo_Read < NodoAST
     end
     begin
       i = STDIN.gets.chomp
-      puts i
       if cosa[0]=="boolean"
         i = i=="true"
       else
@@ -713,10 +712,33 @@ class Nodo_NewFunctionBody < NodoAST
   end
 
   def execute args
-    puts "Ejecutando #{@id.to_str}"
+    puts "Ejecutando #{@id.to_str}" if $debug
     $tl.open_level
-    parametros = @params.recorrer # Esto debería meter los parámetros al symtable
     begin
+      parametros = @params.recorrer[1] # Esto debería meter los parámetros al symtable
+      
+      # # Debug
+      # print  "Teorico: "
+      # parametros.each do |a|
+      #   print a; print '  '
+      # end
+      # print " // Total: #{parametros.length}\n"
+      # print  "Practic: "
+      # args.each do |a|
+      #   print a; print '  '
+      # end
+      # print " // Total: #{args.length}\n"
+      # (0..parametros.length-1).each do |i|
+      #   puts "ESTE: "+parametros[i.to_i].to_s
+      #   puts "HI:"+parametros[i][0].to_s+parametros[i][1].to_s if parametros[i][0]!=parametros[i][0]
+      # end
+      raise (ContextError.new(self, "Número de argumentos inválido")) if parametros.length != args.length
+      for i in 0..parametros.length-1
+        raise (ContextError.new(self, "Tipo de argumento ##{i+1} difiere del tipo definido (#{args[i][0]} != #{parametros[i][0]})")) if parametros[i][0] != args[i][0]
+        $tl.var_mod(parametros[i][1], args[i][1])
+      end
+        
+    
       @instr.recorrer
     rescue ReturnValueE => e
       return e.eval
