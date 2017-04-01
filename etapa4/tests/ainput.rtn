@@ -1,0 +1,10 @@
+program
+    with
+        number i;
+        boolean j;
+    do
+        read i;
+        read j;
+        writeln i, " ", j;
+    end;
+end;

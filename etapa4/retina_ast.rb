@@ -16,7 +16,7 @@
 
 
 ####################################################################################################
-## Manejo de ERRORES DE CONTEXTO
+## Manejo de ERRORES DE CONTEXTO y posibles errores del INTERPRETE
 ####################################################################################################
 
 class ContextError < RuntimeError
@@ -29,6 +29,7 @@ class ContextError < RuntimeError
     "Error de contexto: #{@mensaje} (#{@nodo.class.to_s[5..-1]} en línea #{@nodo.row})"
   end
 end
+
 class InterpreterError < RuntimeError
   def initialize nodo, mensaje=""
     @nodo = nodo
@@ -71,6 +72,10 @@ class Nodo_Nulo < NodoAST; end
 ## Abstract Syntax Tree
 ####################################################################################################
 
+# Clase para el AST
+# ======================
+# Define variable global para Tabla de Símbolos
+# Recibe program y functions, hace un recorrido sintáctico/contextual de las funciones
 class AST < NodoAST
   def initialize program, functions=nil
     $tl = TableList.new
@@ -135,7 +140,7 @@ end
 class Nodo_LitNumber < Nodo_Literal
   def recorrer
     puts "Recorriendo #{self.class}" if $debug
-    return "number",   @literal.to_i
+    return "number",   @literal.to_f
   end
 end
 class Nodo_LitBoolean < Nodo_Literal
@@ -237,7 +242,7 @@ class Nodo_DivisionReal < Nodo_OpeBinaria
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de primer operador no es 'number' (Es '#{t1}')")) if t1!="number"
     raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2}')")) if t2!="number"
-    raise (ContextError.new(self, "División por cero")) if v2==0
+    raise (ContextError.new(self, "División por cero")) if v2.abs<=0.00000000001
     return "number", (v1/v2)
   end
 end
@@ -250,7 +255,7 @@ class Nodo_DivisionEntera < Nodo_OpeBinaria
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de primer operador no es 'number' (Es '#{t1}')")) if t1!="number"
     raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2}')")) if t2!="number"
-    raise (ContextError.new(self, "División por cero")) if v2==0
+    raise (ContextError.new(self, "División por cero")) if v2.abs<=0.00000000001
     return "number", (v1/v2)
   end
 end
@@ -263,7 +268,7 @@ class Nodo_ModuloEntero < Nodo_OpeBinaria
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de primer operador no es 'number' (Es '#{t1}')")) if t1!="number"
     raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2}')")) if t2!="number"
-    raise (ContextError.new(self, "División por cero")) if v2==0
+    raise (ContextError.new(self, "División por cero")) if v2.abs<=0.00000000001
     return "number", (v1%v2)
   end
 end
@@ -276,7 +281,7 @@ class Nodo_ModuloReal < Nodo_OpeBinaria
     t2, v2 = @op2.recorrer
     raise (ContextError.new(self, "Tipo de primer operador no es 'number' (Es '#{t1}')")) if t1!="number"
     raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2}')")) if t2!="number"
-    raise (ContextError.new(self, "División por cero")) if v2==0
+    raise (ContextError.new(self, "División por cero")) if v2.abs<=0.00000000001
     return "number", (v1%v2)
   end
 end
@@ -428,17 +433,18 @@ class Nodo_Read < NodoAST
     if cosa==false
       raise (ContextError.new(self, "Variable '#{@que}' no ha sido declarada en este scope"))
     end
-    # begin
-    #   i = gets
-    #   if cosa[0]=="boolean"
-    #     i = i.to_b
-    #   else
-    #     i = i.to_i
-    #   end
-    #   $tl.var_mod(@que, i)
-    # rescue Exception
-    #   raise (ContextError.new(self, "No se pudo interpretar '#{i}' como '#{cosa[0]}'"))
-    # end
+    begin
+      i = STDIN.gets.chomp
+      puts i
+      if cosa[0]=="boolean"
+        i = i=="true"
+      else
+        i = i.to_f
+      end
+      $tl.var_mod(@que, i)
+    rescue Exception
+      raise (ContextError.new(self, "No se pudo interpretar '#{i}' como '#{cosa[0]}'"))
+    end
     return nil, "READ"
   end
 end
@@ -579,12 +585,13 @@ class Nodo_BloqueRepeat < NodoAST
     puts "Recorriendo #{self.class}" if $debug
     raise (InterpreterError.new(self, "Valor nulo")) if @times.nil? or @instructions.nil?
     t,v = @times.recorrer
-    v = v.to_i
+    v = v.to_f
     raise (ContextError.new(self, "Tipo de expresión no es 'number' en el número de pasos (Es #{t})")) if t!="number"
     raise (ContextError.new(self, "Número de pasos negativo")) if v<0
-    while v>0
+    i,f = 1, v.to_f
+    while i<f
       @instructions.recorrer
-      v-=1
+      i+=1
     end
   end
 end
@@ -618,8 +625,8 @@ class Nodo_BloqueIfElse < NodoAST
     raise (InterpreterError.new(self, "Valor nulo")) if @if.nil? or @then.nil? or @else.nil?
     t,v = @if.recorrer
     raise (ContextError.new(self, "Tipo de expresión evaluada por el IF no es 'boolean' (Es #{t})")) if t!="boolean"
-    if v == "true"; @then.recorrer
-    else;           @else.recorrer
+    if v; @then.recorrer
+    else; @else.recorrer
     end
   end
 end
@@ -650,14 +657,14 @@ class Nodo_BloqueFor < Nodo_Scope
     ti, vi = @ini.recorrer
     raise (ContextError.new(self, "Tipo de expresión de inicio no es 'number' (Es #{ti})")) if ti!="number"
     tf, vf = @fin.recorrer
-    vi, vf, paso = vi.to_s.to_i, vf.to_s.to_i, @paso.recorrer
-    tp, paso = paso[0], paso[1].to_i
+    vi, vf, paso = vi.to_s.to_f, vf.to_s.to_f, @paso.recorrer
+    tp, paso = paso[0], paso[1].to_f
     raise (ContextError.new(self, "Tipo de expresión de parada no es 'number' (Es #{tf})")) if tf!="number"
     raise (ContextError.new(self, "Tipo de expresión de paso no es 'number' (Es #{tp})")) if tp!="number"
     raise (ContextError.new(self, "Expresión de parada iguala cero, ciclo infinito")) if paso==0
 
     i,f = vi, vf
-    while i<f
+    while i<f-0.0000000001
       $tl.var_mod(@it, i)
       @instr.recorrer
       i+=paso
@@ -703,13 +710,10 @@ class Nodo_NewFunctionBody < NodoAST
     puts "Ejecutando #{@id.to_str}"
     $tl.open_level
     parametros = @params.recorrer # Esto debería meter los parámetros al symtable
-    # Cambiar los valores de los parametros en la symtable
     begin
       @instr.recorrer
     rescue ReturnValueE => e
-      #puts "Someone returned #{e}" if $debug
       return e
-      #puts "Me going" if $debug
     ensure
       $tl.close_level
     end
