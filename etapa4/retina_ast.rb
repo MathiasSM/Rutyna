@@ -473,7 +473,6 @@ class Nodo_LlamaFuncion < NodoAST
     raise (InterpreterError.new(self, "Valor nulo")) if @name.nil? or @args.nil?
     raise (ContextError.new(self, "Función '#{@name}' no ha sido declarada")) if not ($tl.fun_exists? @name)[0]
     args = @args.recorrer[1]
-    puts "Args done"
     ret = $tl.exec_fun(@name, args)
     puts "Recorriendo / #{self.class}" if $debug
     return ret
@@ -708,9 +707,9 @@ class Nodo_NewFunctionBody < NodoAST
     begin
       @instr.recorrer
     rescue ReturnValueE => e
-      puts "Someone returned #{e}" if $debug
+      #puts "Someone returned #{e}" if $debug
       return e
-      puts "Me going" if $debug
+      #puts "Me going" if $debug
     ensure
       $tl.close_level
     end
