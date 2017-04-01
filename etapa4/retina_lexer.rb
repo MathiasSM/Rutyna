@@ -148,6 +148,7 @@ class StringLiteral       < Token; def to_s; "linea #{@row}, columna #{@col}: li
 class NumberLiteral       < Token
   def to_s; "linea #{@row}, columna #{@col}: literal numérico \'#{@t}\'";          end;
   def to_i; self.to_str.to_i; end;
+  def to_f; self.to_str.to_f; end;
 end
 class BooleanLiteral      < Token; def to_s; "linea #{@row}, columna #{@col}: literal booleano \'#{@t}\'";          end; end
 
