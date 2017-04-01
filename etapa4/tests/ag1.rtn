@@ -1,0 +1,18 @@
+program
+    with
+        number l=150;
+        number rep=360;
+        number nvertex = 5;
+    do
+        setposition(180, 0);
+        repeat rep times
+            rotater(l);
+            for i from 1 to nvertex do
+                forward(l);
+                rotatel(80);
+                forward(l);
+                rotater(80+360/nvertex);
+            end;
+        end;
+    end;
+end;

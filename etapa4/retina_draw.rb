@@ -134,7 +134,7 @@ end
 
 def procesarCapa
   tortuga = Turtle.new()                  # Se crea la tortuga con sus valores por defecto
-  segmentos  = []                         # Arreglo en el que se van agregando los segmentos conseguidos
+  segmentos  = [Punto.new(0, 0)]          # Arreglo en el que se van agregando los segmentos conseguidos
   for a in $paint.cola
     if a.id == 1                          # Si la instruccion es home():
       tortuga.punto = Punto.new(0, 0)     # Devuelve a la tortuga a la posicion inicial
@@ -218,8 +218,12 @@ def crearImagen segmentos
     output.concat("\n")
   end
 
+  # Generar nombre de archivo
+  temp = ARGV[0].split("/").last
+  filename = (temp.split(".rtn").first).concat(".pbm")
+
   # Escribir la salida en el archivo
-  File.open('7.pbm', 'w') do |content|
+  File.open(filename, 'w') do |content|
     content.print output
   end
 end
