@@ -619,9 +619,8 @@ class Nodo_BloqueIfElse < NodoAST
     raise (InterpreterError.new(self, "Valor nulo")) if @if.nil? or @then.nil? or @else.nil?
     t,v = @if.recorrer
     raise (ContextError.new(self, "Tipo de expresión evaluada por el IF no es 'boolean' (Es #{t})")) if t!="boolean"
-    if $executing and v == "true"; @then.recorrer
-    elsif $executing;              @else.recorrer
-    else;                          @then.recorrer; @else.recorrer
+    if v == "true"; @then.recorrer
+    else;           @else.recorrer
     end
   end
 end
