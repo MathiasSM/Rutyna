@@ -204,9 +204,9 @@ def crearImagen segmentos
   for punto in segmentos     # Para todo punto en segmentos
     i = 500 - punto.y        # Calcula la fila del arreglo
     j = 500 + punto.x        # Calcula la columa del arreglo
-    #if i.between?(0, 1000) && j.between?(0, 1000)
+    if i.between?(0, 1000) && j.between?(0, 1000)
       bits[i][j] = 1           # Enciende el bit
-    #end
+    end
   end
 
   # Generar salida
