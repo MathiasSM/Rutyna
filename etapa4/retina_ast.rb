@@ -453,7 +453,7 @@ class Nodo_Write < NodoAST
     raise (InterpreterError.new(self, "Valor nulo")) if @que.nil?
     cosas = @que.recorrer[1]
     cosas.each do |cosa|
-      print cosa[1].to_s[1..-2]
+      print cosa[1]
     end
     print @sep
     STDOUT.flush
@@ -728,4 +728,3 @@ class Nodo_BloqueProgram < NodoAST
     @instructions.recorrer
   end
 end
-
