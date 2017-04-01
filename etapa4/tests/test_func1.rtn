@@ -1,24 +1,15 @@
-# Probar que no pueda usarse la función fuera de su tipo.
-func plus(number op1, number op2) -> number
-begin
-    return op1 + op2;
-end;
 program
-  with
-      number i;
-      number j = 78 + plus(4, 3);
-  do
-      with
-          number i;
-          number j = 78 + plus(4, 3);
-      do
-      end;
-      i = plus(3,2);
-        with
-          boolean i;
-        do
-          i = true and plus(1,4)==8;
+    with
+        number l=150;
+        number rep=360;
+        number nvertex = 5;
+    do
+        rotater(1);
+        for i from 1 to nvertex do
+            forward(l);
+            rotatel(80);
+            forward(l);
+            rotater(80+360/nvertex);
         end;
-      j = 78 + i;
-  end;
+    end;
 end;

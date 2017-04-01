@@ -122,14 +122,14 @@ end
 
 # 'TOKEN' para CARACTER INVÁLIDO
 #=======================================
-class LexicographicError < RuntimeError
+class LexicographicError < RetinaError
   def initialize t
     @t = t
     @row = $row
     @col = $col
   end
 
-  def to_s; "linea #{@row}, columna #{@col}: caracter inesperado \'#{@t}\'"; end
+  def to_s; "#{@@prompt} Error Lexicográfico: línea #{@row}, columna #{@col}: caracter inesperado \'#{@t}\'"; end
 end
 
 
@@ -252,9 +252,10 @@ class Lexer
 
     # Si NO hay match, hay error, lo mete como token de error.
     if $&.nil? and class_to_be_instanciated.eql? LexicographicError
-      @input =~ /\A(\w|\p{punct})/
-      @tokens << LexicographicError.new($&)
-      $col = $col + $&.length
+      # @input =~ /\A(\w|\p{punct})/
+      # @tokens << LexicographicError.new($&)
+      # $col = $col + $&.length
+      raise LexicographicError.new($&)
 
     # Si SI hay match, mete lo que matcheó
     else
