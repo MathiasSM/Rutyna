@@ -1,22 +1,8 @@
-# Probar que las funciones puedan usarse correctamente.
-func plus(number op1, number op2) -> number
-begin
-    return op1 + op2;
-end;
 program
-  with
-      number i;
-      number j = 78 + plus(4.32, 3);
-  do
-      i = plus(3,2);
-      writeln i, " ",j;
-        with
-          boolean i;
-        do
-          i = true;
-          writeln i;
+    for l from 10 to 600 by 10 do
+        for i from 1 to 5 do
+            forward(l);
+            rotatel(360/5);
         end;
-      j = 78 + i;
-      writeln i, " ",j;
-  end;
+    end;
 end;
