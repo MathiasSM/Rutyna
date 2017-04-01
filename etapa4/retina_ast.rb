@@ -147,7 +147,7 @@ end
 class Nodo_LitString < Nodo_Literal
   def recorrer
     puts "Recorriendo #{self.class}" if $debug
-    return "string",   @literal.to_str
+    return "string",   @literal.to_str[1..-2]
   end
 end
 

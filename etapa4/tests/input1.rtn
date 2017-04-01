@@ -1,5 +1,5 @@
 program
     for i from 1 to 5 do
-      write 1;
+      write 1, "hola";
     end;
 end;
