@@ -1,22 +1,16 @@
-# Probar que las funciones puedan usarse correctamente.
-func plus(number op1, number op2) -> number
-begin
-    return op1 + op2;
-end;
 program
-  with
-      number i;
-      number j = 78 + plus(4.32, 3);
-  do
-      i = plus(3,2);
-      writeln i, " ",j;
-        with
-          boolean i;
-        do
-          i = true;
-          writeln i;
-        end;
-      j = 78 + i;
-      writeln i, " ",j;
-  end;
+  writeln 5   div 2 ;
+  writeln 5    /  2 ;
+  writeln 7   mod 3.5 ;
+  writeln 7    %  3.5 ;
+  writeln 12  div 5 ;
+  writeln -12 div 5 ;
+  writeln 12  div -5 ;
+  writeln -12 div -5;
+  writeln 12  mod 5 ;
+  writeln -12 mod 5 ;
+  writeln 12  mod -5 ;
+  writeln -12 mod -5;
+  writeln "Hola\\ Como están?";
+  writeln "Hola!!! \n Como están?";
 end;
