@@ -218,8 +218,12 @@ def crearImagen segmentos
     output.concat("\n")
   end
 
+  # Generar nombre de archivo
+  temp = ARGV[0].split("/").last
+  filename = (temp.split(".rtn").first).concat(".pbm")
+
   # Escribir la salida en el archivo
-  File.open('7.pbm', 'w') do |content|
+  File.open(filename, 'w') do |content|
     content.print output
   end
 end
