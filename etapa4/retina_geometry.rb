@@ -1,4 +1,19 @@
-############################### Funciones de dibujo ##########################
+####################################################################################################
+## INFO:
+####################################################################################################
+
+# DESCRIPCIÓN
+# =====================
+# Implementación de librería de métodos geometricos para los calculos de las funciones de dibujo
+
+# AUTORES
+# =====================
+# Carlos Serrada      13-11347    cserradag96@gmail.com
+# Mathias San Miguel  13-11310    mathiassanmiguel@gmail.com
+
+####################################################################################################
+## CLASE PARA REPRESENTAR PUNTOS EN EL PLANO:
+####################################################################################################
 
 # Clase punto
 # Atributos
@@ -12,6 +27,10 @@ class Punto
     @y = y
   end
 end
+
+####################################################################################################
+## FUNCIONES ARITMÉTICAS PARA LA CLASE PUNTO:
+####################################################################################################
 
 # Suma de puntos: recibe dos puntos y suma de forma vectorial
 def sum p, q
@@ -41,7 +60,6 @@ def proEscalar p, a
   return Punto.new(p.x*a, p.y*a)
 end
 
-
 # Distancia al cuadrado entre dos puntos
 def dist2 p, q
   return proPunto (diff p, q), (diff p, q)
@@ -52,6 +70,9 @@ def dist p, q
   return Math.sqrt(dist2 p, q)
 end
 
+####################################################################################################
+## FUNCIONES AVANZADAS PARA LA CLASE PUNTO:
+####################################################################################################
 
 # Proyecta el punto c en el segment ab
 # Argumentos:
@@ -73,7 +94,6 @@ def proyectar a, b, c
   return sum a, (proEscalar (diff b, a), r)
 end
 
-
 # Calcula la distancia del punto c al segment ab
 # Argumentos:
 #   a: punto inicial del segmento
@@ -82,44 +102,6 @@ end
 def distPuntoSegmento a, b, c
   return dist c, (proyectar a, b, c)
 end
-
-
-
-########################## FIN FUNCIONES DE PUNTOS ######################################
-# Clase Segmento
-# Atributos
-#   inicio:     punto de inicio del segmento
-#   direccion:  angulo del segmento con respecto al eje x
-#   longitud:   longitud del segmento 
-class Segmento
-   attr_accessor :inicio, :direccion, :longitud
-
-  def initialize inicio, direccion, longitud
-    @inicio = inicio
-    @direccion = direccion
-    @longitud = longitud
-  end
-end
-
-
-# Determina si el punto p esta en el segmento s
-# Argumentos:
-#   p: punto para verificar
-#   s: segmento
-# Retorna:
-#   true:   si el punto p esta en el segmento s
-#   false:  si el punto p no esta en el segmento s
-def estaEnSegmento p, s
-  a = s.inicio                                                            # Punto inicial del segmento
-  b = desplazar a, s.direccion, s.longitud                                # Punto final del segmento
-  dist = distPuntoSegmento a, b, p                                        # Distancia del punto al segmento
-  if dist < (Math.sqrt 1.9)*0.5
-      return true
-  else
-      return false
-  end
-end
-
 
 # Calcula un el desplazamieto de un punto en una direccion
 # con una longitud especifica
@@ -133,26 +115,12 @@ def desplazar p, dir, l
   y       = Math.sin(alpha)*l
   return sum p, Punto.new(x, y)
 end
-   
 
-
-
-################################### PRUEBAS ########################################
-punto1 = Punto.new(0, 0)
-punto2 = Punto.new(2, 0)
-
-punto3 = sum punto1, punto2
-
+# Imprimir un punto
 def imprimirPunto p
-  puts "Punto:"  
-  puts p.x
-  puts p.y
+  print "(", p.x, ", ", p.y, ")\n"
 end
 
-# puts punto3.x
-# puts punto3.y
-# puts dist2 punto1, punto2
-# puts dist punto1, punto2
-# imprimirPunto (proyectar punto1, punto2, Punto.new(1, 1))
-# puts distPuntoSegmento punto1, punto2, Punto.new(1, 1)
-# puts estaEnSegmento punto2, Segmento.new(punto1, 0, 7) 
+####################################################################################################
+## FIN :)
+####################################################################################################

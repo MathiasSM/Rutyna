@@ -20,7 +20,7 @@
 require_relative "retina_geometry" # Importar libreria de funciones geometricas de retina
 
 ####################################################################################################
-## CLASE DE LAS INSTRUCCIONES:
+## CLASE:
 ####################################################################################################
 
 # Intenta adaptar tu código a usar esta clase en vez de Instrucciones. Me facilita el usar lo de var = method :C
@@ -136,16 +136,16 @@ def procesarCapa
   tortuga = Turtle.new()                  # Se crea la tortuga con sus valores por defecto
   segmentos  = []                         # Arreglo en el que se van agregando los segmentos conseguidos
   for a in $paint.cola
-    if a.id == 1                          # Si la instruccion es 1) home():
+    if a.id == 1                          # Si la instruccion es home():
       tortuga.punto = Punto.new(0, 0)     # Devuelve a la tortuga a la posicion inicial
 
-    elsif a.id == 2                       # Si la instruccion es 2) openeye():
+    elsif a.id == 2                       # Si la instruccion es openeye():
       tortuga.ojo = true                  # Activar el ojo para marcar
 
-    elsif a.id == 3                       # Si la instruccion es 3) closeeye():
+    elsif a.id == 3                       # Si la instruccion es closeeye():
       tortuga.ojo = false                 # Desactivar el ojo
 
-    elsif a.id == 4                       # Si la instruccion es 4) forward():
+    elsif a.id == 4                       # Si la instruccion es forward():
       ini = tortuga.punto
       dir = tortuga.angulo
       len = a.args[0][1]
@@ -158,7 +158,7 @@ def procesarCapa
         segmentos += puntos
       end
 
-    elsif a.id == 5                       # Si la instruccion es 5) backward():
+    elsif a.id == 5                       # Si la instruccion es backward():
       ini = tortuga.punto
       dir = tortuga.angulo
       len = -a.args[0][1]
@@ -171,16 +171,19 @@ def procesarCapa
         segmentos += puntos
       end
 
-    elsif a.id == 6                          # Si la instruccion es 6) rotatel(x):
+    elsif a.id == 6                          # Si la instruccion es rotatel(x):
       tortuga.rotateL(a.args[0][1])          # Rotar tortuga a la izquierda
 
-    elsif a.id == 7                          # Si la instruccion es 7) rotater(x):
+    elsif a.id == 7                          # Si la instruccion es rotater(x):
       tortuga.rotateR(a.args[0][1])          # Rotar tortuga a la derecha
 
-    else                                     # Si la instruccion es 8) setposition(x, y):
+    elsif a.id == 8                          # Si la instruccion es setposition(x, y):
       x = a.args[0][1]
       y = a.args[1][1]
       tortuga.punto = Punto.new(x, y)
+
+    else                                     # Si la instruccion es arc(x, y):
+      puts "Arcos - Coming Soon"
     end
   end
   return segmentos
@@ -222,7 +225,7 @@ def crearImagen segmentos
 end
 
 ####################################################################################################
-## Test:
+## Funciones para probar los métodos para dibujar
 ####################################################################################################
 
 def dosCuadrados
@@ -261,3 +264,7 @@ def dibujar_poligono n
     $paint.addCapa(6, [angulo])
   end
 end
+
+####################################################################################################
+## FIN :)
+####################################################################################################
