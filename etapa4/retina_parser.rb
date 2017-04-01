@@ -1057,14 +1057,14 @@ module_eval(<<'.,.,', 'retina_parser.y', 191)
 
 module_eval(<<'.,.,', 'retina_parser.y', 192)
   def _reduce_57(val, _values, result)
-     result = Nodo_Write.new( val[1],   '' ); result.place val[0].row
+     result = Nodo_Write.new( val[1],   "" ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 193)
   def _reduce_58(val, _values, result)
-     result = Nodo_Write.new( val[1], '\n' ); result.place val[0].row
+     result = Nodo_Write.new( val[1], "\n" ); result.place val[0].row
     result
   end
 .,.,

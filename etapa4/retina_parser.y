@@ -190,8 +190,8 @@ rule
               | repeat EXPRESSION times INSTRUCTIONs 'end'                                  { result = Nodo_BloqueRepeat.new( val[1],             val[3]  ); result.place val[0].row}
               | repeat EXPRESSION times 'end'                                               { result = Nodo_BloqueRepeat.new( val[1], Nodo_Lista.new(nil) ); result.place val[0].row}
               | read VariableID                                                             { result = Nodo_Read.new( val[1] ); result.place val[0].row}
-              | write EXPRESSIONs                                                           { result = Nodo_Write.new( val[1],   '' ); result.place val[0].row}
-              | writeln EXPRESSIONs                                                         { result = Nodo_Write.new( val[1], '\n' ); result.place val[0].row}
+              | write EXPRESSIONs                                                           { result = Nodo_Write.new( val[1],   "" ); result.place val[0].row}
+              | writeln EXPRESSIONs                                                         { result = Nodo_Write.new( val[1], "\n" ); result.place val[0].row}
               | return EXPRESSION                                                           { result = Nodo_Return.new( val[1] ); result.place val[0].row}
               | FunctionID '(' EXPRESSIONs ')'                                              { result = Nodo_LlamaFuncion.new( val[0],              val[2] ); result.place val[0].row}
               | FunctionID '(' ')'                                                          { result = Nodo_LlamaFuncion.new( val[0], Nodo_Lista.new(nil) ); result.place val[0].row}
