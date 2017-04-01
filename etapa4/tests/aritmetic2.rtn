@@ -1,0 +1,8 @@
+program
+    with
+        number i;
+        number j;
+    do
+        i = i + j;
+    end;
+end;

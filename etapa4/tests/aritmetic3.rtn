@@ -1,0 +1,10 @@
+program
+    with
+        number i;
+        number j;
+    do
+        i = i*j;
+        write i;
+        writeln i;
+    end;
+end;

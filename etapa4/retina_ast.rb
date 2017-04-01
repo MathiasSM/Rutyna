@@ -24,7 +24,7 @@ class ContextError < RuntimeError
     @nodo = nodo
     @mensaje = mensaje
   end
-  
+
   def to_s
     "Error de contexto: #{@mensaje} (#{@nodo.class.to_s[5..-1]} en línea #{@nodo.row})"
   end
@@ -34,7 +34,7 @@ class InterpreterError < RuntimeError
     @nodo = nodo
     @mensaje = mensaje
   end
-  
+
   def to_s
     "Error del Interpretador (bug): #{@mensaje} (#{@nodo.class.to_s[5..-1]} con línea #{@nodo.row})"
   end
@@ -50,7 +50,7 @@ class ReturnValueE < StandardError
     @mensaje = mensaje
   end
 end
-  
+
 
 
 ####################################################################################################
@@ -100,17 +100,17 @@ end
 # (instrucciones, variables, etc. Devuelve la lista al recorrer)
 class Nodo_Lista < NodoAST
   attr_accessor :lista
-  
+
   def initialize k=nil
     k.nil? ? @lista=[] : @lista=[k];
   end
-  
+
   def appendTo nl=nil
     if nl.nil?; return self; end
     @lista = nl.lista + @lista
     return self
   end
-  
+
   def recorrer
     puts "Recorriendo #{self.class}" if $debug
     cosas = []
@@ -453,7 +453,7 @@ class Nodo_Write < NodoAST
     raise (InterpreterError.new(self, "Valor nulo")) if @que.nil?
     cosas = @que.recorrer[1]
     cosas.each do |cosa|
-      print cosa[1][1..-2]
+      print cosa[1].to_s[1..-2]
     end
     print @sep
     STDOUT.flush
@@ -522,7 +522,7 @@ class Nodo_DeclaracionSimple < NodoAST
     @tipo = tipo.to_str
     @varid = varid
   end
-  
+
   def recorrer
     puts "Recorriendo #{self.class}" if $debug
     v = @tipo == "number" ? 0 : false
@@ -537,7 +537,7 @@ class Nodo_DeclaracionMultiple < NodoAST
     @tipo = tipo.to_str
     @varids = varids
   end
-  
+
   def recorrer
     puts "Recorriendo #{self.class}" if $debug
     ret = []
@@ -557,7 +557,7 @@ class Nodo_DeclaracionCompleta < NodoAST
     @quien = quien
     @que = que
   end
-  
+
   def recorrer
     puts "Recorriendo #{self.class}" if $debug
     nombre = @quien.recorrer.to_str
@@ -645,9 +645,9 @@ class Nodo_BloqueFor < Nodo_Scope
   def recorrer_body
     puts "Recorriendo #{self.class}" if $debug
     raise (InterpreterError.new(self, "Valor nulo")) if @it.nil? or @ini.nil? or @fin.nil? or @paso.nil? or @instr.nil?
-    
+
     $tl.push_var(@it, "number")
-    
+
     ti, vi = @ini.recorrer
     raise (ContextError.new(self, "Tipo de expresión de inicio no es 'number' (Es #{ti})")) if ti!="number"
     tf, vf = @fin.recorrer
@@ -656,7 +656,7 @@ class Nodo_BloqueFor < Nodo_Scope
     raise (ContextError.new(self, "Tipo de expresión de parada no es 'number' (Es #{tf})")) if tf!="number"
     raise (ContextError.new(self, "Tipo de expresión de paso no es 'number' (Es #{tp})")) if tp!="number"
     raise (ContextError.new(self, "Expresión de parada iguala cero, ciclo infinito")) if paso==0
-    
+
     i,f = vi, vf
     while i<f
       $tl.var_mod(@it, i)
@@ -699,7 +699,7 @@ class Nodo_NewFunctionBody < NodoAST
       @instr.recorrer
     $tl.close_level
   end
- 
+
   def execute args
     puts "Ejecutando #{@id.to_str}"
     $tl.open_level
@@ -728,4 +728,4 @@ class Nodo_BloqueProgram < NodoAST
     @instructions.recorrer
   end
 end
-  
+
