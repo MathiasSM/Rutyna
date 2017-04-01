@@ -261,7 +261,7 @@ class Nodo_DivisionEntera < Nodo_OpeBinaria
     raise (ContextError.new(self, "Tipo de primer operador no es 'number' (Es '#{t1}')")) if t1!="number"
     raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2}')")) if t2!="number"
     raise (ContextError.new(self, "División por cero")) if v2.abs<=0.00000000001
-    return "number", (v1.div(v2))
+    return "number", (v1.div(v2)).to_f
   end
 end
 
@@ -274,7 +274,7 @@ class Nodo_ModuloEntero < Nodo_OpeBinaria
     raise (ContextError.new(self, "Tipo de primer operador no es 'number' (Es '#{t1}')")) if t1!="number"
     raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2}')")) if t2!="number"
     raise (ContextError.new(self, "División por cero")) if v2.abs<=0.00000000001
-    return "number", (v1.to_int % v2.to_int)
+    return "number", (v1.to_int % v2.to_int).to_f
   end
 end
 

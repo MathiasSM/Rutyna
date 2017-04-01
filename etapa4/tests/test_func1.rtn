@@ -1,8 +1,14 @@
 program
-    for l from 10 to 600 by 10 do
-        for i from 1 to 5 do
-            forward(l);
-            rotatel(360/5);
-        end;
-    end;
+  writeln 5   div 2 ;
+  writeln 5    /  2 ;
+  writeln 7   mod 3.5 ;
+  writeln 7    %  3.5 ;
+  writeln 12  div 5 ;
+  writeln -12 div 5 ;
+  writeln 12  div -5 ;
+  writeln -12 div -5;
+  writeln 12  mod 5 ;
+  writeln -12 mod 5 ;
+  writeln 12  mod -5 ;
+  writeln -12 mod -5;
 end;
