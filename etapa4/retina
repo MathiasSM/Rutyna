@@ -87,6 +87,7 @@ def main
       begin
         ast.execute
         crearImagen procesarCapa
+        puts "Done"
       rescue ContextError => e  # Al primer error de sintáxis salimos corriendo
         puts e
         exit 1
