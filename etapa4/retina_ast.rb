@@ -540,6 +540,7 @@ class Nodo_DeclaracionSimple < NodoAST
     puts "Recorriendo #{self.class}" if $debug
     v = @tipo == "number" ? 0 : false
     nombre = @varid.recorrer.to_str
+    raise (ContextError.new(self, "Variable '#{nombre}' ya ha sido declarada en este scope")) if $tl.var_exists_thisscope? nombre
     $tl.push_var(nombre, @tipo, v)
     return @tipo, nombre
   end
@@ -557,6 +558,7 @@ class Nodo_DeclaracionMultiple < NodoAST
     nombres = @varids.recorrer[1] if not @varids.nil?
     v = @tipo == "number" ? 0 : false
     nombres.each do |nombre|
+      raise (ContextError.new(self, "Variable '#{nombre}' ya ha sido declarada en este scope")) if $tl.var_exists_thisscope? nombre
       $tl.push_var(nombre, @tipo, v)
       ret.push( [@tipo, nombre] )
     end
@@ -575,6 +577,7 @@ class Nodo_DeclaracionCompleta < NodoAST
     puts "Recorriendo #{self.class}" if $debug
     nombre = @quien.recorrer.to_str
     valor = @que.recorrer[1]
+    raise (ContextError.new(self, "Variable '#{nombre}' ya ha sido declarada en este scope")) if $tl.var_exists_thisscope? nombre
     $tl.push_var(nombre, @tipo, valor)
     return @tipo, nombre
   end

@@ -100,6 +100,15 @@ class TableList
     return false
   end
   
+  def var_exists_thisscope? symbol_name
+    @varlist[-1][-1].table.each do |symbol|
+      if symbol.name == symbol_name
+        return (symbol.type), (symbol.value)
+      end
+    end
+    return false
+  end
+  
   def var_mod symbol_name, nu_val
     @varlist[-1].reverse.each do |scope|
       scope.table.each do |symbol|

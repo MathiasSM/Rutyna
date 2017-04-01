@@ -1,16 +1,24 @@
+# Probar que no pueda usarse la función fuera de su tipo.
+func plus(number op1, number op2) -> number
+begin
+    return op1 + op2;
+end;
 program
-  writeln 5   div 2 ;
-  writeln 5    /  2 ;
-  writeln 7   mod 3.5 ;
-  writeln 7    %  3.5 ;
-  writeln 12  div 5 ;
-  writeln -12 div 5 ;
-  writeln 12  div -5 ;
-  writeln -12 div -5;
-  writeln 12  mod 5 ;
-  writeln -12 mod 5 ;
-  writeln 12  mod -5 ;
-  writeln -12 mod -5;
-  writeln "Hola\\ Como están?";
-  writeln "Hola!!! \n Como están?";
+  with
+      number i;
+      number j = 78 + plus(4, 3);
+  do
+      with
+          number i;
+          number j = 78 + plus(4, 3);
+      do
+      end;
+      i = plus(3,2);
+        with
+          boolean i;
+        do
+          i = true and plus(1,4)==8;
+        end;
+      j = 78 + i;
+  end;
 end;
