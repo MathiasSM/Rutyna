@@ -30,6 +30,17 @@
 # retina_ast.rb
 
 
+
+####################################################################################################
+## CUSTOM ERROR:
+####################################################################################################
+
+class RetinaError < RuntimeError
+  @@prompt = "Retina:"
+end
+
+
+
 ####################################################################################################
 ## LIBRERÍAS:
 ####################################################################################################
@@ -39,9 +50,11 @@ require_relative 'retina_geometry'  # Librería que contiene reglas y compases
 require_relative 'retina_draw'      # Librería que contiene dibujitos y rayones
 
 
+
 ####################################################################################################
 ## DECLRACIÓN DE FUNCIONES:
 ####################################################################################################
+
 
 def main
   # LECTURA (chequeo de .ext y abrir como string)
@@ -74,7 +87,13 @@ def main
       parser = Parser.new       # Inicializamos Parser
       $paint = CapasPintura.new
       ast = parser.parse lexer  # Creamos el AST de prueba a partir del output del Parser
-
+      ast.execute
+      crearImagen procesarCapa
+      
+    rescue LexicographicError => e  # Al primer error de sintáxis salimos corriendo
+      puts e
+      exit 1
+      
     rescue SyntacticError => e  # Al primer error de sintáxis salimos corriendo
       puts e
       exit 1
@@ -82,15 +101,6 @@ def main
     rescue ContextError => e  # Al primer error de sintáxis salimos corriendo
       puts e
       exit 1
-
-    else
-      begin
-        ast.execute
-        crearImagen procesarCapa
-      rescue ContextError => e  # Al primer error de sintáxis salimos corriendo
-        puts e
-        exit 1
-      end
     end
   end
 end

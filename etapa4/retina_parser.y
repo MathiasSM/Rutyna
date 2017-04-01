@@ -240,13 +240,13 @@ require_relative "retina_simtable"  # Importar el SIMTAB de retina
 
 # CLASE de ERROR DE SINTÁXISz
 #=======================================
-class SyntacticError < RuntimeError
+class SyntacticError < RetinaError
   def initialize token
     @token = token
   end
 
   def to_s
-    "Error de Sintáxis: linea #{@token.row}, columna #{@token.col}: token inesperado \'#{@token.to_str}\'"
+    "#{@@prompt} Error de Sintáxis: linea #{@token.row}, columna #{@token.col}: token inesperado \'#{@token.to_str}\'"
   end
 end
 

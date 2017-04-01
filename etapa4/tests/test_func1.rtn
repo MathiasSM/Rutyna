@@ -13,7 +13,7 @@ program
           number j = 78 + plus(4, 3);
       do
       end;
-      i = plus(3,2);
+      i = plus(true,2);
         with
           boolean i;
         do
