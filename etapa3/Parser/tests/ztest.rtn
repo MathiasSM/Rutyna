@@ -1,9 +1,0 @@
-program
-    with
-        boolean b = false;
-    do
-        if b then
-        end;
-        ;
-    end;
-end;

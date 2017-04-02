@@ -1,5 +1,0 @@
-program
-    for i from 1 to 5 do
-      writeln 1, "hola", false;
-    end;
-end;
