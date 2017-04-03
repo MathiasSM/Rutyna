@@ -1,4 +1,5 @@
 ---
+zip: https://github.com/MathiasSM/Rutyna/releases/download/v1.0/Rutyna.zip
 ---
 # Rutyna
 
