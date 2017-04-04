@@ -39,6 +39,60 @@ class RetinaError < RuntimeError
   @@prompt = "Retina:"
 end
 
+class LexicographicError < RetinaError
+  def initialize t
+    @t = t
+    @row = $row
+    @col = $col
+  end
+
+  def to_s; "#{@@prompt} Error Lexicográfico: Caracter inesperado \'#{@t}\' (línea #{@row}, columna #{@col})"; end
+end
+
+class SyntacticError < RetinaError
+  def initialize token
+    @token = token
+  end
+
+  def to_s
+    "#{@@prompt} Error de Sintáxis: Token inesperado \'#{@token.to_str}\' (linea #{@token.row}, columna #{@token.col})"
+  end
+end
+
+class ContextError < RetinaError
+  def initialize nodo, mensaje=""
+    @nodo = nodo
+    @mensaje = mensaje
+  end
+
+  def to_s
+    "#{@@prompt} Error de contexto: #{@mensaje} (#{@nodo.name} en línea #{@nodo.row})"
+  end
+end
+
+class ExecutionError < RetinaError
+  attr_accessor :mensaje
+  def initialize nodo, mensaje=""
+    @nodo = nodo
+    @mensaje = mensaje
+  end
+
+  def to_s
+    "#{@@prompt} Error de Ejecución: #{@mensaje} (#{@nodo.name} en línea #{@nodo.row})"
+  end
+end
+
+class InterpreterError < RetinaError
+  def initialize nodo, mensaje=""
+    @nodo = nodo
+    @mensaje = mensaje
+  end
+
+  def to_s
+    "#{@@prompt} Error del Interpretador (bug): #{@mensaje} (#{@nodo.name} en línea #{@nodo.row})"
+  end
+end
+
 
 
 ####################################################################################################
@@ -101,6 +155,11 @@ def main
     rescue ContextError => e  # Al primer error de sintáxis salimos corriendo
       puts e
       exit 1
+
+    rescue ExecutionError => e  # Al primer error de sintáxis salimos corriendo
+      puts e
+      exit 1
+    
     end
   end
 end

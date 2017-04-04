@@ -15,31 +15,6 @@
 # Mathias San Miguel  13-11310    mathiassanmiguel@gmail.com
 
 
-####################################################################################################
-## Manejo de ERRORES DE CONTEXTO y posibles errores del INTERPRETE
-####################################################################################################
-
-class ContextError < RetinaError
-  def initialize nodo, mensaje=""
-    @nodo = nodo
-    @mensaje = mensaje
-  end
-
-  def to_s
-    "#{@@prompt} Error de contexto: #{@mensaje} (#{@nodo.class.to_s[5..-1]} en línea #{@nodo.row})"
-  end
-end
-
-class InterpreterError < RetinaError
-  def initialize nodo, mensaje=""
-    @nodo = nodo
-    @mensaje = mensaje
-  end
-
-  def to_s
-    "#{@@prompt} Error del Interpretador (bug): #{@mensaje} (#{@nodo.class.to_s[5..-1]} con línea #{@nodo.row})"
-  end
-end
 
 ####################################################################################################
 ## Manejo de VALORES DE RETORNO
@@ -67,6 +42,7 @@ class NodoAST
   def recorrer; end
   def place r; @lugar = r; end
   def row; return @lugar; end
+  def name; return self.class.to_s[5..-1]; end
 end
 
 class Nodo_Nulo < NodoAST; end
@@ -86,11 +62,11 @@ class AST < NodoAST
     $tl = TableList.new
     @program = program
     @functions = functions
+    $executing = false
     @functions.recorrer if not @functions.nil?
   end
   def execute
     begin
-      puts "\n===============  TODO PARECE NORMAL ALLÁ ARRIBA ================\n" if $debug
       $executing = true
       @program.recorrer
     ensure
@@ -129,6 +105,7 @@ class Nodo_Lista < NodoAST
     end
     return nil, cosas
   end
+  def name; "Listado"; end
 end
 
 
@@ -147,18 +124,21 @@ class Nodo_LitNumber < Nodo_Literal
     puts "Recorriendo #{self.class}" if $debug
     return "number",   @literal.to_f
   end
+  def name; "Literal de número"; end
 end
 class Nodo_LitBoolean < Nodo_Literal
   def recorrer
     puts "Recorriendo #{self.class}" if $debug
     return "boolean", (@literal.to_str == "true")
   end
+  def name; "Literal booleano"; end
 end
 class Nodo_LitString < Nodo_Literal
   def recorrer
     puts "Recorriendo #{self.class}" if $debug
     return "string",   @literal.to_str[1..-2]
   end
+  def name; "Literal de string"; end
 end
 
 
@@ -188,6 +168,7 @@ class Nodo_UMINUS < Nodo_OpeUnaria
     raise (ContextError.new(self, "Tipo de operador no es 'number' (Es '#{t}')")) if t!="number"
     return "number", -v
   end
+  def name; "'-' unario"; end
 end
 
 class Nodo_Not < Nodo_OpeUnaria
@@ -198,6 +179,7 @@ class Nodo_Not < Nodo_OpeUnaria
     raise (ContextError.new(self, "Tipo de #{@op} no es 'boolean' (Es '#{t}')")) if t!="boolean"
     return "boolean", (not v)
   end
+  def name; "'not'"; end
 end
 
 
@@ -213,6 +195,7 @@ class Nodo_Suma < Nodo_OpeBinaria
     raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2}')")) if t2!="number"
     return "number", (v1+v2)
   end
+  def name; "'+'"; end
 end
 
 class Nodo_Resta < Nodo_OpeBinaria
@@ -225,6 +208,7 @@ class Nodo_Resta < Nodo_OpeBinaria
     raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2}')")) if t2!="number"
     return "number", (v1-v2)
   end
+  def name; "'-'"; end
 end
 
 class Nodo_Multiplicacion < Nodo_OpeBinaria
@@ -237,6 +221,7 @@ class Nodo_Multiplicacion < Nodo_OpeBinaria
     raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2}')")) if t2!="number"
     return "number", (v1*v2)
   end
+  def name; "'*'"; end
 end
 
 class Nodo_DivisionReal < Nodo_OpeBinaria
@@ -250,6 +235,7 @@ class Nodo_DivisionReal < Nodo_OpeBinaria
     raise (ContextError.new(self, "División por cero")) if v2.abs<=0.00000000001
     return "number", (v1.fdiv(v2))
   end
+  def name; "División real '/'"; end
 end
 
 class Nodo_DivisionEntera < Nodo_OpeBinaria
@@ -263,6 +249,7 @@ class Nodo_DivisionEntera < Nodo_OpeBinaria
     raise (ContextError.new(self, "División por cero")) if v2.abs<=0.00000000001
     return "number", (v1.div(v2)).to_f
   end
+  def name; "Divisón entera 'div'"; end
 end
 
 class Nodo_ModuloEntero < Nodo_OpeBinaria
@@ -276,6 +263,7 @@ class Nodo_ModuloEntero < Nodo_OpeBinaria
     raise (ContextError.new(self, "División por cero")) if v2.abs<=0.00000000001
     return "number", (v1.to_int % v2.to_int).to_f
   end
+  def name; "Módulo entero 'mod'"; end
 end
 
 class Nodo_ModuloReal < Nodo_OpeBinaria
@@ -289,6 +277,7 @@ class Nodo_ModuloReal < Nodo_OpeBinaria
     raise (ContextError.new(self, "División por cero")) if v2.abs<=0.00000000001
     return "number", (v1%v2)
   end
+  def name; "Módulo real '%'"; end
 end
 
 
@@ -304,6 +293,7 @@ class Nodo_MenorQue < Nodo_OpeBinaria
     raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2}')")) if t2!="number"
     return "boolean", (v1<v2)
   end
+  def name; "'<'"; end
 end
 
 class Nodo_MayorQue < Nodo_OpeBinaria
@@ -316,6 +306,7 @@ class Nodo_MayorQue < Nodo_OpeBinaria
     raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2}')")) if t2!="number"
     return "boolean", (v1>v2)
   end
+  def name; "'>'"; end
 end
 
 class Nodo_MenorIgualQue < Nodo_OpeBinaria
@@ -328,6 +319,7 @@ class Nodo_MenorIgualQue < Nodo_OpeBinaria
     raise (ContextError.new(self, "Tipo de segundo operador no es 'number' (Es '#{t2}')")) if t2!="number"
     return "boolean", (v1<=v2)
   end
+  def name; "'<='"; end
 end
 
 class Nodo_MayorIgualQue < Nodo_OpeBinaria
@@ -340,6 +332,7 @@ class Nodo_MayorIgualQue < Nodo_OpeBinaria
     raise (ContextError.new(self, "Tipo de segundo no es 'number' (Es '#{t2}')")) if t2!="number"
     return "boolean", (v1>=v2)
   end
+  def name; "'>='"; end
 end
 
 
@@ -355,6 +348,7 @@ class Nodo_Y < Nodo_OpeBinaria
     raise (ContextError.new(self, "Tipo de segundo operador no es 'boolean' (Es '#{t2}')")) if t2!="boolean"
     return "boolean", (v1 and v2)
   end
+  def name; "Conjunción 'and'"; end
 end
 
 class Nodo_O < Nodo_OpeBinaria
@@ -367,6 +361,7 @@ class Nodo_O < Nodo_OpeBinaria
     raise (ContextError.new(self, "Tipo de segundo operador no es 'boolean'")) if t2!="boolean"
     return "boolean", (v1 or v2)
   end
+  def name; "Disjunción 'or'"; end
 end
 
 
@@ -381,6 +376,7 @@ class Nodo_IgualQue < Nodo_OpeBinaria
     raise (ContextError.new(self, "Tipo de ambos operadores difiere")) if t1!=t2
     return "boolean", (v1==v2)
   end
+  def name; "=="; end
 end
 
 class Nodo_DiferenteDe < Nodo_OpeBinaria
@@ -392,6 +388,7 @@ class Nodo_DiferenteDe < Nodo_OpeBinaria
     raise (ContextError.new(self, "Tipo de ambos operadores difiere")) if t1!=t2
     return "boolean", (v1!=v2)
   end
+  def name; "/="; end
 end
 
 
@@ -410,6 +407,7 @@ class Nodo_Asignacion < NodoAST
     $tl.var_mod(@quien, v2)
     return t1, v2
   end
+  def name; "Instrucción de asignación"; end
 end
 
 class Nodo_Return < NodoAST
@@ -423,6 +421,7 @@ class Nodo_Return < NodoAST
     #puts "HEY: "+ret.to_s
     raise (ReturnValueE.new(self,ret[0],ret[1])) if $executing # Lanza el return al controlador de la función
   end
+  def name; "Instrucción de retorno"; end
 end
 
 
@@ -440,9 +439,9 @@ class Nodo_Read < NodoAST
       raise (ContextError.new(self, "Variable '#{@que}' no ha sido declarada en este scope"))
     end
     begin
-      i = STDIN.gets.chomp
+      i = STDIN.gets if $executing
       if cosa[0]=="boolean"
-        i = i=="true"
+        i = i=="true\n"
       else
         i = i.to_f
       end
@@ -452,6 +451,7 @@ class Nodo_Read < NodoAST
     end
     return nil, "READ"
   end
+  def name; "Instrucción de lectura"; end
 end
 
 class Nodo_Write < NodoAST
@@ -466,13 +466,17 @@ class Nodo_Write < NodoAST
     puts "Recorriendo #{self.class}" if $debug
     raise (InterpreterError.new(self, "Valor nulo")) if @que.nil?
     cosas = @que.recorrer[1]
+    i=1
     cosas.each do |cosa|
-      print self.escapa(cosa[1].to_s)
+      raise (ExecutionError.new(self, "Valor nulo de argumento ##{i}")) if cosa.nil?
+      print self.escapa(cosa[1].to_s) if $executing
+      i=i+1
     end
-    print @sep
-    STDOUT.flush
+    print @sep if $executing
+    STDOUT.flush if $executing
     return nil, "WRITE"
   end
+  def name; "Instrucción de escritura"; end
 end
 
 
@@ -487,10 +491,17 @@ class Nodo_LlamaFuncion < NodoAST
     raise (InterpreterError.new(self, "Valor nulo")) if @name.nil? or @args.nil?
     raise (ContextError.new(self, "Función '#{@name}' no ha sido declarada")) if not ($tl.fun_exists? @name)[0]
     args = @args.recorrer[1]
-    ret = $tl.exec_fun(@name, args)
-    puts "Recorriendo / #{self.class}" if $debug
+    begin
+      ret = $tl.exec_fun(@name, args) if $executing
+    rescue SystemStackError => e
+      raise (ExecutionError.new(self, "Stack Overflow, la recursión fue muy profunda"))
+    rescue ExecutionError => e
+      raise (ExecutionError.new(self, e.mensaje))
+    end
+    puts "Recorrida #{self.class}" if $debug
     return ret
   end
+  def name; "Llamada a función"; end
 end
 
 class Nodo_LlamaVariable < NodoAST
@@ -501,6 +512,7 @@ class Nodo_LlamaVariable < NodoAST
     puts "Recorriendo #{self.class}" if $debug
     raise (ContextError.new(self, "Variable '#{@name}' no ha sido declarada en este scope")) if not $tl.var_exists? @name
     return $tl.var_exists? @name
+    def name; "Llamada a variable"; end
   end
 end
 
@@ -514,6 +526,7 @@ class Nodo_FunctionNewName < NodoAST
     return @name
   end
   def to_str; return @name; end
+  def name; "Nueva función"; end
 end
 
 class Nodo_VariableNewName < NodoAST
@@ -525,6 +538,7 @@ class Nodo_VariableNewName < NodoAST
     #raise (ContextError.new(self, "Variable '#{@name}' ya ha sido declarada en este scope")) if $tl.var_exists? @name
     return @name
   end
+  def name; "Nueva variable"; end
 end
 
 
@@ -544,6 +558,7 @@ class Nodo_DeclaracionSimple < NodoAST
     $tl.push_var(nombre, @tipo, v)
     return @tipo, nombre
   end
+  def name; "Declaración de variable"; end
 end
 
 class Nodo_DeclaracionMultiple < NodoAST
@@ -564,6 +579,7 @@ class Nodo_DeclaracionMultiple < NodoAST
     end
     return ret
   end
+  def name; "Declaración de variable(s)"; end
 end
 
 class Nodo_DeclaracionCompleta < NodoAST
@@ -581,6 +597,7 @@ class Nodo_DeclaracionCompleta < NodoAST
     $tl.push_var(nombre, @tipo, valor)
     return @tipo, nombre
   end
+  def name; "Declaración e inicialización de variable"; end
 end
 
 
@@ -600,11 +617,12 @@ class Nodo_BloqueRepeat < NodoAST
     raise (ContextError.new(self, "Tipo de expresión no es 'number' en el número de pasos (Es #{t})")) if t!="number"
     raise (ContextError.new(self, "Número de pasos negativo")) if v<0
     i,f = 1, v.to_f
-    while i<f
+    while i<=f
       @instructions.recorrer
       i+=1
     end
   end
+  def name; "Bloque 'Repeat'"; end
 end
 
 class Nodo_BloqueWhile < NodoAST
@@ -623,6 +641,7 @@ class Nodo_BloqueWhile < NodoAST
       can = @expression.recorrer[1]
     end
   end
+  def name; "Bloque 'While'"; end
 end
 
 class Nodo_BloqueIfElse < NodoAST
@@ -640,6 +659,7 @@ class Nodo_BloqueIfElse < NodoAST
     else; @else.recorrer
     end
   end
+  def name; "Bloque 'If'"; end
 end
 
 class Nodo_Scope < NodoAST
@@ -682,6 +702,7 @@ class Nodo_BloqueFor < Nodo_Scope
       i+=paso
     end
   end
+  def name; "Bloque 'For'"; end
 end
 
 class Nodo_BloqueWith < Nodo_Scope
@@ -694,6 +715,7 @@ class Nodo_BloqueWith < Nodo_Scope
     @variables.recorrer
     @instructions.recorrer
   end
+  def name; "Bloque 'With'"; end
 end
 
 class Nodo_NewFunctionBody < NodoAST
@@ -738,6 +760,7 @@ class Nodo_NewFunctionBody < NodoAST
     end
     return nil
   end
+  def name; "Declaración de Función '#{@id}'"; end
 end
 
 class Nodo_BloqueProgram < NodoAST
@@ -747,6 +770,11 @@ class Nodo_BloqueProgram < NodoAST
   def recorrer
     puts "Recorriendo #{self.class}" if $debug
     raise (InterpreterError.new(self, "Valor nulo")) if @instructions.nil?
-    @instructions.recorrer
+    begin
+      @instructions.recorrer
+    rescue ReturnValueE => e
+      raise (ExecutionError.new(self, "Instrucción de retorno en programa principal"))
+    end
   end
+  def name; "Programa Principal"; end
 end

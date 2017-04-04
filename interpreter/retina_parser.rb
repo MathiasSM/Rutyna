@@ -1120,14 +1120,14 @@ module_eval(<<'.,.,', 'retina_parser.y', 204)
 
 module_eval(<<'.,.,', 'retina_parser.y', 207)
   def _reduce_66(val, _values, result)
-     result = Nodo_BloqueProgram.new( val[1] ); result.place val[0].row
+     result = Nodo_BloqueProgram.new(                val[1] ); result.place val[0].row
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'retina_parser.y', 208)
   def _reduce_67(val, _values, result)
-     result = Nodo_BloqueProgram.new(    nil ); result.place val[0].row
+     result = Nodo_BloqueProgram.new( Nodo_Lista.new( nil ) ); result.place val[0].row
     result
   end
 .,.,

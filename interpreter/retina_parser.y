@@ -205,8 +205,8 @@ rule
               | PARAMS ',' DATATYPE VARID                                                   { result = Nodo_Lista.new( Nodo_DeclaracionSimple.new( val[2], val[3] ) ).appendTo( val[0] ); result.place val[0].row}
   ;
 
-  PROGRAM:      program INSTRUCTIONs 'end'                                                  { result = Nodo_BloqueProgram.new( val[1] ); result.place val[0].row}
-              | program 'end'                                                               { result = Nodo_BloqueProgram.new(    nil ); result.place val[0].row}
+  PROGRAM:      program INSTRUCTIONs 'end'                                                  { result = Nodo_BloqueProgram.new(                val[1] ); result.place val[0].row}
+              | program 'end'                                                               { result = Nodo_BloqueProgram.new( Nodo_Lista.new( nil ) ); result.place val[0].row}
   ;
   
   BEGINEND:     begin INSTRUCTIONs 'end'                                                    { result =                val[1];}
@@ -238,17 +238,6 @@ require_relative "retina_lexer"     # Importar el lexer de retina
 require_relative "retina_ast"       # Importar el AST de retina
 require_relative "retina_simtable"  # Importar el SIMTAB de retina
 
-# CLASE de ERROR DE SINTÁXISz
-#=======================================
-class SyntacticError < RetinaError
-  def initialize token
-    @token = token
-  end
-
-  def to_s
-    "#{@@prompt} Error de Sintáxis: linea #{@token.row}, columna #{@token.col}: token inesperado \'#{@token.to_str}\'"
-  end
-end
 
 ---- inner
 # Clase para captar los errores y producir una excepcion

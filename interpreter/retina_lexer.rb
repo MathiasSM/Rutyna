@@ -120,18 +120,6 @@ class Token
   def to_str; "#{@t}"; end
 end
 
-# 'TOKEN' para CARACTER INVÁLIDO
-#=======================================
-class LexicographicError < RetinaError
-  def initialize t
-    @t = t
-    @row = $row
-    @col = $col
-  end
-
-  def to_s; "#{@@prompt} Error Lexicográfico: línea #{@row}, columna #{@col}: caracter inesperado \'#{@t}\'"; end
-end
-
 
 # TIPOS DE TOKENS
 #=======================================
