@@ -4,7 +4,7 @@ tar: https://github.com/MathiasSM/Rutyna/releases/download/v1.0/Rutyna.tar
 ---
 # Interpretador Rutyna
 
-Se trata de un interpretador sencillo implementado en Ruby para el lenguaje inventado "Retina". Fue realizado como parte del curso CI3725 (Traductores e Interpretadores) de la **Universidad Simón Bolvar** por _MathiasSM_ y _CSerradaG_.
+Se trata de un interpretador sencillo implementado en Ruby para el lenguaje inventado "Retina". Fue realizado como parte del curso CI3725 (Traductores e Interpretadores) de la **Universidad Simón Bolívar** por _MathiasSM_ y _CSerradaG_.
 
 + [Más sobre Retina](#retina)
 + [Más sobre Rutyna](#rutyna)
@@ -83,7 +83,7 @@ Forman expresiones de tipo `boolean` a partir de operandos de tipo `number`. Tod
 - `>`. Si el operando izquierdo es mayor estricto al derecho, el valor de la expresión formada será `true`.
 - `<`. Si el operando izquierdo es menor estricto al derecho, el valor de la expresión formada será `true`.
 
-Para toda expresión formada por cualquiera de estos operadores, ésta será evaluada de izquierda a derecha. Además, los operadores `==` y `/=` también pueden formar expresiones a partir de operandos de tipo `boolean`. 
+Para toda expresión formada por cualquiera de estos operadores, ésta será evaluada de izquierda a derecha. Además, los operadores `==` y `/=` también pueden formar expresiones a partir de operandos de tipo `boolean`.
 
 #### Operadores aritméticos
 
@@ -99,7 +99,7 @@ Forman expresiones de tipo `number` a partir de operandos de tipo `number`. Esto
 
 #### Declaración de variables (Bloques)
 
-Es posible formar una instrucción de bloque `with DS do INSTR end;`, donde `DS` es una secuencia de declaraciones, la cual es opcional, y `INSTR` es una secuencia de instrucciones separadas por `;`. 
+Es posible formar una instrucción de bloque `with DS do INSTR end;`, donde `DS` es una secuencia de declaraciones, la cual es opcional, y `INSTR` es una secuencia de instrucciones separadas por `;`.
 
 Es posible indicar, en una misma linea, varias declaraciones a un mismo tipo, sólo si no se inicializa explícitamente alguna de las variables. Es decir que una declaración puede ser `TIPO ID1, ID2, ID3` para un tipo `TIPO` y un número indeterminado de IDs, o bien `TIPO ID = E`, con un solo `ID`, asignándole el valor de la expresión `E`.
 
@@ -113,7 +113,7 @@ Dado un identificador `I` y una expresión `E` de un tipo `T`, se puede formar u
 
 #### Control de flujo
 
-##### Condicionales (If / Else) 
+##### Condicionales (If / Else)
 
 Es posible tener una instrucción condicional con una secuencia de instruciones `INSTR` y una expresión `E` de tipo `boolean`. Donde `INSTR` será ejecutada sólo si `E` produce el valor `true`.
 ```
@@ -149,11 +149,11 @@ Se puede construir una iteración determinada `repeat N times INSTR end;` como u
 
 #### Funciones
 
-En Retina es posible definir una función con una secuencia de parámetros especificados `PR`, un identificador `F` y una secuencia de instrucciones `INSTR`, de la forma 
+En Retina es posible definir una función con una secuencia de parámetros especificados `PR`, un identificador `F` y una secuencia de instrucciones `INSTR`, de la forma
 ```
-func F(PR) 
+func F(PR)
 begin
-  INSTR 
+  INSTR
 end;
 ```
 La secuencia de paramentros puede ser vacía, de lo contrario cada parametro estará separado por una coma `,` y será de la forma `TIPO ID`. Donde `TIPO` es el tipo de dato y `ID` es el identificador del parámetro como variable.
