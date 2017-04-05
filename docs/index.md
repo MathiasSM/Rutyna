@@ -68,20 +68,20 @@ Las expresiones están constituidas por variables, valores numéricos, booleanos
 
 Forman expresiones de tipo `boolean` a partir de operandos de tipo `boolean`. La precedencia de los operadores va desde la más alta a la más baja.
 
-- `not  ` : Operador unario prefijo con asociatividad derecha. El valor correspondiente a la expresión formada será el contrario del operando.
-- `and  ` : Operador binario infijo con asociatividad izquierda. El valor correspondiente a la expresión formada será la conjunción de los valores de cada operando.
-- `or  ` : Operador binario infijo con asociatividad izquierda. El valor correspondiente a la expresión formada será la disyunción de los valores de cada operando.
+- `not ` : Operador unario prefijo con asociatividad derecha. El valor correspondiente a la expresión formada será el contrario del operando.
+- `and ` : Operador binario infijo con asociatividad izquierda. El valor correspondiente a la expresión formada será la conjunción de los valores de cada operando.
+- `or ` : Operador binario infijo con asociatividad izquierda. El valor correspondiente a la expresión formada será la disyunción de los valores de cada operando.
 
 #### Operadores de comparación
 
 Forman expresiones de tipo `boolean` a partir de operandos de tipo `number`. Todos son operadores infijos y binarios y la precedencia de los operadores es la misma pero es menor al operador `not`, y mayor al operador `and` y `or`.
 
-- `==  ` : Si ambos operandos son iguales, el valor de la expresión formada será `true`.
-- `/=  ` : Si ambos operandos son desiguales, el valor de la expresión formada será `true`.
-- `>=  ` : Si el operando izquierdo es mayor o igual al derecho, el valor de la expresión formada será `true`.
-- `<=  ` : Si el operando izquierdo es menor o igual al derecho, el valor de la expresión formada será `true`.
-- `>  ` : Si el operando izquierdo es mayor estricto al derecho, el valor de la expresión formada será `true`.
-- `<  ` : Si el operando izquierdo es menor estricto al derecho, el valor de la expresión formada será `true`.
+- `==  `  Si ambos operandos son iguales, el valor de la expresión formada será `true`.
+- `/=  `  Si ambos operandos son desiguales, el valor de la expresión formada será `true`.
+- `>=  `  Si el operando izquierdo es mayor o igual al derecho, el valor de la expresión formada será `true`.
+- `<=  `  Si el operando izquierdo es menor o igual al derecho, el valor de la expresión formada será `true`.
+- `>  `  Si el operando izquierdo es mayor estricto al derecho, el valor de la expresión formada será `true`.
+- `<  `  Si el operando izquierdo es menor estricto al derecho, el valor de la expresión formada será `true`.
 
 Para toda expresión formada por cualquiera de estos operadores, ésta será evaluada de izquierda a derecha. Además, los operadores `==` y `/=` también pueden formar expresiones a partir de operandos de tipo `boolean`.
 
@@ -89,9 +89,9 @@ Para toda expresión formada por cualquiera de estos operadores, ésta será eva
 
 Forman expresiones de tipo `number` a partir de operandos de tipo `number`. Estos operadores tienen mayor precedencia que los operadores de comparación. Se listan desde el operador con mayor precedencia.
 
-- `-  ` : Operador unario, prefijo, asociatividad derecha. Se trata del "Menos unitario".
-- `*`,`/`, `%`, `div` y `mod  ` : Operadores binarios, infijos, asociatividad izquierda. `/` y `%` corresponden a la división exacta y resto exacto entre los operandos, respectivamente.  `div` y `mod` corresponden a la división entera y resto entero entre los operandos, respectivamente. En caso de que el operando izquierdo sea `0` para todos los operandos excepto `*`, habrá error.
-- `+` y `-  ` : Operadores binarios, infijos, asociatividad izquierda. Corresponden a la suma y resta entre operandos.
+- `-  `  Operador unario, prefijo, asociatividad derecha. Se trata del "Menos unitario".
+- `*`, `/`, `%`, `div` y `mod  `  Operadores binarios, infijos, asociatividad izquierda. `/` y `%` corresponden a la división exacta y resto exacto entre los operandos, respectivamente.  `div` y `mod` corresponden a la división entera y resto entero entre los operandos, respectivamente. En caso de que el operando izquierdo sea `0` para todos los operandos excepto `*`, habrá error.
+- `+` y `-  `  Operadores binarios, infijos, asociatividad izquierda. Corresponden a la suma y resta entre operandos.
 
 *****
 
