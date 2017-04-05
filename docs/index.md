@@ -143,7 +143,7 @@ for i from A to B by P do INSTR end;
 ```
 Es importante destacar que `A` y `B`, de no ser enteras, serán transformadas al entero más cercano por debajo.
 
-###### Repeat (Caso particular)
+##### Repeat (Caso particular)
 
 Se puede construir una iteración determinada `repeat N times INSTR end;` como un caso particular de `for`, con una expresión `N` de tipo `number` y una secuencia de instrucciones `INSTR`. Dicha instrucción es equivalavente a `for i from 1 to N do INSTR end;` pero no existe un contador como variable.
 
