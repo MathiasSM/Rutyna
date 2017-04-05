@@ -195,20 +195,17 @@ Teniendo un identificador `I`, asociado a un tipo de dato `T` en Retina, es posi
 La instrucción `write x1, x2, ..., xn;`, donde `xi` puede ser una cadena de caracteres encerrada entre comillas dobles o una expresión de cualquier tipo. Recorre la secuencia de elementos de izquierda a derecha e imprime cada elemento en pantalla; esta secuencia no puede ser vacía. Existe la instrucción `writeln`, que realiza la imprisión descrita previamente y adicionalmente imprime un salto de línea al final.
 
 *****
-
-[//]: ### Referencias
-
-[Especificación del Lenguaje Retina]: <https://github.com/dvdalilue/retina/blob/master/lenguaje/especificacion.md>
-[Logo]: <http://el.media.mit.edu/logo-foundation/what_is_logo/logo_programming.html>
-[pbm]: <https://en.wikipedia.org/wiki/Netpbm_format>
-[Turtle graphics]: <https://en.wikipedia.org/wiki/Turtle_graphics>
-
 *****
-*****
-
 
 ## Rutyna
 
 Rutyna fue desarrollado en Ruby 2.4.0; puede funcionar con otras versiones pero no lo aseguramos. Contiene un archivo `retina` ejecutable (es un shellscript) que puedes usar para ejecutar **rutyna** (cuyos archivos se encuentran en `/interpreter`). Un ejemplo de ejecución sería `./retina archivo.rtn` donde `archivo.rtn` es un archivo de texto con código retina; el archivo de imagen se llamará `archivo.pbm`.
 
 Por ahora la única documentación existente se encuentra en el código. Descárgalo, lée los comentarios, dibuja con Rutyna.
+
+[//]: ## Referencias
+
+[Especificación del Lenguaje Retina]: <https://github.com/dvdalilue/retina/blob/master/lenguaje/especificacion.md>
+[Logo]: <http://el.media.mit.edu/logo-foundation/what_is_logo/logo_programming.html>
+[pbm]: <https://en.wikipedia.org/wiki/Netpbm_format>
+[Turtle graphics]: <https://en.wikipedia.org/wiki/Turtle_graphics>
