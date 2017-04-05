@@ -177,10 +177,10 @@ Cada programa en Retina, inicia con el cursor en la posición (0,0) del plano ca
 - `closeeye()`: Todo movimiento a partir de esta instrucción no se marcará.
 - `forward(number x)`: Avanza el cursor el número pasos indicado como parámetro `x`.
 - `backward(number x)`: Retrocede el cursor el número pasos indicado como parámetro `x`.
-- `rotatel(number x)`: Rota el cursor en sentido antihorario el número de grados indicado como parámetro `x`.
-- `rotater(number x)`: Rota el cursor en sentido horario el número de grados indicado como parámetro `x`.
+- `rotatel(number n)`: Rota el cursor en sentido antihorario el número de grados indicado como parámetro `n`.
+- `rotater(number n)`: Rota el cursor en sentido horario el número de grados indicado como parámetro `n`.
 - `setposition(number x, number y)`: Posiciona el cursor en el punto `(x, y)`.
-- `arc(number x, number y)`: Dibuja un arco de `n` grados y radio `y`, con el cursor equidistante a todo punto del arco; sin marcar más que el arco, sin mover el cursor. _Esta función no ha sido implementada._
+- `arc(number n, number r)`: Dibuja un arco de `n` grados y radio `r`, con el cursor equidistante a todo punto del arco; sin marcar más que el arco y sin mover el cursor. _Esta función no ha sido implementada._
 
 #### Entrada y salida (a consola)
 
